@@ -54,14 +54,14 @@ env:
   # 🖊️ EDIT to specify custom tags for the container image, or default tags will be generated below.
   IMAGE_TAGS: ""
 
-  API_IMAGE_NAME: quarkus-example
+  API_IMAGE_NAME: quarkus-api-main
   DOCKER_ARTIFACTORY_REPO: docker-remote.artifacts.developer.gov.bc.ca
   ARTIFACTORY_REPO: artifacts.developer.gov.bc.ca
 
   APP_NAME: 'quarkus-api'
   REPO_NAME: "iit-arch"
   JOB_NAME: "main"
-  APP_NAME_FULL: "quarkus-api"
+  APP_NAME_FULL: "quarkus-api-main"
   NAMESPACE: ${{ secrets.NAMESPACE_NO_ENV }}
   TAG: "latest"
   TARGET_ENV: "dev"
