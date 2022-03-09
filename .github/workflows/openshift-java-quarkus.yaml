@@ -148,7 +148,7 @@ jobs:
           username: ${{ secrets.DOCKER_HUB_USERNAME }}
           password: ${{ secrets.DOCKER_HUB_ACCESS_TOKEN }}
 
-      - uses: actions/setup-java@v1
+      - uses: actions/setup-java@v11
         with:
           java-version: 11
       - uses: actions/cache@v1
@@ -157,7 +157,8 @@ jobs:
           key: ${{ runner.os }}-maven-${{ hashFiles('**/pom.xml') }}
           restore-keys: |
             ${{ runner.os }}-maven-
-      # https://github.com/redhat-actions/buildah-build#readme
+      - name: Build native application
+        run: mvn clean package -Pnative -DskipTests
       - name: Build from Dockerfile
         id: build-image
         uses: redhat-actions/buildah-build@v2
