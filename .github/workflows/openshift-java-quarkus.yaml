@@ -83,7 +83,7 @@ jobs:
     environment: quarkus-dev
     defaults:
       run:
-        working-directory: api/java/quarkus
+        working-directory: apis/java/quarkus
 
     outputs:
       ROUTE: ${{ steps.deploy-and-expose.outputs.route }}
