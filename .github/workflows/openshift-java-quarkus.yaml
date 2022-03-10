@@ -33,12 +33,8 @@ env:
   OPENSHIFT_SERVER: ${{ secrets.OPENSHIFT_SERVER }}
   OPENSHIFT_TOKEN: ${{ secrets.OPENSHIFT_TOKEN }}
   # 🖊️ EDIT to set the kube context's namespace after login. Leave blank to use your user's default namespace.
-  OPENSHIFT_NAMESPACE: ${{ secrets.OPENSHIFT_NAMESPACE }}
+  OPENSHIFT_NAMESPACE: ${{ secrets.NAMESPACE_NO_ENV}}-tools
 
-  DB_JDBC_CONNECT_STRING: ${{ secrets.DB_JDBC_CONNECT_STRING }}
-  DB_PWD: ${{ secrets.DB_PWD }}
-  DB_USER: ${{ secrets.DB_USER }}
-  SPLUNK_TOKEN: ${{ secrets.SPLUNK_TOKEN }}
 
   # 🖊️ EDIT with the port your application should be accessible on.
   # If the container image exposes *exactly one* port, this can be left blank.
@@ -50,11 +46,11 @@ env:
   IMAGE_REGISTRY: ghcr.io/${{ github.repository_owner }}
   IMAGE_REGISTRY_USER: ${{ github.actor }}
   IMAGE_REGISTRY_PASSWORD: ${{ github.token }}
-
+  OIDC_AUTH_SERVER_URL: ${{ secrets.OIDC_AUTH_SERVER_URL }}
   # 🖊️ EDIT to specify custom tags for the container image, or default tags will be generated below.
   IMAGE_TAGS: ""
 
-  API_IMAGE_NAME: quarkus-api-main
+  API_IMAGE_NAME: iit-arch-quarkus-api-main
   DOCKER_ARTIFACTORY_REPO: docker-remote.artifacts.developer.gov.bc.ca
   ARTIFACTORY_REPO: artifacts.developer.gov.bc.ca
 
@@ -64,7 +60,7 @@ env:
   APP_NAME_FULL: "quarkus-api-main"
   NAMESPACE: ${{ secrets.NAMESPACE_NO_ENV }}
   TAG: "latest"
-  TARGET_ENV: "dev"
+  TARGET_ENV: "tools"
   MIN_REPLICAS: "1"
   MAX_REPLICAS: "1"
   MIN_CPU: "50m"
@@ -202,13 +198,13 @@ jobs:
           oc rollout cancel dc/${{ env.API_IMAGE_NAME }} 2> /dev/null \
           || true && echo "No rollout in progress"
           
-          oc tag ${{ steps.push-image.outputs.registry-path }} ${{ env.REPO_NAME }}-${{ env.JOB_NAME }}:${{ env.TAG }}
+          oc tag ${{ steps.push-image.outputs.registry-path }} quarkus-api-main:${{ env.TAG }}
           
           # Process and apply deployment template
           oc process -f tools/openshift/api.dc.yaml -p APP_NAME=${{ env.APP_NAME }} -p REPO_NAME=${{ env.REPO_NAME }} -p JOB_NAME=${{ env.JOB_NAME }} -p NAMESPACE=${{ env.OPENSHIFT_NAMESPACE }} -p TAG=${{ env.TAG }} -p MIN_REPLICAS=${{ env.MIN_REPLICAS }} -p MAX_REPLICAS=${{ env.MAX_REPLICAS }} -p MIN_CPU=${{ env.MIN_CPU }} -p MAX_CPU=${{ env.MAX_CPU }} -p MIN_MEM=${{ env.MIN_MEM }} -p MAX_MEM=${{ env.MAX_MEM }} \
           | oc apply -f -
           
-          curl -s https://raw.githubusercontent.com/bcgov/${{ env.REPO_NAME }}/master/tools/jenkins/update-configmap.sh | bash /dev/stdin ${{ env.TARGET_ENV }} ${{ env.APP_NAME }} ${{ env.NAMESPACE }} ${{ env.COMMON_NAMESPACE }} ${{ env.DB_JDBC_CONNECT_STRING }} ${{ env.DB_PWD }} ${{ env.DB_USER }} ${{ env.SPLUNK_TOKEN }}
+          curl -s https://raw.githubusercontent.com/bcgov/${{ env.REPO_NAME }}/main/apis/java/quarkus/openshift-config-map.sh | bash /dev/stdin ${{ env.APP_NAME }} ${{ env.OIDC_AUTH_SERVER_URL }} ${{ env.OPENSHIFT_NAMESPACE }}
           
           # Start rollout (if necessary) and follow it
           oc rollout latest dc/${{ env.API_IMAGE_NAME }} 2> /dev/null \

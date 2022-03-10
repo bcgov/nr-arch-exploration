@@ -23,6 +23,12 @@ Postman sample to get a token:
 ![img.png](img.png)
 If you want to learn more about building native executables, please consult https://quarkus.io/guides/maven-tooling.
 
+#Deployment to openshift
+1. follow this link for artifactory knowledge https://developer.gov.bc.ca/Artifact-Repositories-(Artifactory),  it helps in understanding build and push of image to openshift.
+2. Create secrets for running GitHub actions by following instructions at https://github.com/redhat-actions/oc-login#readme
+3. make sure you have OC CLI installed on your desktop. Follow this link for getting the patroni image in your image stream to deploy patroni statefulset https://github.com/BCDevOps/platform-services/tree/master/apps/pgsql/patroni .
+   1. the documentation above is based on cloning the repo to local, you don't need to clone the repo to local just replace the reference to files like this openshift/build.yaml with https://raw.githubusercontent.com/BCDevOps/platform-services/master/apps/pgsql/patroni/openshift/build.yaml
+   
 ## Related Guides
 
 - RESTEasy JAX-RS ([guide](https://quarkus.io/guides/rest-json)): REST endpoint framework implementing JAX-RS and more
