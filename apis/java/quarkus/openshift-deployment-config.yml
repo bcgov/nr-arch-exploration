@@ -29,7 +29,7 @@ objects:
             deploymentConfig: "${APP_NAME}-${JOB_NAME}"
         spec:
           containers:
-            - image: image-registry.openshift-image-registry.svc:5000/${NAMESPACE}/${REPO_NAME}-${JOB_NAME}:${TAG}
+            - image: image-registry.openshift-image-registry.svc:5000/${NAMESPACE}/quarkus-api-main:${TAG}
               imagePullPolicy: Always
               volumeMounts:
                 - name: tls-certs
@@ -52,7 +52,7 @@ objects:
                 timeoutSeconds: 5
                 failureThreshold: 5
                 successThreshold: 1
-              name: "${APP_NAME}-${JOB_NAME}"
+              name: "quarkus-api-main"
               ports:
                 - containerPort: ${{CONTAINER_PORT}}
                   protocol: TCP
@@ -128,7 +128,7 @@ parameters:
     required: true
   - name: CONTAINER_PORT
     description: The port on which the application will be accessible
-    value: "8080"
+    value: "8000"
     required: false
   - name: TAG
     description: The identifying tag for this specific deployment
