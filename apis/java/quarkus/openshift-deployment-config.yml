@@ -63,6 +63,16 @@ objects:
                 limits:
                   cpu: "${MAX_CPU}"
                   memory: "${MAX_MEM}"
+              env:
+                - name: QUARKUS_DATASOURCE_JDBC_URL
+                  value: "jdbc:postgresql://quarkus-api-pgsql:5432/quarkus"
+                - name: QUARKUS_DATASOURCE_JDBC_USERNAME
+                  value: "quarkus"
+                - name: QUARKUS_DATASOURCE_JDBC_PASSWORD
+                  valueFrom:
+                    secretKeyRef:
+                      name: "quarkus-api-pgsqltools"
+                      key: "app-db-password"
 
           volumes:
             - name: tls-certs
