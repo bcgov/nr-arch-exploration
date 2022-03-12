@@ -168,4 +168,60 @@ jobs:
             ${{ runner.os }}-maven-
       - name: Build native application
         run: mvn clean package -Pnative -DskipTests
+      - name: Build from Dockerfile
+        id: build-image
+        uses: redhat-actions/buildah-build@v2
+        with:
+          image: ${{ env.APP_NAME_FULL }}
+          tags: ${{ env.IMAGE_TAGS }}
 
+          # If you don't have a Dockerfile/Containerfile, refer to https://github.com/redhat-actions/buildah-build#scratch-build-inputs
+          # Or, perform a source-to-image build using https://github.com/redhat-actions/s2i-build
+          # Otherwise, point this to your Dockerfile/Containerfile relative to the repository root.
+          dockerfiles: |
+            ./apis/java/quarkus/Dockerfile.native-openshift
+
+      # https://github.com/redhat-actions/push-to-registry#readme
+      - name: Push to registry
+        id: push-image
+        uses: redhat-actions/push-to-registry@v2
+        with:
+          image: ${{ steps.build-image.outputs.image }}
+          tags: ${{ steps.build-image.outputs.tags }}
+          registry: ${{ env.IMAGE_REGISTRY }}
+          username: ${{ env.IMAGE_REGISTRY_USER }}
+          password: ${{ env.IMAGE_REGISTRY_PASSWORD }}
+
+      # The path the image was pushed to is now stored in ${{ steps.push-image.outputs.registry-path }}
+
+      - name: Install oc
+        uses: redhat-actions/openshift-tools-installer@v1
+        with:
+          oc: 4
+
+        # https://github.com/redhat-actions/oc-login#readme
+      - uses: actions/checkout@v2
+      - name: Deploy
+        run: |
+          set -eux
+          # Login to OpenShift and select project
+          oc login --token=${{ env.OPENSHIFT_TOKEN }} --server=${{ env.OPENSHIFT_SERVER }}
+          oc project ${{ env.OPENSHIFT_NAMESPACE }}
+          # Cancel any rollouts in progress
+          oc rollout cancel dc/${{ env.API_IMAGE_NAME }} 2> /dev/null \
+          || true && echo "No rollout in progress"
+          
+          oc tag ${{ steps.push-image.outputs.registry-path }} quarkus-api-main:${{ env.TAG }}
+          
+          # Process and apply deployment template
+          oc process -f https://raw.githubusercontent.com/bcgov/iit-arch/main/apis/java/quarkus/openshift-deployment-config.yml -p APP_NAME=${{ env.APP_NAME }} -p REPO_NAME=${{ env.REPO_NAME }} -p JOB_NAME=${{ env.JOB_NAME }} -p NAMESPACE=${{ env.OPENSHIFT_NAMESPACE }} -p TAG=${{ env.TAG }} -p MIN_REPLICAS=${{ env.MIN_REPLICAS }} -p MAX_REPLICAS=${{ env.MAX_REPLICAS }} -p MIN_CPU=${{ env.MIN_CPU }} -p MAX_CPU=${{ env.MAX_CPU }} -p MIN_MEM=${{ env.MIN_MEM }} -p MAX_MEM=${{ env.MAX_MEM }} \
+          | oc apply -f -
+          
+          curl -s https://raw.githubusercontent.com/bcgov/${{ env.REPO_NAME }}/main/apis/java/quarkus/openshift-config-map.sh | bash /dev/stdin ${{ env.APP_NAME }} ${{ env.OIDC_AUTH_SERVER_URL }} ${{ env.OPENSHIFT_NAMESPACE }}
+          
+          # Start rollout (if necessary) and follow it
+          oc rollout latest dc/${{ env.API_IMAGE_NAME }} 2> /dev/null \
+          || true && echo "Rollout in progress"
+          oc logs -f dc/${{ env.API_IMAGE_NAME }}
+          # Get status, returns 0 if rollout is successful
+          oc rollout status dc/${{ env.API_IMAGE_NAME }}
