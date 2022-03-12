@@ -4,19 +4,19 @@ kind: Template
 labels:
   template: "${REPO_NAME}-template"
 metadata:
-  name: "${REPO_NAME}-${JOB_NAME}-dc"
+  name: "${REPO_NAME}-dc"
 objects:
   - apiVersion: v1
     kind: DeploymentConfig
     metadata:
       labels:
-        app: "${APP_NAME}-${JOB_NAME}"
-      name: "${APP_NAME}-${JOB_NAME}"
+        app: "${APP_NAME}"
+      name: "${APP_NAME}"
     spec:
       replicas: ${{MIN_REPLICAS}}
       selector:
-        app: "${APP_NAME}-${JOB_NAME}"
-        deploymentConfig: "${APP_NAME}-${JOB_NAME}"
+        app: "${APP_NAME}"
+        deploymentConfig: "${APP_NAME}"
       strategy:
         resources: {}
         type: Rolling
@@ -25,11 +25,11 @@ objects:
           annotations:
             openshift.io/generated-by: quarkus-api
           labels:
-            app: "${APP_NAME}-${JOB_NAME}"
-            deploymentConfig: "${APP_NAME}-${JOB_NAME}"
+            app: "${APP_NAME}"
+            deploymentConfig: "${APP_NAME}"
         spec:
           containers:
-            - image: image-registry.openshift-image-registry.svc:5000/${NAMESPACE}/quarkus-api-main:${TAG}
+            - image: image-registry.openshift-image-registry.svc:5000/${NAMESPACE}/quarkus-api:${TAG}
               imagePullPolicy: Always
               volumeMounts:
                 - name: tls-certs
@@ -86,25 +86,25 @@ objects:
       annotations:
         service.alpha.openshift.io/serving-cert-secret-name: "quarkus-api-cert"
       labels:
-        app: "${APP_NAME}-${JOB_NAME}"
-      name: "${APP_NAME}-${JOB_NAME}"
+        app: "${APP_NAME}"
+      name: "${APP_NAME}"
     spec:
       ports:
         - name: ${CONTAINER_PORT}-tcp
           port: ${{CONTAINER_PORT}}
           protocol: TCP
       selector:
-        app: "${APP_NAME}-${JOB_NAME}"
-        deploymentconfig: "${APP_NAME}-${JOB_NAME}"
+        app: "${APP_NAME}"
+        deploymentconfig: "${APP_NAME}"
   - apiVersion: autoscaling/v2beta1
     kind: HorizontalPodAutoscaler
     metadata:
-      name: "${APP_NAME}-${JOB_NAME}-cpu-autoscaler"
+      name: "${APP_NAME}-cpu-autoscaler"
     spec:
       scaleTargetRef:
         apiVersion: apps.openshift.io/v1
         kind: DeploymentConfig
-        name: "${APP_NAME}-${JOB_NAME}"
+        name: "${APP_NAME}"
         subresource: scale
       minReplicas: ${{MIN_REPLICAS}}
       maxReplicas: ${{MAX_REPLICAS}}

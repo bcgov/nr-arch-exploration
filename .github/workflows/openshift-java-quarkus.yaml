@@ -57,7 +57,6 @@ env:
   APP_NAME: 'quarkus-api'
   REPO_NAME: "iit-arch"
   JOB_NAME: "main"
-  APP_NAME_FULL: "quarkus-api-main"
   NAMESPACE: ${{ secrets.NAMESPACE_NO_ENV }}
   TAG: "latest"
   TARGET_ENV: "tools"
@@ -133,10 +132,6 @@ jobs:
       - name: Check out repository
         uses: actions/checkout@v2
 
-      - name: Determine app name
-        if: env.APP_NAME_FULL == ''
-        run: |
-          echo "APP_NAME_FULL=$(basename $PWD)" | tee -a $GITHUB_ENV
 
       - name: Determine image tags
         if: env.IMAGE_TAGS == ''
@@ -172,7 +167,7 @@ jobs:
         id: build-image
         uses: redhat-actions/buildah-build@v2
         with:
-          image: ${{ env.APP_NAME_FULL }}
+          image: ${{ env.APP_NAME }}
           tags: ${{ env.IMAGE_TAGS }}
 
           # If you don't have a Dockerfile/Containerfile, refer to https://github.com/redhat-actions/buildah-build#scratch-build-inputs
