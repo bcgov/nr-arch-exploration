@@ -29,7 +29,7 @@ objects:
             deploymentConfig: "${APP_NAME}"
         spec:
           containers:
-            - image: image-registry.openshift-image-registry.svc:5000/${NAMESPACE}/quarkus-api:${TAG}
+            - image: image-registry.openshift-image-registry.svc:5000/${NAMESPACE}/${APP_NAME}:${TAG}
               imagePullPolicy: Always
               volumeMounts:
                 - name: tls-certs
