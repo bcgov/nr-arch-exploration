@@ -1,0 +1,62 @@
+---
+kind: Template
+apiVersion: v1
+labels:
+  app: "${NAME}"
+  app.kubernetes.io/component: "${NAME}"
+  app.kubernetes.io/instance: "${NAME}"
+  app.kubernetes.io/managed-by: template
+  app.kubernetes.io/name: java
+  app.kubernetes.io/part-of: "${NAME}"
+  template: "${NAME}-nsp-template"
+metadata:
+  name: "${NAME}"
+objects:
+  - apiVersion: networking.k8s.io/v1
+    kind: NetworkPolicy
+    metadata:
+      name: "allow-${NAME}-${NS_PREFIX}-${NS_ENV}-to-${TARGET_NAME}-${TARGET_INSTANCE}-readonly"
+    spec:
+      # Allow Metabase to talk to Patroni cluster in different namespace
+      ingress:
+        - from:
+            - namespaceSelector:
+                matchLabels:
+                  environment: "${NS_ENV}"
+                  name: "${NS_PREFIX}"
+              podSelector:
+                matchLabels:
+                  app: "${NAME}"
+                  deploymentconfig: "${NAME}"
+          ports:
+            - port: 5432
+              protocol: TCP
+      podSelector:
+        matchLabels:
+          cluster-name: "${TARGET_INSTANCE}"
+          statefulset: "${TARGET_NAME}-${TARGET_INSTANCE}"
+          role: replica
+parameters:
+  - name: NAME
+    description: The name assigned to all of the objects defined in this template
+    displayName: Name
+    required: true
+    value: metabase
+  - name: TARGET_NAME
+    description: The name of the application db to grant access to
+    displayName: Application Name
+    required: true
+    value: patroni
+  - name: TARGET_INSTANCE
+    description: The name of this instance of the application
+    displayName: Application Instance Name
+    required: true
+    value: master
+  - name: NS_PREFIX
+    displayName: Namespace Prefix
+    description: The prefix (a.k.a license plate) of the metabase namespace
+    required: true
+  - name: NS_ENV
+    displayName: Environment Name
+    description: The environment (i.e dev/test/prod/tools) of the metabase namespace
+    required: true

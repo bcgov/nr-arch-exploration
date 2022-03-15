@@ -1,0 +1,78 @@
+---
+kind: Template
+apiVersion: v1
+labels:
+  build: "${NAME}"
+  template: "${NAME}-bc-template"
+metadata:
+  name: "${NAME}"
+objects:
+  - apiVersion: v1
+    kind: ImageStream
+    metadata:
+      name: "${NAME}"
+    spec:
+      lookupPolicy:
+        local: false
+  - apiVersion: v1
+    kind: BuildConfig
+    metadata:
+      name: "${NAME}"
+      labels:
+        buildconfig: "${NAME}"
+    spec:
+      completionDeadlineSeconds: 600
+      failedBuildsHistoryLimit: 3
+      output:
+        to:
+          kind: ImageStreamTag
+          name: "${NAME}:${VERSION}"
+      postCommit: {}
+      resources:
+        limits:
+          cpu: 2000m
+          memory: 2Gi
+        requests:
+          cpu: 1000m
+          memory: 1Gi
+      runPolicy: SerialLatestOnly
+      source:
+        dockerfile: |
+          FROM BuildConfig
+          WORKDIR /app
+          ENV FC_LANG=en-US \
+              LC_CTYPE=en_US.UTF-8
+          RUN apk add --update --no-cache bash curl wget ttf-dejavu fontconfig
+          RUN wget -q http://downloads.metabase.com/${METABASE_VERSION}/metabase.jar \
+           && chmod -R 777 /app
+          EXPOSE 3000
+          ENTRYPOINT ["java", "-jar", "metabase.jar"]
+        type: Dockerfile
+      strategy:
+        dockerStrategy:
+          buildArgs:
+            - name: METABASE_VERSION
+              value: "${METABASE_VERSION}"
+          from:
+            kind: DockerImage
+            name: docker.io/adoptopenjdk/openjdk11:alpine-jre
+        type: Docker
+      successfulBuildsHistoryLimit: 3
+      triggers:
+        - type: ConfigChange
+parameters:
+  - name: NAME
+    displayName: Name
+    description: The name assigned to all of the objects defined in this template.
+    required: true
+    value: metabase
+  - name: METABASE_VERSION
+    displayName: Metabase Version
+    description: Version of Metabase to use
+    required: true
+    value: v0.41.5
+  - name: VERSION
+    displayName: Image version tag
+    description: The version tag of the built image
+    required: true
+    value: latest
