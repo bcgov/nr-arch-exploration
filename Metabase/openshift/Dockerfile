@@ -1,4 +1,4 @@
-FROM artifacts.developer.gov.bc.ca/openjdk:11
+FROM docker.io/adoptopenjdk/openjdk11:alpine-jre
 WORKDIR /app
 ENV FC_LANG=en-US \
   LC_CTYPE=en_US.UTF-8
