@@ -7,7 +7,7 @@ This folder contains the OpenShift templates required in order to build and depl
 While Metabase does provide a Docker image [here](https://hub.docker.com/r/metabase/metabase), it is not compatible with OpenShift due to the image assuming it has root privileges. Instead, we build a simple Java image based off of OpenJDK 11 where the metabase application can execute without needing privilege escalation. In order to build a Metabase image in your project, process and create the build config template using the following command (replace anything in angle brackets with the correct value):
 
 ``` sh
-export BASE_URL="https://raw.githubusercontent.com/bcgov/nr-showcase-devops-tools/master/tools/metabase/openshift"
+export BASE_URL="https://raw.githubusercontent.com/bcgov/iit-arch/main/Metabase/openshift"
 export NAMESPACE=<YOURNAMESPACE>
 export METABASE_VERSION=v0.41.5
 

@@ -45,6 +45,7 @@ objects:
           RUN apk add --update --no-cache bash curl wget ttf-dejavu fontconfig
           RUN wget -q http://downloads.metabase.com/${METABASE_VERSION}/metabase.jar \
            && chmod -R 777 /app
+          COPY ojbc11.jar /app/plugins/ojbc11.jar
           EXPOSE 3000
           ENTRYPOINT ["java", "-jar", "metabase.jar"]
         type: Dockerfile
