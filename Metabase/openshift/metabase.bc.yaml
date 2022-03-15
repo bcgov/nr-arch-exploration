@@ -37,6 +37,7 @@ objects:
           memory: 1Gi
       runPolicy: SerialLatestOnly
       source:
+        contextDir: Metabase/openshift
         dockerfile: |
           FROM BuildConfig
           WORKDIR /app
