@@ -1,4 +1,4 @@
-FROM docker-remote.artifacts.developer.gov.bc.ca/adoptopenjdk/openjdk11:alpine-jre
+FROM artifacts.developer.gov.bc.ca/adoptopenjdk/openjdk11:alpine-jre
 WORKDIR /app
 ENV FC_LANG=en-US \
   LC_CTYPE=en_US.UTF-8
