@@ -48,7 +48,7 @@ objects:
             - name: METABASE_VERSION
               value: "${METABASE_VERSION}"
           pullSecret:
-            name: artifacts-default-jtftbt
+            name: artifactory-creds
         type: Docker
       successfulBuildsHistoryLimit: 3
       triggers:
