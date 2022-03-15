@@ -1,6 +1,6 @@
 # Metabase
 
-This folder contains the OpenShift templates required in order to build and deploy an instance of Metabase onto OpenShift. These templates were designed with the assumption that you will be building and deploying the Metabase application within the same project. We will be running with the assumption that this Metabase instance will be co-located in the same project as the database it is expecting to poll from.
+This folder contains the OpenShift templates required in order to build and deploy an instance of Metabase onto OpenShift with Oracle support.
 
 ## Build Metabase
 
@@ -23,7 +23,7 @@ Once your metabase image has been successfully built, you can then deploy it in 
 *Note: We recommend the prefix have a dash at the end so that you get something like "app-metabase" instead of "appmetabase" as the domain.*
 
 ``` sh
-export ADMIN_EMAIL=NR.CommonServiceShowcase@gov.bc.ca
+export ADMIN_EMAIL=<ADMINEMAIL>
 export NAMESPACE=<YOURNAMESPACE>
 export PREFIX=<YOURCUSTOMPREFIX>
 
