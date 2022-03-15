@@ -1,4 +1,4 @@
-FROM artifacts.developer.gov.bc.ca/openjdk11:alpine-jre
+FROM artifacts.developer.gov.bc.ca/openjdk:11
 WORKDIR /app
 ENV FC_LANG=en-US \
   LC_CTYPE=en_US.UTF-8
