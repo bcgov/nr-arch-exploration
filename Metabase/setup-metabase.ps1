@@ -26,11 +26,14 @@ function main
 #This function will check if the OC client is installed on the windows machine. If not it will install it.
 function checkAndAddOCClientForWindows
 {
-  if (oc)
+  try
   {
-    Write-Output "OC client is installed already."
+    if (oc)
+    {
+      Write-Output "OC client is installed already."
+    }
   }
-  else
+  catch
   {
     Write-Output "OC client is not present, it will downloaded and unzipped to $( $OC_BASE_PATH )"
     if (Test-Path $OC_BASE_PATH\oc.exe)
@@ -51,6 +54,8 @@ function checkAndAddOCClientForWindows
     Set-Item -Path alias:oc  -Value $OC_BASE_PATH\oc.exe
     Write-Output "$( oc version )"
   }
+
+
 }
 function getInputsFromUser
 {
@@ -164,7 +169,7 @@ function getMetabaseAdminEmail
 function loginToOpenshift
 {
   Write-Output "Logging into openshift."
-  oc login --token=$OPENSHIFT_TOKEN --server=$OPENSHIFT_SERVER
+  oc login --token =$OPENSHIFT_TOKEN --server = $OPENSHIFT_SERVER
   Write-Output "Logged in to openshift."
 }
 
