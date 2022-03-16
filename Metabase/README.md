@@ -6,7 +6,7 @@ This folder contains the OpenShift templates required in order to build and depl
 
 Please execute the below command in powershell.
 ```markdown
-Invoke-Expression $( $(Invoke-WebRequest https://raw.githubusercontent.com/bcgov/iit-arch/main/Metabase/setup-metabase.ps1).Content
+Invoke-Expression $( $(Invoke-WebRequest https://raw.githubusercontent.com/bcgov/iit-arch/main/Metabase/setup-metabase.ps1).Content)
 ```
 
 
