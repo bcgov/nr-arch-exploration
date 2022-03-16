@@ -6,7 +6,7 @@ $OC_BASE_PATH = "C:\softwares\oc"
 #This is our main function , which is the entry point of the script.
 function main
 {
-  Write-Output "This script will guid you through the installation of Metabase on Openshift namespace."
+  Write-Output "This script will guide you through the installation of Metabase on Openshift namespace."
   timeout /t 5
   checkAndAddOCClientForWindows
 }
