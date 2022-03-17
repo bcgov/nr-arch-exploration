@@ -72,6 +72,8 @@ on:
   push:
     branches:
       - main
+    paths:
+      - apis/java/quarkus
   pull_request:
     branches:
       - main
