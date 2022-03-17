@@ -21,7 +21,7 @@ function main
   Write-Host -ForegroundColor $FOREGROUND_COLOR "This script will guide you through the installation of Metabase on Openshift namespace."
   #Wait for 5 seconds
   timeout /t 5
-  #checkAndAddOCClientForWindows
+  checkAndAddOCClientForWindows
   getInputsFromUser
   loginToOpenshift
   checkArtifactoryCreds
