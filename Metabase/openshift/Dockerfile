@@ -1,6 +1,6 @@
 FROM docker.io/adoptopenjdk/openjdk11:alpine-jre
 WORKDIR /app
-COPY /ojdbc11.jar /app/plugins/ojbc11.jar
+COPY /ojdbc11-full/ /app/plugins/
 ARG METABASE_VERSION=v0.41.5
 ENV METABASE_VER=$METABASE_VERSION
 ENV FC_LANG=en-US \
