@@ -74,6 +74,11 @@ objects:
                     secretKeyRef:
                       name: "${NAME}-secret"
                       key: database-password
+                - name: TRUST_STORE_PASSWORD
+                  valueFrom:
+                    secretKeyRef:
+                      name: metabase-truststore-secret"
+                      key: metabase
                 - name: MB_JETTY_HOST
                   value: 0.0.0.0
                 - name: MB_PASSWORD_COMPLEXITY
@@ -81,12 +86,18 @@ objects:
               volumeMounts:
                 - mountPath: "/app/data"
                   name: data
+                - mountPath: /opt/truststore/metabasestore.jks
+                  name: metabase-oracle-jks
+                  subPath: metabasestore.jks
           dnsPolicy: ClusterFirst
           restartPolicy: Always
           volumes:
             - name: data
               persistentVolumeClaim:
                 claimName: "${NAME}"
+            - name: metabase-oracle-jks
+              configMap:
+                name: metabase-config
       test: false
       triggers:
         - type: ConfigChange
