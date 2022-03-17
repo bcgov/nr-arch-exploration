@@ -47,6 +47,8 @@ objects:
           buildArgs:
             - name: METABASE_VERSION
               value: "${METABASE_VERSION}"
+            - name: TRUST_STORE_PASSWORD
+              value: "${TRUST_STORE_PASSWORD}"
           pullSecret:
             name: artifactory-creds
         type: Docker
@@ -68,4 +70,7 @@ parameters:
     displayName: Image version tag
     description: The version tag of the built image
     required: true
-    value: latest
+  - name: TRUST_STORE_PASSWORD
+    displayName: TRUST_STORE_PASSWORD
+    description: The password for oracle trust store
+    required: true

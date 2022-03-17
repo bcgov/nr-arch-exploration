@@ -9,5 +9,6 @@ RUN apk add --update --no-cache bash curl wget ttf-dejavu fontconfig
 RUN wget -q http://downloads.metabase.com/${METABASE_VER}/metabase.jar \
 && chmod -R 777 /app
 EXPOSE 3000
-ENV TRUST_STORE_PASSWORD=""
+ARG TRUST_STORE_PASSWORD
+RUN echo ${TRUST_STORE_PASSWORD}
 ENTRYPOINT ["java", "-jar","-Djavax.net.ssl.trustStore=/opt/truststore/metabasestore.jks","-Djavax.net.ssl.trustStoreType=JKS","-Djavax.net.ssl.trustStorePassword=${TRUST_STORE_PASSWORD}", "metabase.jar"]
