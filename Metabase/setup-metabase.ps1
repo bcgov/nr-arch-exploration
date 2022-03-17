@@ -17,7 +17,7 @@ $global:BASE_URL="https://raw.githubusercontent.com/bcgov/iit-arch/main/Metabase
 #This is our main function , which is the entry point of the script.
 function main
 {
-  clear
+  Clear-Host
   Write-Host -ForegroundColor $FOREGROUND_COLOR "This script will guide you through the installation of Metabase on Openshift namespace."
   #Wait for 5 seconds
   timeout /t 5
@@ -30,16 +30,9 @@ function main
     Write-Host -ForegroundColor yellow "Artifactory Creds are not present. Lets set it up."
     setupArtifactoryCreds
   }
-  oc process -n $NAMESPACE-tools -f "$BASE_URL/metabase.bc.yaml" -p METABASE_VERSION=v0.41.5 -o yaml | oc apply -n $NAMESPACE-tools -f -
-  Write-Host -ForegroundColor cyan "Metabase Image is being created, grab a cup of coffee as this might take 3-4 minutes."
-  oc start-build metabase --wait
-  Write-Host -ForegroundColor $FOREGROUND_COLOR "Metabase Image build is completed."
-  oc tag "$NAMESPACE-tools/metabase:latest" "$NAMESPACE-$ENVIRONMENT/metabase:latest"
-  Write-Host -ForegroundColor $FOREGROUND_COLOR "Metabase Image is tagged in $($NAMESPACE)-$($ENVIRONMENT)."
-  Write-Host -ForegroundColor cyan "Metabase secret is being created."
-  oc process -n "$NAMESPACE-$ENVIRONMENT" -f "$BASE_URL/metabase.secret.yaml" -p ADMIN_EMAIL=$METABASE_ADMIN_EMAIL -o yaml | oc create -n "$NAMESPACE-$ENVIRONMENT" -f -
-  Write-Host -ForegroundColor $FOREGROUND_COLOR "Metabase secret created."
-  oc process -n "$NAMESPACE-$ENVIRONMENT" -f "$BASE_URL/metabase.dc.yaml" -p NAMESPACE="$NAMESPACE-$ENVIRONMENT" -p PREFIX=$METABASE_APP_PREFIX -o yaml | oc apply -n "$NAMESPACE-$ENVIRONMENT" -f -
+  buildMetabase
+
+ deployMetabase
   exit 0
 }
 
@@ -103,7 +96,7 @@ function getEnvironment
 }
 function getNamespace
 {
-  Write-Host -ForegroundColor $FOREGROUND_COLOR "Enter the Namespace of  where Metabase will be installed, it will be a 5 character alphanumeric string."
+  Write-Host -ForegroundColor $FOREGROUND_COLOR "Enter the Namespace of  where Metabase will be installed, it will be a 6 character alphanumeric string."
   $NAMESPACE = Read-Host
   if (-not([string]::IsNullOrEmpty($NAMESPACE)))
   {
@@ -232,13 +225,33 @@ function checkArtifactoryCreds
   $data = oc -n $NAMESPACE-tools get secret artifactory-creds -o json
   if([string]::IsNullOrEmpty($data))
   {
-    $global:ARTIFACTORY_CREDS_PRESENT="false"
+    $global:ARTIFACTORY_CREDS_PRESENT = "false"
   }
   else
   {
     $global:ARTIFACTORY_CREDS_PRESENT="true"
   }
 
+}
+function buildMetabase
+{
+  $data =  oc -n $NAMESPACE-tools get imagestream/metabase -o json
+  if([string]::IsNullOrEmpty($data))
+  {
+    oc process -n $NAMESPACE-tools -f "$BASE_URL/metabase.bc.yaml" -p METABASE_VERSION=v0.41.5 -o yaml | oc apply -n $NAMESPACE-tools -f -
+    Write-Host -ForegroundColor cyan "Metabase Image is being created, grab a cup of coffee as this might take 3-4 minutes."
+    oc -n $NAMESPACE-tools start-build metabase --wait
+    Write-Host -ForegroundColor $FOREGROUND_COLOR "Metabase Image build is completed."
+    oc tag "$NAMESPACE-tools/metabase:latest" "$NAMESPACE-$ENVIRONMENT/metabase:latest"
+    Write-Host -ForegroundColor $FOREGROUND_COLOR "Metabase Image is tagged in $($NAMESPACE)-$($ENVIRONMENT)."
+    Write-Host -ForegroundColor cyan "Metabase secret is being created."
+  }
+}
+function deployMetabase
+{
+  oc process -n "$NAMESPACE-$ENVIRONMENT" -f "$BASE_URL/metabase.secret.yaml" -p ADMIN_EMAIL=$METABASE_ADMIN_EMAIL -o yaml | oc create -n "$NAMESPACE-$ENVIRONMENT" -f -
+  Write-Host -ForegroundColor $FOREGROUND_COLOR "Metabase secret created."
+  oc process -n "$NAMESPACE-$ENVIRONMENT" -f "$BASE_URL/metabase.dc.yaml" -p NAMESPACE="$NAMESPACE-$ENVIRONMENT" -p PREFIX=$METABASE_APP_PREFIX -o yaml | oc apply -n "$NAMESPACE-$ENVIRONMENT" -f -
 }
 
 main
