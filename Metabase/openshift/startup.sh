@@ -1,2 +1,2 @@
 #!/bin/sh
-java -Djavax.net.ssl.keyStore=/opt/truststore/metabasestore.p12 -Djavax.net.ssl.keyStoreType=PKCS12 -Djavax.net.ssl.keyStorePassword="$TRUST_STORE_PASSWORD"  -jar metabase.jar
+java -Djavax.net.ssl.trustStore=/opt/truststore/metabasestore.p12 -Djavax.net.ssl.trustStoreType=PKCS12 -Djavax.net.ssl.trustStorePassword="$TRUST_STORE_PASSWORD"  -jar metabase.jar
