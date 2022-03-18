@@ -86,9 +86,9 @@ objects:
               volumeMounts:
                 - mountPath: "/app/data"
                   name: data
-                - mountPath: /opt/truststore/metabasestore.jks
+                - mountPath: /opt/truststore/metabasestore.p12
                   name: metabase-oracle-jks
-                  subPath: metabasestore.jks
+                  subPath: metabasestore.p12
           dnsPolicy: ClusterFirst
           restartPolicy: Always
           volumes:
