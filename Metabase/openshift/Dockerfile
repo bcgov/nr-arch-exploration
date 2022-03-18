@@ -11,4 +11,5 @@ RUN wget -q http://downloads.metabase.com/${METABASE_VER}/metabase.jar \
 EXPOSE 3000
 ARG TRUST_STORE_PASSWORD
 RUN echo ${TRUST_STORE_PASSWORD}
-ENTRYPOINT ["java", "-jar","-Djavax.net.ssl.trustStore=/opt/truststore/metabasestore.jks","-Djavax.net.ssl.trustStoreType=JKS","-Djavax.net.ssl.trustStorePassword=${TRUST_STORE_PASSWORD}", "metabase.jar"]
+ENV TRUST_STORE="-Djavax.net.ssl.trustStorePassword=${TRUST_STORE_PASSWORD}"
+ENTRYPOINT ["java", "-jar","-Djavax.net.ssl.trustStore=/opt/truststore/metabasestore.jks","-Djavax.net.ssl.trustStoreType=JKS","${TRUST_STORE}", "metabase.jar"]
