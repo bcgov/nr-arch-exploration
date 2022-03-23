@@ -1,7 +1,10 @@
-FROM docker.io/adoptopenjdk/openjdk11:alpine-jre
+FROM docker.io/adoptopenjdk/openjdk8:alpine
 WORKDIR /app
-COPY /ojdbc11-full/ /app/plugins/
+COPY /ojdbc8-full/ /app/plugins/
 ARG METABASE_VERSION=v0.41.5
+ARG DB_HOST
+ARG DB_PORT
+ENV DB_HOST_PORT=$DB_HOST:$DB_PORT
 ENV METABASE_VER=$METABASE_VERSION
 ENV FC_LANG=en-US \
   LC_CTYPE=en_US.UTF-8
@@ -9,7 +12,10 @@ RUN apk add --update --no-cache bash curl wget ttf-dejavu fontconfig
 RUN wget -q http://downloads.metabase.com/${METABASE_VER}/metabase.jar \
 && chmod -R 777 /app
 
-COPY startup.sh /app/startup.sh
-RUN chmod +x /app/startup.sh
+COPY InstallCert.java .
+RUN javac InstallCert.java
+RUN java InstallCert --quiet ${DB_HOST_PORT}
+RUN keytool -exportcert -alias "$DB_HOST-1" -keystore jssecacerts -storepass changeit -file /opt/mto.cer
+RUN keytool -importcert -alias orakey -noprompt -keystore /opt/java/openjdk/jre/lib/security/cacerts -storepass changeit -file /opt/mto.cer
 EXPOSE 3000
-ENTRYPOINT ["/app/startup.sh"]
+ENTRYPOINT ["java", "-jar", "metabase.jar"]

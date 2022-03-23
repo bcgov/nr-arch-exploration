@@ -47,8 +47,10 @@ objects:
           buildArgs:
             - name: METABASE_VERSION
               value: "${METABASE_VERSION}"
-            - name: TRUST_STORE_PASSWORD
-              value: "${TRUST_STORE_PASSWORD}"
+            - name: DB_HOST
+              value: "${DB_HOST}"
+            - name: DB_PORT
+              value: "${DB_PORT}"
           pullSecret:
             name: artifactory-creds
         type: Docker
@@ -70,7 +72,11 @@ parameters:
     displayName: Image version tag
     description: The version tag of the built image
     required: true
-  - name: TRUST_STORE_PASSWORD
-    displayName: TRUST_STORE_PASSWORD
-    description: The password for oracle trust store
+  - name: DB_HOST
+    displayName: DB_HOST
+    description: The host name of the oracle database connection using encrypted listener
+    required: true
+  - name: DB_PORT
+    displayName: DB_PORT
+    description: The port number of the oracle database connection using encrypted listener
     required: true
