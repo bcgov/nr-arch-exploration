@@ -69,6 +69,8 @@ objects:
                   value: "/app/data/metabase.db"
                 - name: MB_DB_TYPE
                   value: h2
+                - name: TZ
+                  value: America/Vancouver
                 - name: MB_ENCRYPTION_SECRET_KEY
                   valueFrom:
                     secretKeyRef:
