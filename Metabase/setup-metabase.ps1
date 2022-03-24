@@ -274,9 +274,6 @@ function checkArtifactoryCreds
 }
 function buildMetabase
 {
-  $data =  oc -n $NAMESPACE-tools get imagestream/metabase -o json
-  if([string]::IsNullOrEmpty($data))
-  {
     oc process -n $NAMESPACE-tools -f "$BASE_URL/metabase.bc.yaml" -p METABASE_VERSION=v0.41.5 -p VERSION=$ENVIRONMENT -p DB_HOST=$DB_HOST -p DB_PORT=$DB_PORT -o yaml | oc apply -n $NAMESPACE-tools -f -
     Write-Host -ForegroundColor cyan "Metabase Image is being created, grab a cup of coffee as this might take 3-4 minutes."
     oc -n $NAMESPACE-tools start-build metabase --wait
@@ -284,7 +281,6 @@ function buildMetabase
     oc tag "$NAMESPACE-tools/metabase:$ENVIRONMENT" "$NAMESPACE-$ENVIRONMENT/metabase:$ENVIRONMENT"
     Write-Host -ForegroundColor $FOREGROUND_COLOR "Metabase Image is tagged in $($NAMESPACE)-$($ENVIRONMENT)."
     Write-Host -ForegroundColor cyan "Metabase secret is being created."
-  }
 }
 function deployMetabase
 {
