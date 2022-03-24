@@ -14,6 +14,8 @@ $global:FOREGROUND_COLOR="DarkGreen"
 $global:ARTIFACTORY_CREDS_PRESENT=""
 $global:METABASE_APP_PREFIX=""
 $global:BASE_URL="https://raw.githubusercontent.com/bcgov/iit-arch/main/Metabase/openshift"
+$global:DB_HOST=""
+$global:DB_PORT=""
 #This is our main function , which is the entry point of the script.
 function main
 {
@@ -78,6 +80,8 @@ function getInputsFromUser
   getOpenShiftServer
   getMetabaseAdminEmail
   getMetabaseAppPrefix
+  getOracleDBHost
+  getOracleDBPort
 }
 
 function getEnvironment
@@ -92,6 +96,36 @@ function getEnvironment
   else
   {
     $global:ENVIRONMENT = $ENVIRONMENT.Trim()
+  }
+}
+function getOracleDBHost
+{
+  Write-Host -ForegroundColor $FOREGROUND_COLOR "Enter the oracle db host name, this is required."
+  $data = Read-Host
+  if (-not([string]::IsNullOrEmpty($data)))
+  {
+    $global:DB_HOST = $data.Trim()
+  }
+  else
+  {
+    Write-Host -ForegroundColor red "oracle db host name is required."
+    getOracleDBHost
+  }
+
+
+}
+function getOracleDBPort
+{
+  Write-Host -ForegroundColor $FOREGROUND_COLOR "Enter the oracle db port number, this is required."
+  $port = Read-Host
+  if (-not([string]::IsNullOrEmpty($port)))
+  {
+    $global:DB_PORT = $port.Trim()
+  }
+  else
+  {
+    Write-Host -ForegroundColor red "oracle db port is required."
+    getOracleDBPort
   }
 }
 function getNamespace
@@ -238,11 +272,11 @@ function buildMetabase
   $data =  oc -n $NAMESPACE-tools get imagestream/metabase -o json
   if([string]::IsNullOrEmpty($data))
   {
-    oc process -n $NAMESPACE-tools -f "$BASE_URL/metabase.bc.yaml" -p METABASE_VERSION=v0.41.5 -o yaml | oc apply -n $NAMESPACE-tools -f -
+    oc process -n $NAMESPACE-tools -f "$BASE_URL/metabase.bc.yaml" -p METABASE_VERSION=v0.41.5 -p VERSION=$ENVIRONMENT -p DB_HOST=$DB_HOST -p DB_PORT=$DB_PORT -o yaml | oc apply -n $NAMESPACE-tools -f -
     Write-Host -ForegroundColor cyan "Metabase Image is being created, grab a cup of coffee as this might take 3-4 minutes."
     oc -n $NAMESPACE-tools start-build metabase --wait
     Write-Host -ForegroundColor $FOREGROUND_COLOR "Metabase Image build is completed."
-    oc tag "$NAMESPACE-tools/metabase:latest" "$NAMESPACE-$ENVIRONMENT/metabase:latest"
+    oc tag "$NAMESPACE-tools/metabase:$ENVIRONMENT" "$NAMESPACE-$ENVIRONMENT/metabase:$ENVIRONMENT"
     Write-Host -ForegroundColor $FOREGROUND_COLOR "Metabase Image is tagged in $($NAMESPACE)-$($ENVIRONMENT)."
     Write-Host -ForegroundColor cyan "Metabase secret is being created."
   }
@@ -251,7 +285,7 @@ function deployMetabase
 {
   oc process -n "$NAMESPACE-$ENVIRONMENT" -f "$BASE_URL/metabase.secret.yaml" -p ADMIN_EMAIL=$METABASE_ADMIN_EMAIL -o yaml | oc create -n "$NAMESPACE-$ENVIRONMENT" -f -
   Write-Host -ForegroundColor $FOREGROUND_COLOR "Metabase secret created."
-  oc process -n "$NAMESPACE-$ENVIRONMENT" -f "$BASE_URL/metabase.dc.yaml" -p NAMESPACE="$NAMESPACE-$ENVIRONMENT" -p PREFIX=$METABASE_APP_PREFIX -o yaml | oc apply -n "$NAMESPACE-$ENVIRONMENT" -f -
+  oc process -n "$NAMESPACE-$ENVIRONMENT" -f "$BASE_URL/metabase.dc.yaml" -p NAMESPACE="$NAMESPACE-$ENVIRONMENT" -p VERSION=$ENVIRONMENT -p PREFIX=$METABASE_APP_PREFIX -o yaml | oc apply -n "$NAMESPACE-$ENVIRONMENT" -f -
 }
 
 main
