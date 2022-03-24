@@ -20,9 +20,9 @@ $global:DB_PORT=""
 function main
 {
   Clear-Host
-  Write-Host -ForegroundColor $FOREGROUND_COLOR "This script will guide you through the installation of Metabase on Openshift namespace."
+  Write-Host -ForegroundColor $FOREGROUND_COLOR "This script will guide you through the installation of Metabase on Openshift namespace With Specific To Oracle DB connection Over Encrypted Listeners. Please know that Image is built uniquely for each envionment as there could be different hosts to connect to oracle DB based on the environment. This process will download OC CLI on your desktop if it is not already on Path. Please enter a key to continue."
   #Wait for 5 seconds
-  timeout /t 5
+  timeout /t -1
   checkAndAddOCClientForWindows
   getInputsFromUser
   loginToOpenshift
@@ -100,7 +100,7 @@ function getEnvironment
 }
 function getOracleDBHost
 {
-  Write-Host -ForegroundColor $FOREGROUND_COLOR "Enter the oracle db host name, this is required."
+  Write-Host -ForegroundColor $FOREGROUND_COLOR "Enter the oracle db host name, this is the DB Host which will be connected from the metabase instance. This is required."
   $data = Read-Host
   if (-not([string]::IsNullOrEmpty($data)))
   {
@@ -116,7 +116,7 @@ function getOracleDBHost
 }
 function getOracleDBPort
 {
-  Write-Host -ForegroundColor $FOREGROUND_COLOR "Enter the oracle db port number, this is required."
+  Write-Host -ForegroundColor $FOREGROUND_COLOR "Enter the oracle db port number,this is the DB Port which will be connected from the metabase instance. This is required."
   $port = Read-Host
   if (-not([string]::IsNullOrEmpty($port)))
   {

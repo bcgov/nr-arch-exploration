@@ -35,7 +35,7 @@ objects:
           containers:
             - name: metabase
               image: "${IMAGE_REGISTRY}/${NAMESPACE}/${NAME}:${VERSION}"
-              imagePullPolicy: IfNotPresent
+              imagePullPolicy: Always
               livenessProbe:
                 tcpSocket:
                   port: 3000
@@ -74,11 +74,6 @@ objects:
                     secretKeyRef:
                       name: "${NAME}-secret"
                       key: database-password
-                - name: TRUST_STORE_PASSWORD
-                  valueFrom:
-                    secretKeyRef:
-                      name: metabase-truststore-secret
-                      key: metabase
                 - name: MB_JETTY_HOST
                   value: 0.0.0.0
                 - name: MB_PASSWORD_COMPLEXITY
@@ -86,18 +81,12 @@ objects:
               volumeMounts:
                 - mountPath: "/app/data"
                   name: data
-                - mountPath: /opt/truststore/metabasestore.p12
-                  name: metabase-oracle-jks
-                  subPath: metabasestore.p12
           dnsPolicy: ClusterFirst
           restartPolicy: Always
           volumes:
             - name: data
               persistentVolumeClaim:
                 claimName: "${NAME}"
-            - name: metabase-oracle-jks
-              configMap:
-                name: metabase-config
       test: false
       triggers:
         - type: ConfigChange
@@ -186,11 +175,11 @@ parameters:
   - name: CPU_REQUEST
     description: Minimal CPU needed to run
     displayName: CPU Request
-    value: 250m
+    value: 50m
   - name: CPU_LIMIT
     description: Maximum CPU allowed to use
     displayName: CPU Limit
-    value: 500m
+    value: 250m
   - name: MEMORY_REQUEST
     description: Minimal amount of memory needed to run
     displayName: Memory Request
