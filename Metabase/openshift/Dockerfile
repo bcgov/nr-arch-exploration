@@ -15,7 +15,7 @@ RUN wget -q http://downloads.metabase.com/${METABASE_VER}/metabase.jar \
 COPY InstallCert.java .
 RUN javac InstallCert.java
 RUN java InstallCert --quiet ${DB_HOST_PORT}
-RUN keytool -exportcert -alias "$DB_HOST-1" -keystore jssecacerts -storepass changeit -file /opt/mto.cer
-RUN keytool -importcert -alias orakey -noprompt -keystore /opt/java/openjdk/jre/lib/security/cacerts -storepass changeit -file /opt/mto.cer
+RUN keytool -exportcert -alias "$DB_HOST-1" -keystore jssecacerts -storepass changeit -file /opt/oracle.cer
+RUN keytool -importcert -alias orakey -noprompt -keystore /opt/java/openjdk/jre/lib/security/cacerts -storepass changeit -file /opt/oracle.cer
 EXPOSE 3000
 ENTRYPOINT ["java", "-jar", "metabase.jar"]
