@@ -66,7 +66,7 @@ function checkAndAddOCClientForWindows
       Expand-Archive $OC_BASE_PATH\oc.zip -DestinationPath $OC_BASE_PATH
       Write-Host -ForegroundColor $FOREGROUND_COLOR "oc.exe extracted to $( $OC_BASE_PATH )"
     }
-    Set-Item -Path alias:oc  -Value $OC_BASE_PATH\oc.exe
+    Set-Item -Path alias:oc  -Value $OC_BASE_PATH\oc.exe -Scope global
     Write-Host "$( oc version )"
   }
 
