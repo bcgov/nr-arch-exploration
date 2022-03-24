@@ -16,6 +16,7 @@ $global:METABASE_APP_PREFIX=""
 $global:BASE_URL="https://raw.githubusercontent.com/bcgov/iit-arch/main/Metabase/openshift"
 $global:DB_HOST=""
 $global:DB_PORT=""
+$global:OC_ALIAS_REQUIRED="false"
 #This is our main function , which is the entry point of the script.
 function main
 {
@@ -24,6 +25,11 @@ function main
   #Wait for 5 seconds
   timeout /t -1
   checkAndAddOCClientForWindows
+  if($global:OC_ALIAS_REQUIRED -eq "true")
+  {
+    Set-Alias -Name oc -Value $global:OC_BASE_PATH\oc.exe
+    Write-Host "$( oc version )"
+  }
   getInputsFromUser
   loginToOpenshift
   checkArtifactoryCreds
@@ -66,8 +72,7 @@ function checkAndAddOCClientForWindows
       Expand-Archive $OC_BASE_PATH\oc.zip -DestinationPath $OC_BASE_PATH
       Write-Host -ForegroundColor $FOREGROUND_COLOR "oc.exe extracted to $( $OC_BASE_PATH )"
     }
-    Set-Item -Path alias:oc  -Value $OC_BASE_PATH\oc.exe -Scope global
-    Write-Host "$( oc version )"
+    $global:OC_ALIAS_REQUIRED="true"
   }
 
 
@@ -187,7 +192,7 @@ function getOpenShiftToken
 }
 function getOpenShiftServer
 {
-  Write-Host -ForegroundColor cyan "From the same place in your browser copy the server name where it is like '--server=****' and paste it here."
+  Write-Host -ForegroundColor cyan "From the same place in your browser copy the server name where it is like '--server=****' and paste it here. Copy the value portion which is after '--server='"
   Write-Host -ForegroundColor $FOREGROUND_COLOR  "Enter the openshift server."
   $OPENSHIFT_SERVER = Read-Host
   if (-not([string]::IsNullOrEmpty($OPENSHIFT_SERVER)))
@@ -216,7 +221,7 @@ function getMetabaseAdminEmail
 }
 function getMetabaseAppPrefix
 {
-  Write-Host -ForegroundColor $FOREGROUND_COLOR "Enter the prefix of the Metabase application name. A valid prefix is required."
+  Write-Host -ForegroundColor $FOREGROUND_COLOR "Enter the prefix of the Metabase application name. A valid prefix is required. Make sure the prefix ends with a '-'."
   $METABASE_APP_PREFIX = Read-Host
   if (-not([string]::IsNullOrEmpty($METABASE_APP_PREFIX)))
   {
