@@ -65,10 +65,25 @@ objects:
                 timeoutSeconds: 1
                 failureThreshold: 12
               env:
-                - name: MB_DB_FILE
-                  value: "/app/data/metabase.db"
+                - name: MB_DB_DBNAME
+                  valueFrom:
+                    secretKeyRef:
+                      name: metabase-patroni
+                      key: app-db-name
+                - name: MB_DB_PORT
+                  value: "5432"
+                - name: MB_DB_USER
+                  valueFrom:
+                    secretKeyRef:
+                      name: metabase-patroni
+                      key: app-db-username
+                - name: MB_DB_PASS
+                  valueFrom:
+                    secretKeyRef:
+                      name: metabase-patroni
+                      key: app-db-password
                 - name: MB_DB_TYPE
-                  value: h2
+                  value: postgres
                 - name: TZ
                   value: America/Vancouver
                 - name: MB_ENCRYPTION_SECRET_KEY
@@ -80,9 +95,6 @@ objects:
                   value: 0.0.0.0
                 - name: MB_PASSWORD_COMPLEXITY
                   value: strong
-              volumeMounts:
-                - mountPath: "/app/data"
-                  name: data
           dnsPolicy: ClusterFirst
           restartPolicy: Always
           volumes:
@@ -101,17 +113,6 @@ objects:
               kind: ImageStreamTag
               name: "${NAME}:${VERSION}"
               namespace: "${NAMESPACE}"
-  - apiVersion: v1
-    kind: PersistentVolumeClaim
-    metadata:
-      name: "${NAME}"
-    spec:
-      accessModes:
-        - ReadWriteMany
-      storageClassName: "${DATA_PERSISTENT_VOLUME_CLASS}"
-      resources:
-        requests:
-          storage: "${DATA_VOLUME_CAPACITY}"
   - apiVersion: v1
     kind: Service
     metadata:
