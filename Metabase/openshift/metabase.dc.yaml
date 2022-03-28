@@ -97,10 +97,6 @@ objects:
                   value: strong
           dnsPolicy: ClusterFirst
           restartPolicy: Always
-          volumes:
-            - name: data
-              persistentVolumeClaim:
-                claimName: "${NAME}"
       test: false
       triggers:
         - type: ConfigChange
