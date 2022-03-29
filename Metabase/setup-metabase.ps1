@@ -22,7 +22,6 @@ function main
 {
   Clear-Host
   Write-Host -ForegroundColor $FOREGROUND_COLOR "This script will guide you through the installation of Metabase on Openshift namespace With Specific To Oracle DB connection Over Encrypted Listeners. Please know that Image is built uniquely for each envionment as there could be different hosts to connect to oracle DB based on the environment. This process will download OC CLI on your desktop if it is not already on Path. Please enter a key to continue."
-  #Wait for 5 seconds
   timeout /t -1
   checkAndAddOCClientForWindows
   if($global:OC_ALIAS_REQUIRED -eq "true")
@@ -38,9 +37,10 @@ function main
     Write-Host -ForegroundColor yellow "Artifactory Creds are not present. Lets set it up."
     setupArtifactoryCreds
   }
+  addNetworkPolicy
+  deployPostgres
   buildMetabase
-
- deployMetabase
+  deployMetabase
   exit 0
 }
 
@@ -272,15 +272,33 @@ function checkArtifactoryCreds
   }
 
 }
+
+function deployPostgres{
+  try{
+    oc process -f "https://raw.githubusercontent.com/bcgov/iit-arch/main/Metabase/openshift/postgres/postgres.yml"  -p NAMESPACE="$NAMESPACE-$ENVIRONMENT" -p DB_PVC_SIZE=1Gi | oc -n "$NAMESPACE-$ENVIRONMENT" create -f -
+  }catch{
+    Write-Host -ForegroundColor red "Error deploying patroni. exiting."
+    exit 1
+  }
+}
 function buildMetabase
 {
-    oc process -n $NAMESPACE-tools -f "$BASE_URL/metabase.bc.yaml" -p METABASE_VERSION=v0.41.5 -p VERSION=$ENVIRONMENT -p DB_HOST=$DB_HOST -p DB_PORT=$DB_PORT -o yaml | oc apply -n $NAMESPACE-tools -f -
+    oc process -n $NAMESPACE-tools -f "$BASE_URL/metabase.bc.yaml" -p METABASE_VERSION=v0.41.5 -p VERSION=$ENVIRONMENT -p DB_HOST=$DB_HOST -p DB_PORT=$DB_PORT -o yaml | oc create -n $NAMESPACE-tools -f -
     Write-Host -ForegroundColor cyan "Metabase Image is being created, grab a cup of coffee as this might take 3-4 minutes."
     oc -n $NAMESPACE-tools start-build metabase --wait
     Write-Host -ForegroundColor $FOREGROUND_COLOR "Metabase Image build is completed."
     oc tag "$NAMESPACE-tools/metabase:$ENVIRONMENT" "$NAMESPACE-$ENVIRONMENT/metabase:$ENVIRONMENT"
     Write-Host -ForegroundColor $FOREGROUND_COLOR "Metabase Image is tagged in $($NAMESPACE)-$($ENVIRONMENT)."
     Write-Host -ForegroundColor cyan "Metabase secret is being created."
+}
+function addNetworkPolicy{
+  try{
+    Write-Host -ForegroundColor $FOREGROUND_COLOR "Adding network policy for patroni."
+    oc process -f "$BASE_URL/metabase.np.yaml" | oc create -n "$NAMESPACE-$ENVIRONMENT" -f -
+  }catch{
+    Write-Host -ForegroundColor red "Error adding network policy for patroni. exiting."
+    exit 1
+  }
 }
 function deployMetabase
 {
