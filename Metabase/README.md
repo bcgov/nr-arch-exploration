@@ -46,6 +46,10 @@ In general, Metabase should take up very little CPU (<0.01 cores) and float betw
 ## Cleanup
 
 run these below commands after connecting to OC CLI and replacing the variables with $ sign
-`oc delete -n $NAMESPACE all,template,secret,pvc,configmap,dc,bc -l app=metabase-postgres`
-`oc delete -n $NAMESPACE all,template,networkpolicy,secret,pvc -l app=metabase`
+```markdown
+    oc delete -n $NAMESPACE all,template,networkpolicy,secret,pvc -l app=metabase
+```
+```markdown
+    oc delete -n $NAMESPACE all,template,secret,pvc,configmap,dc,bc -l app=metabase-postgres
+```
 
