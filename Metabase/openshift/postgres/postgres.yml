@@ -59,7 +59,7 @@ objects:
       lookupPolicy:
         local: false
       tags:
-        - name: ${NAME}
+        - name: v12
           from:
             kind: DockerImage
             name: image-registry.openshift-image-registry.svc:5000/openshift/postgresql:12
@@ -92,7 +92,7 @@ objects:
                 claimName: ${NAME}
           containers:
             - name: ${NAME}
-              image: image-registry.openshift-image-registry.svc:5000/${NAMESPACE}/${NAME}
+              image: image-registry.openshift-image-registry.svc:5000/${NAMESPACE}/${NAME}:v12
               ports:
                 - containerPort: 5432
                   protocol: TCP
