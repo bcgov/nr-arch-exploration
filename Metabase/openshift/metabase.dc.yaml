@@ -176,11 +176,11 @@ parameters:
   - name: CPU_REQUEST
     description: Minimal CPU needed to run
     displayName: CPU Request
-    value: 100m
+    value: 50m
   - name: CPU_LIMIT
     description: Maximum CPU allowed to use
     displayName: CPU Limit
-    value: 1000m
+    value: 350m
   - name: MEMORY_REQUEST
     description: Minimal amount of memory needed to run
     displayName: Memory Request
