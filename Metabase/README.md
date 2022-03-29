@@ -24,7 +24,7 @@ Please perform the following steps
 7. run the deployment template by issuing below command after replacing variables with $ sign `oc process -n "$NAMESPACE-$ENVIRONMENT" -f "https://raw.githubusercontent.com/bcgov/iit-arch/main/Metabase/openshift/metabase.dc.yaml" -p NAMESPACE="$NAMESPACE-$ENVIRONMENT" -p VERSION=$ENVIRONMENT -p PREFIX=$METABASE_APP_PREFIX -o yaml | oc apply -n "$NAMESPACE-$ENVIRONMENT" -f -`.
 ## Initial Setup
 
-Once Metabase is up and functional (this will take between 3 to 5 minutes), you will have to do initial setup manually. We suggest you populate the email account and password as whatever the `metabase-secret` secret contains in the `admin-email` and `admin-password` fields respectively. You may be asked to connect to your existing Postgres (or equivalent) database during this time, so you will need to refer to your other secrets or other deployment secrets in order to ensure Metabase can properly connect to it via JDBC connection.
+Once Metabase is up and functional (this will take between 3 and 5 minutes), you will have to do initial setup manually. We suggest you populate the email account and password as whatever the `metabase-secret` secret contains in the `admin-email` and `admin-password` fields respectively. You may be asked to connect to your existing Postgres (or equivalent) database during this time, so you will need to refer to your other secrets or other deployment secrets in order to ensure Metabase can properly connect to it via JDBC connection.
 
 ## Notes
 
@@ -32,6 +32,7 @@ In general, Metabase should take up very little CPU (<0.01 cores) and float betw
 
 ## Cleanup
 
-run this below command after connecting to OC CLI and replacing the variables with $ sign
+run these below commands after connecting to OC CLI and replacing the variables with $ sign
+`oc delete -n $NAMESPACE all,template,secret,pvc,configmap,dc,bc -l app=metabase-postgres`
 `oc delete -n $NAMESPACE all,template,networkpolicy,secret,pvc -l app=metabase`
 
