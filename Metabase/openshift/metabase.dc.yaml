@@ -68,20 +68,20 @@ objects:
                 - name: MB_DB_DBNAME
                   valueFrom:
                     secretKeyRef:
-                      name: metabase-patroni
-                      key: app-db-name
+                      name: metabase-postgres
+                      key: database-name
                 - name: MB_DB_PORT
                   value: "5432"
                 - name: MB_DB_USER
                   valueFrom:
                     secretKeyRef:
-                      name: metabase-patroni
-                      key: app-db-username
+                      name: metabase-postgres
+                      key: database-user
                 - name: MB_DB_PASS
                   valueFrom:
                     secretKeyRef:
-                      name: metabase-patroni
-                      key: app-db-password
+                      name: metabase-postgres
+                      key: database-password
                 - name: MB_DB_TYPE
                   value: postgres
                 - name: TZ
