@@ -72,6 +72,8 @@ objects:
                       key: database-name
                 - name: MB_DB_PORT
                   value: "5432"
+                - name: MB_DB_HOST
+                  value: "metabase-postgres"
                 - name: MB_DB_USER
                   valueFrom:
                     secretKeyRef:
