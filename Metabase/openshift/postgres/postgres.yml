@@ -149,6 +149,6 @@ objects:
           protocol: TCP
           targetPort: 5432
       selector:
-        name: ${NAME}
+        app: ${NAME}
       sessionAffinity: None
       type: ClusterIP
