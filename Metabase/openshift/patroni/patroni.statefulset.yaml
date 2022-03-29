@@ -52,7 +52,7 @@ objects:
       name: ${NAME}${SUFFIX}
     spec:
       podManagementPolicy: OrderedReady
-      replicas: 3
+      replicas: ${{REPLICAS}}
       revisionHistoryLimit: 10
       selector:
         matchLabels:
@@ -317,3 +317,7 @@ parameters:
     value: netapp-block-standard
   - name: IMAGE_REGISTRY
     value: docker-registry.default.svc:5000
+  - name: REPLICAS
+    displayName: REPLICAS
+    description: The number of statefulSet replicas to use.
+    value: '3'
