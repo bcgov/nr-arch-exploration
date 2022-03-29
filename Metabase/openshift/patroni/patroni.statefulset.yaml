@@ -164,7 +164,7 @@ objects:
                     - /usr/share/scripts/patroni/health_check.sh
               volumeMounts:
                 - mountPath: /home/postgres/pgdata
-                  name: postgresql
+                  name: ${NAME}${SUFFIX}
             - env:
                 - name: DATA_SOURCE_URI
                   value: 'localhost:5432/wally?sslmode=disable'
@@ -194,10 +194,9 @@ objects:
           serviceAccountName: ${NAME}${SUFFIX}
           terminationGracePeriodSeconds: 0
           volumes:
-            - name: postgresql
-              #          emptyDir: {}
+            - name: ${NAME}${SUFFIX}
               persistentVolumeClaim:
-                claimName: postgresql
+                claimName: ${NAME}${SUFFIX}
       updateStrategy:
         type: RollingUpdate
       volumeClaimTemplates:
@@ -206,7 +205,7 @@ objects:
               volume.beta.kubernetes.io/storage-class: ${STORAGE_CLASS}
             labels:
               app: ${NAME}${SUFFIX}
-            name: postgresql
+            name: ${NAME}${SUFFIX}
           spec:
             storageClassName: ${STORAGE_CLASS}
             accessModes:
