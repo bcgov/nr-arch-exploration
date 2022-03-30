@@ -1,7 +1,7 @@
 FROM docker.io/adoptopenjdk/openjdk8:alpine
 WORKDIR /app
 COPY /ojdbc8-full/ /app/plugins/
-ARG METABASE_VERSION=v0.41.5
+ARG METABASE_VERSION
 ARG DB_HOST
 ARG DB_PORT
 ENV DB_HOST_PORT=$DB_HOST:$DB_PORT
