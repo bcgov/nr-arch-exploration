@@ -39,8 +39,9 @@ objects:
               livenessProbe:
                 tcpSocket:
                   port: 3000
-                initialDelaySeconds: 10
-                timeoutSeconds: 1
+                initialDelaySeconds: 300
+                timeoutSeconds: 10
+                periodSeconds: 60
                 failureThreshold: 3
               ports:
                 - containerPort: 3000
@@ -49,9 +50,10 @@ objects:
                 httpGet:
                   path: "/"
                   port: 3000
-                initialDelaySeconds: 10
-                timeoutSeconds: 1
-                failureThreshold: 3
+                initialDelaySeconds: 120
+                periodSeconds: 20
+                timeoutSeconds: 10
+                failureThreshold: 30
               resources:
                 requests:
                   cpu: "${CPU_REQUEST}"
@@ -62,8 +64,9 @@ objects:
               startupProbe:
                 tcpSocket:
                   port: 3000
-                timeoutSeconds: 1
-                failureThreshold: 12
+                timeoutSeconds: 5
+                periodSeconds: 10
+                failureThreshold: 50
               env:
                 - name: MB_DB_DBNAME
                   valueFrom:
