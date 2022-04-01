@@ -1,7 +1,8 @@
 # Metabase
 
-This folder contains the OpenShift templates required in order to build and deploy an instance of Metabase onto OpenShift with **Specific Intention to Connection to Legacy Oracle DB** Over Encrypted Listeners support.
+This folder contains the OpenShift templates required in order to build and deploy an instance of Metabase onto OpenShift with _**Specific Intention to Connection to Legacy Oracle DB**_ Over Encrypted Listeners support.
 
+**_Currently, only one host of oracle is supported, Connecting to multiple oracle hosts over encrypted listeners is not supported._**
 
 #For Windows users, please make you have access to OpenShift namespace.
 
@@ -19,9 +20,9 @@ Please perform the following steps
        oc -n $NAMESPACE-tools create secret docker-registry artifactory-creds --docker-server=artifacts.developer.gov.bc.ca --docker-username=$DOCKER_USER --docker-password=$DOCKER_PWD --docker-email="admin@$NAMESPACE-$ENVIRONMENT.local"
     ```
 3. execute the command after replacing variables with $ sign. DB_HOST is the host name of oracle db to connect to over encrypted listeners. DB_PORT is the port number of oracle db to connect to over encrypted listeners. ENVIRONMENT is the environment in openshift where metabase will be deployed(dev,test,prod) 
-```markdown
- oc process -n $NAMESPACE-tools -f "https://raw.githubusercontent.com/bcgov/iit-arch/main/Metabase/openshift/metabase.bc.yaml" -p METABASE_VERSION=v0.41.5 -p VERSION=$ENVIRONMENT -p DB_HOST=$DB_HOST -p DB_PORT=$DB_PORT -o yaml | oc apply -n $NAMESPACE-tools -f -
-```
+    ```markdown
+     oc process -n $NAMESPACE-tools -f "https://raw.githubusercontent.com/bcgov/iit-arch/main/Metabase/openshift/metabase.bc.yaml" -p METABASE_VERSION=v0.41.5 -p VERSION=$ENVIRONMENT -p DB_HOST=$DB_HOST -p DB_PORT=$DB_PORT -o yaml | oc apply -n $NAMESPACE-tools -f -
+    ```
 4. once build is completed in tools environment you will be able to see metabase image in imageStreams section. Click on that and go to history to verify Image is there.
    1. Once image is built, tag it for the environment by issuing below command after replacing variables with $ sign
     ```markdown
@@ -44,7 +45,7 @@ Once Metabase is up and functional (this will take between 3 and 5 minutes), you
 In general, Metabase should take up very little CPU (<0.01 cores) and float between 700 to 800mb of memory usage during operation. The template has some reasonable requests and limits set for both CPU and Memory, but you may change it should your needs be different. For some more documentation referencees, you may refer [here](https://github.com/loneil/domo-metabase-viewer/tree/master/docs) for historical templates and tutorials, or inspect the official Metabase documentation [here](https://www.metabase.com/docs/latest/).
 
 ## Cleanup
-
+Please be careful as these will delete both the postgres DB and metabase.
 run these below commands after connecting to OC CLI and replacing the variables with $ sign
 ```markdown
     oc delete -n $NAMESPACE all,template,networkpolicy,secret,pvc -l app=metabase
