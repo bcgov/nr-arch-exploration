@@ -73,10 +73,12 @@ on:
     branches:
       - main
     paths:
-      - apis/java/quarkus
+      - 'apis/java/quarkus'
   pull_request:
     branches:
       - main
+    paths:
+      - 'apis/java/quarkus'
 
 jobs:
   openshift-ci-cd:
@@ -143,7 +145,7 @@ jobs:
         uses: graalvm/setup-graalvm@v1
         with:
           version: 'latest'
-          java-version: '11'
+          java-version: '17'
           components: 'native-image'
           github-token: ${{ secrets.GITHUB_TOKEN }}
       - name: Login to Docker Hub
@@ -155,7 +157,7 @@ jobs:
 
       - uses: actions/setup-java@v1
         with:
-          java-version: 11
+          java-version: 17
       - uses: actions/cache@v1
         with:
           path: ~/.m2/repository
