@@ -148,11 +148,11 @@ objects:
                   value: ${ENVIRONMENT_NAME}
               resources:
                 requests:
-                  cpu: ${CPU_REQUEST}
-                  memory: ${MEMORY_REQUEST}
+                  cpu: 25mc
+                  memory: 50Mi
                 limits:
-                  cpu: ${CPU_LIMIT}
-                  memory: ${MEMORY_LIMIT}
+                  cpu: 50mc
+                  memory: 100Mi
               volumeMounts:
                 - name: ${BACKUP_VOLUME_NAME}
                   mountPath: ${BACKUP_DIR}
