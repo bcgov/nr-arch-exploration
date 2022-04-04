@@ -148,10 +148,10 @@ objects:
                   value: ${ENVIRONMENT_NAME}
               resources:
                 requests:
-                  cpu: 25mc
-                  memory: 50Mi
+                  cpu: 0
+                  memory: 0Mi
                 limits:
-                  cpu: 50mc
+                  cpu: 1
                   memory: 100Mi
               volumeMounts:
                 - name: ${BACKUP_VOLUME_NAME}
