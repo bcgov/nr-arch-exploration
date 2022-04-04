@@ -73,10 +73,12 @@ on:
     branches:
       - main
     paths:
-      - apis/java/quarkus
+      - 'apis/java/quarkus'
   pull_request:
     branches:
       - main
+    paths:
+      - 'apis/java/quarkus'
 
 jobs:
   openshift-ci-cd:
