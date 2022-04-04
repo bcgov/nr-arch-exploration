@@ -17,33 +17,29 @@ $global:BASE_URL="https://raw.githubusercontent.com/bcgov/iit-arch/main/Metabase
 $global:DB_HOST=""
 $global:DB_PORT=""
 $global:OC_ALIAS_REQUIRED="false"
-$global:BACK_UP_CONTAINER_BASE_URL="https://raw.githubusercontent.com/BCDevOps/backup-container/master/openshift/templates/backup"
 
 #This is our main function , which is the entry point of the script.
 function main
 {
   Clear-Host
-  Write-Host -ForegroundColor $FOREGROUND_COLOR "This script will guide you through the installation of Metabase on Openshift namespace With Specific To Oracle DB connection Over Encrypted Listeners. Please know that Image is built uniquely for each envionment as there could be different hosts to connect to oracle DB based on the environment. This process will download OC CLI on your desktop if it is not already on Path. Please enter a key to continue."
+  Write-Host -ForegroundColor $FOREGROUND_COLOR "This script will update the metabase version on a openshift namespace. Please make sure the version you pass is correct otherwise the build will fail. Please enter a key to continue."
   timeout /t -1
-  <#checkAndAddOCClientForWindows
+  checkAndAddOCClientForWindows
   if($global:OC_ALIAS_REQUIRED -eq "true")
   {
     Set-Alias -Name oc -Value $global:OC_BASE_PATH\oc.exe
     Write-Host "$( oc version )"
-  }#>
+  }
   getInputsFromUser
   loginToOpenshift
-<#  checkArtifactoryCreds
+  checkArtifactoryCreds
   if($ARTIFACTORY_CREDS_PRESENT -eq "false")
   {
     Write-Host -ForegroundColor yellow "Artifactory Creds are not present. Lets set it up."
     setupArtifactoryCreds
   }
-  addNetworkPolicy
-  deployPostgres
   buildMetabase
-  deployMetabase#>
-  setupBackupContainer
+  deployMetabase
   exit 0
 }
 
@@ -86,12 +82,42 @@ function getInputsFromUser
   getEnvironment
   getOpenShiftToken
   getOpenShiftServer
-  getMetabaseAdminEmail
-  getMetabaseAppPrefix
+  getMetabaseVersion
   getOracleDBHost
   getOracleDBPort
 }
 
+function getMetabaseVersion
+{
+  Write-Host -ForegroundColor $FOREGROUND_COLOR "Please enter the Metabase version you want to deploy."
+  Write-Host -ForegroundColor $FOREGROUND_COLOR "Example: v0.42.3"
+  $data = Read-Host
+  $HTTP_Request = [System.Net.WebRequest]::Create("https://downloads.metabase.com/${data}/metabase.jar")
+
+  # We then get a response from the site.
+  $HTTP_Response = $HTTP_Request.GetResponse()
+
+  # We then get the HTTP code as an integer.
+  $HTTP_Status = [int]$HTTP_Response.StatusCode
+
+  If ($HTTP_Status -eq 200) {
+    Write-Host -ForegroundColor Cyan "The version is available."
+    $global:METABASE_VERSION=$data
+    # Finally, we clean up the http request by closing it.
+    If ($HTTP_Response -eq $null) { }
+    Else { $HTTP_Response.Close() }
+  }
+  Else {
+    Write-Host -ForegroundColor red "The version you have specified is not available. Please try again."
+    # Finally, we clean up the http request by closing it.
+    If ($HTTP_Response -eq $null) { }
+    Else { $HTTP_Response.Close() }
+    getMetabaseVersion
+  }
+
+
+
+}
 function getEnvironment
 {
   Write-Host -ForegroundColor $FOREGROUND_COLOR "Enter the environment where Metabase will be installed, for example(dev,test,prod)."
@@ -208,20 +234,7 @@ function getOpenShiftServer
     getOpenShiftServer
   }
 }
-function getMetabaseAdminEmail
-{
-  Write-Host -ForegroundColor $FOREGROUND_COLOR "Enter the email address of the Metabase admin user. A valid email address is required."
-  $METABASE_ADMIN_EMAIL = Read-Host
-  if (-not([string]::IsNullOrEmpty($METABASE_ADMIN_EMAIL)))
-  {
-    $global:METABASE_ADMIN_EMAIL = $METABASE_ADMIN_EMAIL.Trim()
-  }
-  else
-  {
-    Write-Host -ForegroundColor red "Metabase admin email is required."
-    getMetabaseAdminEmail
-  }
-}
+
 function getMetabaseAppPrefix
 {
   Write-Host -ForegroundColor $FOREGROUND_COLOR "Enter the prefix of the Metabase application name. A valid prefix is required. Make sure the prefix ends with a '-'."
@@ -276,19 +289,12 @@ function checkArtifactoryCreds
 
 }
 
-function deployPostgres{
-  try{
-    oc process -f "https://raw.githubusercontent.com/bcgov/iit-arch/main/Metabase/openshift/postgres/postgres.yml"  -p NAMESPACE="$NAMESPACE-$ENVIRONMENT" -p DB_PVC_SIZE=1Gi | oc -n "$NAMESPACE-$ENVIRONMENT" create -f -
-  }catch{
-    Write-Host -ForegroundColor red "Error deploying patroni. exiting."
-    exit 1
-  }
-}
+
 function buildMetabase
 {
     oc tag -d "$NAMESPACE-tools/metabase:$ENVIRONMENT"
     oc tag -d "$NAMESPACE-$ENVIRONMENT/metabase:$ENVIRONMENT"
-    oc process -n $NAMESPACE-tools -f "$BASE_URL/metabase.bc.yaml" -p METABASE_VERSION=v0.42.3 -p VERSION=$ENVIRONMENT -p DB_HOST=$DB_HOST -p DB_PORT=$DB_PORT -o yaml | oc apply -n $NAMESPACE-tools -f -
+    oc process -n $NAMESPACE-tools -f "$BASE_URL/metabase.bc.yaml" -p METABASE_VERSION=$METABASE_VERSION -p VERSION=$ENVIRONMENT -p DB_HOST=$DB_HOST -p DB_PORT=$DB_PORT -o yaml | oc apply -n $NAMESPACE-tools -f -
     Write-Host -ForegroundColor cyan "Metabase Image is being created, grab a cup of coffee as this might take 3-4 minutes."
     oc -n $NAMESPACE-tools start-build metabase --wait
     Write-Host -ForegroundColor $FOREGROUND_COLOR "Metabase Image build is completed."
@@ -296,33 +302,10 @@ function buildMetabase
     Write-Host -ForegroundColor $FOREGROUND_COLOR "Metabase Image is tagged in $($NAMESPACE)-$($ENVIRONMENT)."
     Write-Host -ForegroundColor cyan "Metabase secret is being created."
 }
-function addNetworkPolicy{
-  try{
-    Write-Host -ForegroundColor $FOREGROUND_COLOR "Adding network policy for metabase to talk to postgres."
-    oc process -f "$BASE_URL/metabase.np.yaml" | oc create -n "$NAMESPACE-$ENVIRONMENT" -f -
-  }catch{
-    Write-Host -ForegroundColor red "Error adding network policy, exiting."
-    exit 1
-  }
-}
 function deployMetabase
 {
-  oc process -n "$NAMESPACE-$ENVIRONMENT" -f "$BASE_URL/metabase.secret.yaml" -p ADMIN_EMAIL=$METABASE_ADMIN_EMAIL -o yaml | oc create -n "$NAMESPACE-$ENVIRONMENT" -f -
-  Write-Host -ForegroundColor $FOREGROUND_COLOR "Metabase secret created."
-  oc process -n "$NAMESPACE-$ENVIRONMENT" -f "$BASE_URL/metabase.dc.yaml" -p NAMESPACE="$NAMESPACE-$ENVIRONMENT" -p VERSION=$ENVIRONMENT -p PREFIX=$METABASE_APP_PREFIX -o yaml | oc apply -n "$NAMESPACE-$ENVIRONMENT" -f -
+  oc process -n "$NAMESPACE-$ENVIRONMENT" -f "$BASE_URL/metabase.update.dc.yaml" -p NAMESPACE="$NAMESPACE-$ENVIRONMENT" -p VERSION=$ENVIRONMENT -o yaml | oc apply -n "$NAMESPACE-$ENVIRONMENT" -f -
+  Write-Host -ForegroundColor cyan "Metabase updated, please check the pod logs for more details."
 }
-
-function setupBackupContainer
-{
-  oc process -n $NAMESPACE-tools -f "https://raw.githubusercontent.com/BCDevOps/backup-container/master/openshift/templates/backup/backup-build.yaml" -p NAME=backup-postgres OUTPUT_IMAGE_TAG=v1 | oc -n $NAMESPACE-tools create -f -
-  Write-Host -ForegroundColor cyan "Please make sure the build of Backup container is completed before pressing any key. Go to tools environment and check the build status of backup-postgres. you should see something like this: 'backup-postgres-{num}  complete'."
-  timeout /t -1
-  oc tag "$NAMESPACE-tools/backup-postgres:v1" "$NAMESPACE-$ENVIRONMENT/backup-postgres:v1"
-  oc -n "$NAMESPACE-$ENVIRONMENT" create configmap backup-conf --from-literal=backup.conf=$(Invoke-WebRequest https://raw.githubusercontent.com/bcgov/iit-arch/main/Metabase/openshift/postgres/backup/backup.conf)
-  oc -n "$NAMESPACE-$ENVIRONMENT" label configmap backup-conf app=backup-postgres
-  oc -n "$NAMESPACE-$ENVIRONMENT" process -f https://raw.githubusercontent.com/bcgov/iit-arch/main/Metabase/openshift/postgres/backup/backup-deploy.yaml NAME=backup-postgres IMAGE_NAMESPACE="$NAMESPACE-$ENVIRONMENT" SOURCE_IMAGE_NAME=backup-postgres TAG_NAME=v1 BACKUP_VOLUME_NAME=backup-postgres-pvc -p BACKUP_VOLUME_SIZE=5Gi VERIFICATION_VOLUME_SIZE=5Gi ENVIRONMENT_NAME="$ENVIRONMENT" ENVIRONMENT_FRIENDLY_NAME='Metabase postgres DB Backups' | oc -n "$NAMESPACE-$ENVIRONMENT" create -f -
-
-}
-
 main
 
