@@ -11,3 +11,5 @@ Navigate to the terminal of the backup-container pod.
 ### Restore
 First stop all services connecting to the db then run the following.
 `backup.sh -r <host>/<db-name>`
+
+Detailed documentation is present here -> https://github.com/BCDevOps/backup-container#backup
