@@ -20,6 +20,10 @@ parameters:
     from: "[a-zA-Z0-9]{16}"
     generate: expression
     name: DB_PASSWORD
+  - description: Password for the PostgreSQL connection user.
+    from: "[a-zA-Z0-9]{16}"
+    generate: expression
+    name: ADMIN_PASSWORD
   - description: Volume space available for data, e.g. 512Mi, 2Gi.
     displayName: Database Volume Capacity
     name: DB_PVC_SIZE
@@ -36,6 +40,7 @@ objects:
       database-name: "${NAME}"
       database-password: "${DB_PASSWORD}"
       database-user: "${NAME}"
+      admin-password: "${ADMIN_PASSWORD}"
   - kind: PersistentVolumeClaim
     apiVersion: v1
     metadata:
@@ -97,6 +102,11 @@ objects:
                 - containerPort: 5432
                   protocol: TCP
               env:
+                - name: POSTGRESQL_ADMIN_PASSWORD
+                  valueFrom:
+                    secretKeyRef:
+                      name: ${NAME}
+                      key: admin-password
                 - name: POSTGRESQL_DATABASE
                   valueFrom:
                     secretKeyRef:
