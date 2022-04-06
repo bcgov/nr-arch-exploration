@@ -45,8 +45,11 @@ Once Metabase is up and functional (this will take between 3 and 5 minutes), you
 In general, Metabase should take up very little CPU (<0.01 cores) and float between 700 to 800mb of memory usage during operation. The template has some reasonable requests and limits set for both CPU and Memory, but you may change it should your needs be different. For some more documentation referencees, you may refer [here](https://github.com/loneil/domo-metabase-viewer/tree/master/docs) for historical templates and tutorials, or inspect the official Metabase documentation [here](https://www.metabase.com/docs/latest/).
 
 ## Cleanup
-Please be careful as these will delete both the postgres DB and metabase.
+Please be careful as these will delete postgres DB, metabase and Backup container.
 run these below commands after connecting to OC CLI and replacing the variables with $ sign
+```markdown
+    oc delete -n $NAMESPACE all,template,secret,pvc,configmap,dc,bc -l app=backup-container
+```
 ```markdown
     oc delete -n $NAMESPACE all,template,networkpolicy,secret,pvc -l app=metabase
 ```
