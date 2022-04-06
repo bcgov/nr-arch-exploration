@@ -25,15 +25,15 @@ function main
   Clear-Host
   Write-Host -ForegroundColor $FOREGROUND_COLOR "This script will guide you through the installation of Metabase on Openshift namespace With Specific To Oracle DB connection Over Encrypted Listeners. Please know that Image is built uniquely for each envionment as there could be different hosts to connect to oracle DB based on the environment. This process will download OC CLI on your desktop if it is not already on Path. Please enter a key to continue."
   timeout /t -1
-  <#checkAndAddOCClientForWindows
+  checkAndAddOCClientForWindows
   if($global:OC_ALIAS_REQUIRED -eq "true")
   {
     Set-Alias -Name oc -Value $global:OC_BASE_PATH\oc.exe
     Write-Host "$( oc version )"
-  }#>
+  }
   getInputsFromUser
   loginToOpenshift
-<#  checkArtifactoryCreds
+  checkArtifactoryCreds
   if($ARTIFACTORY_CREDS_PRESENT -eq "false")
   {
     Write-Host -ForegroundColor yellow "Artifactory Creds are not present. Lets set it up."
@@ -42,7 +42,7 @@ function main
   addNetworkPolicy
   deployPostgres
   buildMetabase
-  deployMetabase#>
+  deployMetabase
   setupBackupContainer
   exit 0
 }
