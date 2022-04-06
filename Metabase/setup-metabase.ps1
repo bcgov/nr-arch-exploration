@@ -319,7 +319,7 @@ function setupBackupContainer
   timeout /t -1
   oc tag "$NAMESPACE-tools/backup-postgres:v1" "$NAMESPACE-$ENVIRONMENT/backup-postgres:v1"
   oc -n "$NAMESPACE-$ENVIRONMENT" create configmap backup-conf --from-literal=backup.conf=$(Invoke-WebRequest https://raw.githubusercontent.com/bcgov/iit-arch/main/Metabase/openshift/postgres/backup/backup.conf)
-  oc -n "$NAMESPACE-$ENVIRONMENT" label configmap backup-conf app=backup-postgres
+  oc -n "$NAMESPACE-$ENVIRONMENT" label configmap backup-conf app=backup-container
   oc -n "$NAMESPACE-$ENVIRONMENT" process -f https://raw.githubusercontent.com/bcgov/iit-arch/main/Metabase/openshift/postgres/backup/backup-deploy.yaml NAME=backup-postgres IMAGE_NAMESPACE="$NAMESPACE-$ENVIRONMENT" SOURCE_IMAGE_NAME=backup-postgres TAG_NAME=v1 BACKUP_VOLUME_NAME=backup-postgres-pvc -p BACKUP_VOLUME_SIZE=5Gi VERIFICATION_VOLUME_SIZE=5Gi ENVIRONMENT_NAME="$ENVIRONMENT" ENVIRONMENT_FRIENDLY_NAME='Metabase postgres DB Backups' | oc -n "$NAMESPACE-$ENVIRONMENT" create -f -
 
 }
