@@ -37,7 +37,7 @@ objects:
                   readOnly: true
               readinessProbe:
                 tcpSocket:
-                  port: 8000
+                  port: 2015
                 initialDelaySeconds: 30
                 periodSeconds: 10
                 timeoutSeconds: 5
