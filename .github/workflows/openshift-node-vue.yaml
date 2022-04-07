@@ -34,7 +34,7 @@ env:
   OPENSHIFT_TOKEN: ${{ secrets.OPENSHIFT_TOKEN }}
   # 🖊️ EDIT to set the kube context's namespace after login. Leave blank to use your user's default namespace.
   OPENSHIFT_NAMESPACE: ${{ secrets.NAMESPACE_NO_ENV}}-tools
-
+  OPENSHIFT_NAMESPACE_NO_ENV: ${{ secrets.NAMESPACE_NO_ENV}}
 
   # 🖊️ EDIT with the port your application should be accessible on.
   # If the container image exposes *exactly one* port, this can be left blank.
@@ -205,10 +205,10 @@ jobs:
           oc rollout cancel dc/${{ env.APP_NAME }} 2> /dev/null \
           || true && echo "No rollout in progress"
           
-          oc tag ${{ steps.push-image.outputs.registry-path }} ${{ env.APP_NAME }}:${{ env.TAG }}
+          oc tag ${{ steps.push-image.outputs.registry-path }} ${{ env.OPENSHIFT_NAMESPACE_NO_ENV }}-${{env.TARGET_ENV}}/${{ env.APP_NAME }}:${{ env.TAG }}
           
           # Process and apply deployment template
-          oc process -f https://raw.githubusercontent.com/bcgov/iit-arch/main/uis/vue-sample/.pipeline/openshift/openshift-deployment-config.yml -p APP_NAME=${{ env.APP_NAME }} -p REPO_NAME=${{ env.REPO_NAME }} -p JOB_NAME=${{ env.JOB_NAME }} -p NAMESPACE=${{ env.OPENSHIFT_NAMESPACE }} -p TAG=${{ env.TAG }} -p MIN_REPLICAS=${{ env.MIN_REPLICAS }} -p MAX_REPLICAS=${{ env.MAX_REPLICAS }} -p MIN_CPU=${{ env.MIN_CPU }} -p MAX_CPU=${{ env.MAX_CPU }} -p MIN_MEM=${{ env.MIN_MEM }} -p MAX_MEM=${{ env.MAX_MEM }} \
+          oc process -f https://raw.githubusercontent.com/bcgov/iit-arch/main/uis/vue-sample/.pipeline/openshift/openshift-deployment-config.yml -p APP_NAME=${{ env.APP_NAME }} -p REPO_NAME=${{ env.REPO_NAME }} -p JOB_NAME=${{ env.JOB_NAME }} -p NAMESPACE=${{ env.OPENSHIFT_NAMESPACE_NO_ENV }}-${{env.TARGET_ENV}} -p TAG=${{ env.TAG }} -p MIN_REPLICAS=${{ env.MIN_REPLICAS }} -p MAX_REPLICAS=${{ env.MAX_REPLICAS }} -p MIN_CPU=${{ env.MIN_CPU }} -p MAX_CPU=${{ env.MAX_CPU }} -p MIN_MEM=${{ env.MIN_MEM }} -p MAX_MEM=${{ env.MAX_MEM }} \
           | oc apply -f -
           
           # Start rollout (if necessary) and follow it
