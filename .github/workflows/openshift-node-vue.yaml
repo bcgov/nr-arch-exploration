@@ -82,7 +82,7 @@ on:
 
 jobs:
   openshift-ci-cd:
-    name: Build and deploy to OpenShift
+    name: Build and deploy vue sample to OpenShift
     runs-on: ubuntu-20.04
     environment: quarkus-dev
     defaults:
