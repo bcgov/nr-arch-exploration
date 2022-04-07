@@ -24,7 +24,7 @@
 
 # 👋 Visit our GitHub organization at https://github.com/redhat-actions/ to see our actions and provide feedback.
 
-name: openshift-java-quarkus
+name: openshift-node-vue
 
 env:
   # 🖊️ EDIT your repository secrets to log into your OpenShift cluster and set up the context.
@@ -84,7 +84,7 @@ jobs:
   openshift-ci-cd:
     name: Build and deploy to OpenShift
     runs-on: ubuntu-20.04
-    environment: vue-dev
+    environment: quarkus-dev
     defaults:
       run:
         working-directory: uis/vue-sample
