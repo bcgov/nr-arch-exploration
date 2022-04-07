@@ -160,6 +160,8 @@ jobs:
             ${{ runner.os }}-node-
       - name: Install Dependencies
         run: npm ci
+      - name: Build Prod artifact
+        run: npm run build
       - name: Build from Dockerfile
         id: build-image
         uses: redhat-actions/buildah-build@v2
