@@ -33,7 +33,7 @@ env:
   OPENSHIFT_SERVER: ${{ secrets.OPENSHIFT_SERVER }}
   OPENSHIFT_TOKEN: ${{ secrets.OPENSHIFT_TOKEN }}
   # 🖊️ EDIT to set the kube context's namespace after login. Leave blank to use your user's default namespace.
-  OPENSHIFT_NAMESPACE: ${{ secrets.NAMESPACE_NO_ENV}}-tools
+  OPENSHIFT_NAMESPACE_NO_ENV: ${{ secrets.NAMESPACE_NO_ENV}}
 
 
   # 🖊️ EDIT with the port your application should be accessible on.
@@ -58,7 +58,7 @@ env:
   JOB_NAME: "main"
   NAMESPACE: ${{ secrets.NAMESPACE_NO_ENV }}
   TAG: "latest"
-  TARGET_ENV: "tools"
+  TARGET_ENV: "dev"
   MIN_REPLICAS: "1"
   MAX_REPLICAS: "1"
   MIN_CPU: "50m"
@@ -158,7 +158,8 @@ jobs:
       - uses: actions/setup-java@v1
         with:
           java-version: 17
-      - uses: actions/cache@v1
+      - name: Cache local Maven repository
+        uses: actions/cache@v3
         with:
           path: ~/.m2/repository
           key: ${{ runner.os }}-maven-${{ hashFiles('**/pom.xml') }}
@@ -204,7 +205,6 @@ jobs:
           set -eux
           # Login to OpenShift and select project
           oc login --token=${{ env.OPENSHIFT_TOKEN }} --server=${{ env.OPENSHIFT_SERVER }}
-          oc project ${{ env.OPENSHIFT_NAMESPACE }}
           # Cancel any rollouts in progress
           oc rollout cancel dc/${{ env.APP_NAME }} 2> /dev/null \
           || true && echo "No rollout in progress"
@@ -212,10 +212,10 @@ jobs:
           oc tag ${{ steps.push-image.outputs.registry-path }} ${{ env.APP_NAME }}:${{ env.TAG }}
           
           # Process and apply deployment template
-          oc process -f https://raw.githubusercontent.com/bcgov/iit-arch/main/apis/java/quarkus/.pipeline/openshift/openshift-deployment-config.yml -p APP_NAME=${{ env.APP_NAME }} -p REPO_NAME=${{ env.REPO_NAME }} -p JOB_NAME=${{ env.JOB_NAME }} -p NAMESPACE=${{ env.OPENSHIFT_NAMESPACE }} -p TAG=${{ env.TAG }} -p MIN_REPLICAS=${{ env.MIN_REPLICAS }} -p MAX_REPLICAS=${{ env.MAX_REPLICAS }} -p MIN_CPU=${{ env.MIN_CPU }} -p MAX_CPU=${{ env.MAX_CPU }} -p MIN_MEM=${{ env.MIN_MEM }} -p MAX_MEM=${{ env.MAX_MEM }} \
+          oc process -f https://raw.githubusercontent.com/bcgov/iit-arch/main/apis/java/quarkus/.pipeline/openshift/openshift-deployment-config.yml -p APP_NAME=${{ env.APP_NAME }} -p REPO_NAME=${{ env.REPO_NAME }} -p JOB_NAME=${{ env.JOB_NAME }} -p NAMESPACE=${{ env.OPENSHIFT_NAMESPACE_NO_ENV }}-${{env.TARGET_ENV}} -p TAG=${{ env.TAG }} -p MIN_REPLICAS=${{ env.MIN_REPLICAS }} -p MAX_REPLICAS=${{ env.MAX_REPLICAS }} -p MIN_CPU=${{ env.MIN_CPU }} -p MAX_CPU=${{ env.MAX_CPU }} -p MIN_MEM=${{ env.MIN_MEM }} -p MAX_MEM=${{ env.MAX_MEM }} \
           | oc apply -f -
           
-          curl -s https://raw.githubusercontent.com/bcgov/${{ env.REPO_NAME }}/main/apis/java/quarkus/.pipeline/openshift/openshift-config-map.sh | bash /dev/stdin ${{ env.APP_NAME }} ${{ env.OIDC_AUTH_SERVER_URL }} ${{ env.OPENSHIFT_NAMESPACE }}
+          curl -s https://raw.githubusercontent.com/bcgov/${{ env.REPO_NAME }}/main/apis/java/quarkus/.pipeline/openshift/openshift-config-map.sh | bash /dev/stdin ${{ env.APP_NAME }} ${{ env.OIDC_AUTH_SERVER_URL }} ${{ env.OPENSHIFT_NAMESPACE_NO_ENV }}-${{env.TARGET_ENV}}
           
           # Start rollout (if necessary) and follow it
           oc rollout latest dc/${{ env.APP_NAME }} 2> /dev/null \
