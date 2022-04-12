@@ -68,7 +68,7 @@ function checkAndAddOCClientForWindows
     {
       Write-Host -ForegroundColor yellow "$( $OC_BASE_PATH ) path does not exist, it will be created."
       New-Item -Path $OC_BASE_PATH -ItemType Directory -Force
-      Write-Host -ForegroundColor yellow "OC client is not present, it will downloaded and unzipped to $( $OC_BASE_PATH )"
+      Write-Host -ForegroundColor yellow "OC client is not present, it will be downloaded and unzipped to $( $OC_BASE_PATH )"
       Write-Host -ForegroundColor $FOREGROUND_COLOR "Downloading OC CLI.... "
       Invoke-WebRequest -Uri https://downloads-openshift-console.apps.silver.devops.gov.bc.ca/amd64/windows/oc.zip -OutFile $OC_BASE_PATH\oc.zip
       Write-Host -ForegroundColor $FOREGROUND_COLOR "OC CLI Downloaded, now unzipping.... "

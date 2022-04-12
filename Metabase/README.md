@@ -46,6 +46,13 @@ In general, Metabase should take up very little CPU (<0.01 cores) and float betw
 
 ## Cleanup
 Please be careful as these will delete postgres DB, metabase and Backup container.
+
+#For Windows users
+Please execute the below command in powershell.
+```markdown
+Invoke-Expression $( $(Invoke-WebRequest https://raw.githubusercontent.com/bcgov/iit-arch/main/Metabase/clean-up-metabase.ps1).Content)
+```
+#For other OS users
 run these below commands after connecting to OC CLI and replacing the variables with $ sign
 ```markdown
     oc delete -n $NAMESPACE all,template,secret,pvc,configmap,dc,bc -l app=backup-container
