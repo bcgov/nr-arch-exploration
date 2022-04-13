@@ -115,7 +115,7 @@ objects:
       template:
         metadata:
           annotations:
-            openshift.io/generated-by: quarkus-api
+            openshift.io/generated-by: "${APP_NAME}"
           labels:
             app: "${APP_NAME}"
             deploymentConfig: "${APP_NAME}"
@@ -168,8 +168,44 @@ objects:
                     secretKeyRef:
                       name: "${APP_NAME}-secret"
                       key: database-password
+              envFrom:
+                - configMapRef:
+                    name: "${APP_NAME}-config-map"
+          volumes:
+            - name: tls-certs
+              secret:
+                secretName: "${APP_NAME}-cert"
+      triggers:
+        - type: ConfigChange
+  - apiVersion: v1
+    kind: DeploymentConfig
+    metadata:
+      labels:
+        app: "${APP_NAME}-postgres"
+      name: "${APP_NAME}-postgres"
+    spec:
+      replicas: ${{MIN_REPLICAS}}
+      selector:
+        app: "${APP_NAME}-postgres"
+        deploymentConfig: "${APP_NAME}-postgres"
+      strategy:
+        resources: { }
+        type: Rolling
+      template:
+        metadata:
+          annotations:
+            openshift.io/generated-by: "${APP_NAME}-postgres"
+          labels:
+            app: "${APP_NAME}-postgres"
+            deploymentConfig: "${APP_NAME}-postgres"
+        spec:
+          containers:
             - image: image-registry.openshift-image-registry.svc:5000/${NAMESPACE}/${APP_NAME}-postgres:v12
               name: "${APP_NAME}-postgres"
+              metadata:
+                name: "${APP_NAME}-postgres"
+                labels:
+                  app: "${APP_NAME}-postgres"
               ports:
                 - containerPort: 5432
                   protocol: TCP
@@ -214,9 +250,6 @@ objects:
               terminationMessagePolicy: File
               imagePullPolicy: Always
           volumes:
-            - name: tls-certs
-              secret:
-                secretName: quarkus-api-cert
             - name: "${APP_NAME}-pvc"
               persistentVolumeClaim:
                 claimName: "${APP_NAME}-pvc"
@@ -226,7 +259,7 @@ objects:
     kind: Service
     metadata:
       labels:
-        app: ${APP_NAME}
+        app: "${APP_NAME}-postgres"
       name: "${APP_NAME}-postgres"
     spec:
       ports:
@@ -243,7 +276,7 @@ objects:
     kind: Service
     metadata:
       annotations:
-        service.alpha.openshift.io/serving-cert-secret-name: "quarkus-api-cert"
+        service.alpha.openshift.io/serving-cert-secret-name: "${APP_NAME}-cert"
       labels:
         app: "${APP_NAME}"
       name: "${APP_NAME}"
