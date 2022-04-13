@@ -61,7 +61,7 @@ objects:
   - kind: Secret
     apiVersion: v1
     metadata:
-      name: "${APP_NAME}"-secret
+      name: "${APP_NAME}-secret"
       labels:
         app: "${APP_NAME}"
     stringData:
@@ -72,7 +72,7 @@ objects:
   - kind: PersistentVolumeClaim
     apiVersion: v1
     metadata:
-      name: "${APP_NAME}"-pvc
+      name: "${APP_NAME}-pvc"
       labels:
         app: "${APP_NAME}"
     spec:
@@ -85,7 +85,7 @@ objects:
   - kind: ImageStream
     apiVersion: v1
     metadata:
-      name: "${APP_NAME}"-postgres
+      name: "${APP_NAME}-postgres"
       labels:
         app: "${APP_NAME}"
     spec:
@@ -176,22 +176,22 @@ objects:
                 - name: POSTGRESQL_ADMIN_PASSWORD
                   valueFrom:
                     secretKeyRef:
-                      name: ${APP_NAME}-secret
+                      name: "${APP_NAME}-secret"
                       key: admin-password
                 - name: POSTGRESQL_DATABASE
                   valueFrom:
                     secretKeyRef:
-                      name: ${APP_NAME}-secret
+                      name: "${APP_NAME}-secret"
                       key: database-name
                 - name: POSTGRESQL_PASSWORD
                   valueFrom:
                     secretKeyRef:
-                      name: ${APP_NAME}-secret
+                      name: "${APP_NAME}-secret"
                       key: database-password
                 - name: POSTGRESQL_USER
                   valueFrom:
                     secretKeyRef:
-                      name: ${APP_NAME}-secret
+                      name: "${APP_NAME}-secret"
                       key: database-user
               volumeMounts:
                 - name: ${NAME}
@@ -216,9 +216,9 @@ objects:
             - name: tls-certs
               secret:
                 secretName: quarkus-api-cert
-            - name: "${APP_NAME}"-pvc
+            - name: "${APP_NAME}-pvc"
               persistentVolumeClaim:
-                claimName: "${APP_NAME}"-pvc
+                claimName: "${APP_NAME}-pvc"
       triggers:
         - type: ConfigChange
   - apiVersion: v1
@@ -226,16 +226,16 @@ objects:
     metadata:
       labels:
         app: ${APP_NAME}
-      name: ${APP_NAME}-postgres
+      name: "${APP_NAME}-postgres"
     spec:
       ports:
-        - name: ${APP_NAME}-postgres
+        - name: "${APP_NAME}-postgres"
           nodePort: 0
           port: 5432
           protocol: TCP
           targetPort: 5432
       selector:
-        app: ${APP_NAME}-postgres
+        app: "${APP_NAME}-postgres"
       sessionAffinity: None
       type: ClusterIP
   - apiVersion: v1
