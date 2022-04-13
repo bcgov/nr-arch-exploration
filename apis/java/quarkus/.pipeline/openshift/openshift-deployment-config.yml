@@ -194,7 +194,7 @@ objects:
                       name: "${APP_NAME}-secret"
                       key: database-user
               volumeMounts:
-                - name: ${NAME}
+                - name: "${APP_NAME}-pvc"
                   mountPath: "/var/lib/pgsql/data"
               livenessProbe:
                 initialDelaySeconds: 30
