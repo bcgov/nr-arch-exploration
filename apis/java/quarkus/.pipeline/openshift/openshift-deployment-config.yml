@@ -161,12 +161,12 @@ objects:
                 - name: QUARKUS_DATASOURCE_JDBC_USERNAME
                   valueFrom:
                     secretKeyRef:
-                      name: ${APP_NAME}-secret
+                      name: "${APP_NAME}-secret"
                       key: database-user
                 - name: QUARKUS_DATASOURCE_JDBC_PASSWORD
                   valueFrom:
                     secretKeyRef:
-                      name: ${APP_NAME}-secret
+                      name: "${APP_NAME}-secret"
                       key: database-password
             - image: image-registry.openshift-image-registry.svc:5000/${NAMESPACE}/${APP_NAME}-postgres:v12
               name: "${APP_NAME}-postgres"
