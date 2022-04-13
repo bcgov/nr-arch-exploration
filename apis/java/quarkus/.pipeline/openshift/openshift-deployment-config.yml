@@ -144,7 +144,7 @@ objects:
                 timeoutSeconds: 5
                 failureThreshold: 5
                 successThreshold: 1
-              name: "quarkus-api-main"
+              name: "${APP_NAME}"
               ports:
                 - containerPort: ${{CONTAINER_PORT}}
                   protocol: TCP
@@ -169,6 +169,7 @@ objects:
                       name: ${APP_NAME}-secret
                       key: database-password
             - image: image-registry.openshift-image-registry.svc:5000/${NAMESPACE}/${APP_NAME}-postgres:v12
+              name: "${APP_NAME}-postgres"
               ports:
                 - containerPort: 5432
                   protocol: TCP
