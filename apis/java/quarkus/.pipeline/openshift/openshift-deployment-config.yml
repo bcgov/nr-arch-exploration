@@ -1,13 +1,65 @@
----
 apiVersion: template.openshift.io/v1
 kind: Template
 labels:
   template: "${REPO_NAME}-template"
+  app: "${APP_NAME}"
 metadata:
   name: "${REPO_NAME}-dc"
+parameters:
+  - name: REPO_NAME
+    description: Application repository name
+    required: true
+  - name: JOB_NAME
+    description: Job identifier (i.e. 'backend' OR 'frontend')
+    required: true
+  - name: NAMESPACE
+    description: Target namespace reference (i.e. 'k8vopl-dev')
+    required: true
+  - name: APP_NAME
+    description: Application name
+    required: true
+  - name: CONTAINER_PORT
+    description: The port on which the application will be accessible
+    value: "8000"
+    required: false
+  - name: TAG
+    description: The identifying tag for this specific deployment
+    required: true
+  - name: MIN_REPLICAS
+    description: The minimum amount of replicas
+    required: true
+  - name: MAX_REPLICAS
+    description: The maximum amount of replicas
+    required: true
+  - name: MIN_CPU
+    description: The minimum amount of cpu
+    required: true
+  - name: MAX_CPU
+    description: The maximum amount of cpu
+    required: true
+  - name: MIN_MEM
+    description: The minimum amount of memory
+    required: true
+  - name: MAX_MEM
+    description: The maximum amount of memory
+    required: true
+  - description: Password for the PostgreSQL connection user.
+    from: "[a-zA-Z0-9]{16}"
+    generate: expression
+    name: DB_PASSWORD
+  - description: Admin Password for the PostgreSQL connection user.
+    from: "[a-zA-Z0-9]{16}"
+    generate: expression
+    name: ADMIN_PASSWORD
+  - description: Volume space available for data, e.g. 512Mi, 2Gi.
+    displayName: Database Volume Capacity
+    name: DB_PVC_SIZE
+    required: true
+    value: 512Mi
+
 objects:
-  - apiVersion: v1
-    kind: Secret
+  - kind: Secret
+    apiVersion: v1
     metadata:
       name: "${APP_NAME}"-secret
       labels:
@@ -218,54 +270,3 @@ objects:
           resource:
             name: cpu
             targetAverageUtilization: 200
-parameters:
-  - name: REPO_NAME
-    description: Application repository name
-    required: true
-  - name: JOB_NAME
-    description: Job identifier (i.e. 'backend' OR 'frontend')
-    required: true
-  - name: NAMESPACE
-    description: Target namespace reference (i.e. 'k8vopl-dev')
-    required: true
-  - name: APP_NAME
-    description: Application name
-    required: true
-  - name: CONTAINER_PORT
-    description: The port on which the application will be accessible
-    value: "8000"
-    required: false
-  - name: TAG
-    description: The identifying tag for this specific deployment
-    required: true
-  - name: MIN_REPLICAS
-    description: The minimum amount of replicas
-    required: true
-  - name: MAX_REPLICAS
-    description: The maximum amount of replicas
-    required: true
-  - name: MIN_CPU
-    description: The minimum amount of cpu
-    required: true
-  - name: MAX_CPU
-    description: The maximum amount of cpu
-    required: true
-  - name: MIN_MEM
-    description: The minimum amount of memory
-    required: true
-  - name: MAX_MEM
-    description: The maximum amount of memory
-    required: true
-  - description: Password for the PostgreSQL connection user.
-    from: "[a-zA-Z0-9]{16}"
-    generate: expression
-    name: DB_PASSWORD
-  - description: Admin Password for the PostgreSQL connection user.
-    from: "[a-zA-Z0-9]{16}"
-    generate: expression
-    name: ADMIN_PASSWORD
-  - description: Volume space available for data, e.g. 512Mi, 2Gi.
-    displayName: Database Volume Capacity
-    name: DB_PVC_SIZE
-    required: true
-    value: 512Mi
