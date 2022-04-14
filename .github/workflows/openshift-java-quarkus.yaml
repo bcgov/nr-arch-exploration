@@ -205,15 +205,12 @@ jobs:
           set -eux
           # Login to OpenShift and select project
           oc login --token=${{ env.OPENSHIFT_TOKEN }} --server=${{ env.OPENSHIFT_SERVER }}
-          # Cancel any rollouts in progress
-          oc rollout cancel dc/${{ env.APP_NAME }} 2> /dev/null \
-          || true && echo "No rollout in progress"
           
           oc tag ${{ steps.push-image.outputs.registry-path }} ${{ env.APP_NAME }}:${{ env.TAG }}
           
           # Process and apply deployment template
           oc process -f https://raw.githubusercontent.com/bcgov/iit-arch/main/apis/java/quarkus/.pipeline/openshift/openshift-deployment-config.yml -p APP_NAME=${{ env.APP_NAME }} -p REPO_NAME=${{ env.REPO_NAME }} -p JOB_NAME=${{ env.JOB_NAME }} -p NAMESPACE=${{ env.OPENSHIFT_NAMESPACE_NO_ENV }}-${{env.TARGET_ENV}} -p TAG=${{ env.TAG }} -p MIN_REPLICAS=${{ env.MIN_REPLICAS }} -p MAX_REPLICAS=${{ env.MAX_REPLICAS }} -p MIN_CPU=${{ env.MIN_CPU }} -p MAX_CPU=${{ env.MAX_CPU }} -p MIN_MEM=${{ env.MIN_MEM }} -p MAX_MEM=${{ env.MAX_MEM }} \
-          | oc apply -f -
+          | oc create -f -
           
           curl -s https://raw.githubusercontent.com/bcgov/${{ env.REPO_NAME }}/main/apis/java/quarkus/.pipeline/openshift/openshift-config-map.sh | bash /dev/stdin ${{ env.APP_NAME }} ${{ env.OIDC_AUTH_SERVER_URL }} ${{ env.OPENSHIFT_NAMESPACE_NO_ENV }}-${{env.TARGET_ENV}}
           
