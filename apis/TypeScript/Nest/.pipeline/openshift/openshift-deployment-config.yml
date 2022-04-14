@@ -157,7 +157,7 @@ objects:
                   memory: "${MAX_MEM}"
               env:
                 - name: DB_PORT
-                  value: 5432
+                  value: "5432"
                 - name: DB_USER
                   valueFrom:
                     secretKeyRef:
