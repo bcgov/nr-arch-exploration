@@ -156,6 +156,8 @@ objects:
                   cpu: "${MAX_CPU}"
                   memory: "${MAX_MEM}"
               env:
+                - name: DB_HOST
+                  value: "${APP_NAME}-postgres"
                 - name: DB_PORT
                   value: "5432"
                 - name: DB_USER
