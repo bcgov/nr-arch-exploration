@@ -71,14 +71,17 @@ on:
   workflow_dispatch:
   push:
     branches:
-      - main
+      - 'main'
+      - 'feature/**'
+      - 'Feature/**'
+      - 'fix/*'
+      - 'Fix/*'
     paths:
-      - 'apis/java/quarkus'
+      - 'apis/java/quarkus/**'
   pull_request:
-    branches:
-      - main
+    branches: [ main ]
     paths:
-      - 'apis/java/quarkus'
+      - 'apis/java/quarkus/**'
 
 jobs:
   openshift-ci-cd:
