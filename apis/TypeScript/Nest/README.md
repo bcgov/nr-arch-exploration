@@ -1,4 +1,4 @@
-To Run this in on local,
+## To Run this in on local,
 1. Please  run `docker-compose up` command.
 2. login to KC admin console http://localhost:8191/auth/
 3. click on admin console
@@ -8,4 +8,15 @@ To Run this in on local,
 7. run the nest application by `npm run start:dev:windows`
 8. It will run typeorm migrations and then start the application on port 8000.
 9. you can now access the swagger ui at http://localhost:8000/
- //junk commit
+
+## Deployment to openshift
+1. follow this link for artifactory knowledge https://developer.gov.bc.ca/Artifact-Repositories-(Artifactory),  it helps in understanding build and push of image to openshift.
+2. Create secrets in GitHub
+    1. This example repo has 3 secrets which are available for all deployments and then environment specific secrets are for each deployment.
+        - `DOCKER_HUB_ACCESS_TOKEN`
+        - `DOCKER_HUB_USERNAME`
+        - `OPENSHIFT_SERVER`
+    2. The nest-dev environment has secrets specific to this deployment.
+        - `OPENSHIFT_TOKEN` The token to access openshift namespace where this will be deployed ex: `aaaaaa-dev`
+        - `NAMESPACE_NO_ENV` The namespace of the deployment ex: `aaaaaa`
+3. Please refer to this file for sample openshift deployment. `.github/workflows/openshift-node-nest.yaml`
