@@ -2,12 +2,12 @@
 This project uses Quarkus, the Supersonic Subatomic Java Framework.
 If you want to learn more about Quarkus, please visit its website: https://quarkus.io/ .
 
-To Run this in JVM mode on local, 
+## To Run this in JVM mode on local, 
 1. Please ask for the keycloak url and replace the value of `OIDC_AUTH_SERVER_URL` in `docker-compose.yaml`.
 2. if you have maven run: `mvn clean package -Dquarkus.package.type=legacy-jar` after that just run the `docker-compose up` command.
-3. if you dont have maven just uncomment line 8 and comment line#7 in Dockerfile and run `docker-compose up` command.
+3. if you don't have maven just uncomment line 8 and comment line#7 in Dockerfile and run `docker-compose up` command.
 
-To Run this in Native mode on local,
+## To Run this in Native mode on local,
 1. Please ask for the keycloak url and replace the value of `OIDC_AUTH_SERVER_URL` in `docker-compose-native.yaml`.
 2. run ` docker-compose  -f docker-compose-native.yaml up --build`
 
@@ -23,12 +23,18 @@ Postman sample to get a token:
 ![img.png](img.png)
 If you want to learn more about building native executables, please consult https://quarkus.io/guides/maven-tooling.
 
-#Deployment to openshift
+## Deployment to openshift
 1. follow this link for artifactory knowledge https://developer.gov.bc.ca/Artifact-Repositories-(Artifactory),  it helps in understanding build and push of image to openshift.
-2. Create secrets for running GitHub actions by following instructions at https://github.com/redhat-actions/oc-login#readme
-3. make sure you have OC CLI installed on your desktop. Follow this link for getting the patroni image in your image stream to deploy patroni statefulset https://github.com/BCDevOps/platform-services/tree/master/apps/pgsql/patroni .
-   1. the documentation above is based on cloning the repo to local, you don't need to clone the repo to local just replace the reference to files like this openshift/build.yaml with https://raw.githubusercontent.com/BCDevOps/platform-services/master/apps/pgsql/patroni/openshift/build.yaml
-   
+2. Create secrets in GitHub
+   1. This example repo has 3 secrets which are available for all deployments and then environment specific secrets are for each deployment.
+      - `DOCKER_HUB_ACCESS_TOKEN`
+      - `DOCKER_HUB_USERNAME`
+      - `OPENSHIFT_SERVER`
+   2. The quarkus-dev environment has secrets specific to this deployment.
+      - `OPENSHIFT_TOKEN` The token to access openshift namespace where this will be deployed ex: `aaaaaa-dev`
+      - `OIDC_AUTH_SERVER_URL` The URL of the Keycloak server
+      - `NAMESPACE_NO_ENV` The namespace of the deployment ex: `aaaaaa`
+3. Please refer to this file for sample openshift deployment. `.github/workflows/openshift-java-quarkus.yaml`
 ## Related Guides
 
 - RESTEasy JAX-RS ([guide](https://quarkus.io/guides/rest-json)): REST endpoint framework implementing JAX-RS and more
