@@ -71,14 +71,17 @@ on:
   workflow_dispatch:
   push:
     branches:
-      - main
+      - 'main'
+      - 'feature/**'
+      - 'Feature/**'
+      - 'fix/*'
+      - 'Fix/*'
     paths:
-      - 'apis/TypeScript/Nest'
+      - 'apis/TypeScript/Nest/**'
   pull_request:
-    branches:
-      - main
+    branches: [ main ]
     paths:
-      - 'apis/TypeScript/Nest'
+      - 'apis/TypeScript/Nest/**'
 
 jobs:
   openshift-ci-cd:
