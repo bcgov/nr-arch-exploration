@@ -205,7 +205,7 @@ jobs:
       - uses: actions/checkout@v2
       - name: Deploy
         run: |
-          set -eux
+          set +e -ux
           # Login to OpenShift and select project
           oc login --token=${{ env.OPENSHIFT_TOKEN }} --server=${{ env.OPENSHIFT_SERVER }}
           
