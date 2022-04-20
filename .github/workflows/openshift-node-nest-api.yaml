@@ -150,7 +150,9 @@ jobs:
           registry: ${{ env.DOCKER_ARTIFACTORY_REPO }}
           username: ${{ secrets.DOCKER_HUB_USERNAME }}
           password: ${{ secrets.DOCKER_HUB_ACCESS_TOKEN }}
-
+      - uses: actions/setup-node@v1
+        with:
+         node-version: '16.x'
       - uses: actions/cache@v3
         with:
           path: ~/.npm
