@@ -71,14 +71,17 @@ on:
   workflow_dispatch:
   push:
     branches:
-      - main
+      - 'main'
+      - 'feature/**'
+      - 'Feature/**'
+      - 'fix/*'
+      - 'Fix/*'
     paths:
-      - 'uis/vue-sample'
+      - 'uis/vue-sample/**'
   pull_request:
-    branches:
-      - main
+    branches: [ main ]
     paths:
-      - 'uis/vue-sample'
+      - 'uis/vue-sample/**'
 
 jobs:
   openshift-ci-cd:
