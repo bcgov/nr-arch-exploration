@@ -69,16 +69,11 @@ env:
 on:
   # https://docs.github.com/en/actions/reference/events-that-trigger-workflows
   workflow_dispatch:
-  push:
-    branches:
-      - main
-    paths:
-      - 'apis/java/quarkus'
   pull_request:
     branches:
       - main
     paths:
-      - 'apis/java/quarkus'
+      - 'apis/java/quarkus/**'
 
 jobs:
   openshift-ci-cd:
