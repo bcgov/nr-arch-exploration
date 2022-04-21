@@ -1,6 +1,6 @@
-import { ConnectionOptions } from 'typeorm';
+import { DataSourceOptions } from 'typeorm';
 
-const config: ConnectionOptions = {
+const config: DataSourceOptions = {
   type: 'postgres',
   host: process.env.DB_HOST,
   port: Number(process.env.DB_PORT),
@@ -10,9 +10,6 @@ const config: ConnectionOptions = {
   entities: [__dirname + '/dist/**/entities/*'],
   migrationsTableName: 'schema_history',
   migrations: [__dirname + '/src/db/migrations/*.ts'],
-  cli: {
-    migrationsDir: 'migration',
-  },
   logNotifications: true,
   applicationName: 'nest-api',
   extra: {

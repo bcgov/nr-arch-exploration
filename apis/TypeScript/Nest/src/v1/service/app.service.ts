@@ -1,23 +1,28 @@
-import { HttpException, HttpStatus, Injectable, Logger } from '@nestjs/common';
-import { Connection, Repository } from 'typeorm';
-import { User } from '../entities/user.entity';
-import { InjectRepository } from '@nestjs/typeorm';
+import {HttpException, HttpStatus, Injectable, Logger} from '@nestjs/common';
+import {FindOneOptions, Repository} from 'typeorm';
+import {User} from '../entities/user.entity';
+import {InjectRepository} from '@nestjs/typeorm';
 import {randomUUID} from "crypto";
 
 @Injectable()
 export class AppService {
   constructor(
-    private readonly connection: Connection,
     @InjectRepository(User)
     private readonly usersRepository: Repository<User>,
-  ) {}
+  ) {
+  }
 
   async findAll(): Promise<User[]> {
     return this.usersRepository.find();
   }
 
   async findOne(id: string): Promise<User> {
-    const user = await this.usersRepository.findOne(id);
+    const opts: FindOneOptions = {
+      where: {
+        id,
+      },
+    };
+    const user = await this.usersRepository.findOne(opts);
     if (user) {
       return user;
     } else {
