@@ -69,16 +69,11 @@ env:
 on:
   # https://docs.github.com/en/actions/reference/events-that-trigger-workflows
   workflow_dispatch:
-  push:
-    branches:
-      - main
-    paths:
-      - 'apis/TypeScript/Nest'
   pull_request:
     branches:
       - main
     paths:
-      - 'apis/TypeScript/Nest'
+      - 'apis/TypeScript/Nest/**'
 
 jobs:
   openshift-ci-cd:
@@ -147,7 +142,10 @@ jobs:
           registry: ${{ env.DOCKER_ARTIFACTORY_REPO }}
           username: ${{ secrets.DOCKER_HUB_USERNAME }}
           password: ${{ secrets.DOCKER_HUB_ACCESS_TOKEN }}
-
+      - name: Add Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '16.x'
       - uses: actions/cache@v3
         with:
           path: ~/.npm
