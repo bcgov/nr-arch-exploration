@@ -1,12 +1,11 @@
 package routes
 
-import "github.com/gofiber/fiber/v2"
+import (
+	"github.com/gofiber/fiber/v2"
+	"github.com/iit-arch/fiber-crud/v1/services"
+)
 
-func employeeRoutes(app fiber.Router) {
+func EmployeeRoutes(app fiber.Router) {
 	r := app.Group("/api/v1")
-	r.Get("/employees", GetEmployees)
-	r.Get("/employees/:id", GetEmployee)
-	r.Post("/employees", PostEmployee)
-	r.Put("/employees/:id", PutEmployee)
-	r.Delete("/employees/:id", DeleteEmployee)
+	r.Get("/employees", services.GetEmployees)
 }

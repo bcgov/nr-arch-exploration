@@ -1,0 +1,45 @@
+version: "2.3"
+
+services:
+  fiber-database:
+    image: postgres
+    mem_limit: 128m
+    environment:
+      - POSTGRES_USER=fiber
+      - POSTGRES_PASSWORD=fiber123
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U fiber"]
+      interval: 5s
+      timeout: 5s
+      retries: 6
+    ports:
+      - "5330:5432"
+    networks:
+      - nest
+  fiber-keycloak:
+    image: quay.io/keycloak/keycloak:14.0.0
+    environment:
+      DB_VENDOR: postgres
+      DB_ADDR: fiber-database:5432
+      DB_DATABASE: fiber
+      DB_SCHEMA: public
+      DB_USER: fiber
+      DB_PASSWORD: fiber123
+      KEYCLOAK_ADMIN: admin
+      KEYCLOAK_ADMIN_PASSWORD: admin
+      KEYCLOAK_USER: admin
+      KEYCLOAK_PASSWORD: admin
+    healthcheck:
+      test: [ "CMD-SHELL", "curl --fail http://localhost:8080/auth/realms/master" ]
+      interval: 30s
+      timeout: 10s
+      retries: 10
+      start_period: 1m
+    ports:
+      - "8192:8080"  # the HTTP endpoint
+      - "9192:9990"  # the admin HTTP endpoint
+    networks:
+      - nest
+networks:
+  nest:
+    driver: bridge
