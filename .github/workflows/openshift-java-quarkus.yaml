@@ -161,7 +161,7 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-maven-
       - name: Build native application
-        run: mvn clean package -Pnative -DskipTests
+        run: mvn clean package -Pnative
       - name: Build from Dockerfile
         id: build-image
         uses: redhat-actions/buildah-build@v2
