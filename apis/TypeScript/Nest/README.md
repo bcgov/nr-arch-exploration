@@ -20,3 +20,6 @@
         - `OPENSHIFT_TOKEN` The token to access openshift namespace where this will be deployed ex: `aaaaaa-dev`
         - `NAMESPACE_NO_ENV` The namespace of the deployment ex: `aaaaaa`
 3. Please refer to this file for sample openshift deployment. `.github/workflows/openshift-node-nest.yaml`
+4. The image size produced is around 102 MB.
+5. The application starts up within 4 seconds, with 50-150mc cpu and consumes around 55 Megs of memory.
+6. The app consumes around 25-25 mc cpu during idle time.
