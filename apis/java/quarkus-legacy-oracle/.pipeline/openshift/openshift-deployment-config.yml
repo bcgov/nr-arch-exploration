@@ -1,0 +1,145 @@
+apiVersion: template.openshift.io/v1
+kind: Template
+labels:
+  template: "${REPO_NAME}-template"
+  app: "${APP_NAME}"
+metadata:
+  name: "${REPO_NAME}-dc"
+parameters:
+  - name: REPO_NAME
+    description: Application repository name
+    required: true
+  - name: JOB_NAME
+    description: Job identifier (i.e. 'backend' OR 'frontend')
+    required: true
+  - name: NAMESPACE
+    description: Target namespace reference (i.e. 'k8vopl-dev')
+    required: true
+  - name: APP_NAME
+    description: Application name
+    required: true
+  - name: CONTAINER_PORT
+    description: The port on which the application will be accessible
+    value: "8000"
+    required: false
+  - name: TAG
+    description: The identifying tag for this specific deployment
+    required: true
+  - name: MIN_REPLICAS
+    description: The minimum amount of replicas
+    required: true
+  - name: MAX_REPLICAS
+    description: The maximum amount of replicas
+    required: true
+  - name: MIN_CPU
+    description: The minimum amount of cpu
+    required: true
+  - name: MAX_CPU
+    description: The maximum amount of cpu
+    required: true
+  - name: MIN_MEM
+    description: The minimum amount of memory
+    required: true
+  - name: MAX_MEM
+    description: The maximum amount of memory
+    required: true
+
+objects:
+ - apiVersion: v1
+    kind: DeploymentConfig
+    metadata:
+      labels:
+        app: "${APP_NAME}"
+      name: "${APP_NAME}"
+    spec:
+      replicas: ${{MIN_REPLICAS}}
+      selector:
+        app: "${APP_NAME}"
+        deploymentConfig: "${APP_NAME}"
+      strategy:
+        resources: {}
+        type: Rolling
+      template:
+        metadata:
+          annotations:
+            openshift.io/generated-by: "${APP_NAME}"
+          labels:
+            app: "${APP_NAME}"
+            deploymentConfig: "${APP_NAME}"
+        spec:
+          containers:
+            - image: image-registry.openshift-image-registry.svc:5000/${NAMESPACE}/${APP_NAME}:${TAG}
+              imagePullPolicy: Always
+              volumeMounts:
+                - name: tls-certs
+                  mountPath: "/etc/tls-certs"
+                  readOnly: true
+              readinessProbe:
+                tcpSocket:
+                  port: 8000
+                initialDelaySeconds: 30
+                periodSeconds: 10
+                timeoutSeconds: 5
+                failureThreshold: 20
+                successThreshold: 1
+              livenessProbe:
+                httpGet:
+                  path: /q/health
+                  port: 8000
+                initialDelaySeconds: 180
+                periodSeconds: 30
+                timeoutSeconds: 5
+                failureThreshold: 5
+                successThreshold: 1
+              name: "${APP_NAME}"
+              ports:
+                - containerPort: ${{CONTAINER_PORT}}
+                  protocol: TCP
+              resources:
+                requests:
+                  cpu: "${MIN_CPU}"
+                  memory: "${MIN_MEM}"
+                limits:
+                  cpu: "${MAX_CPU}"
+                  memory: "${MAX_MEM}"
+              envFrom:
+                - configMapRef:
+                    name: "${APP_NAME}-config-map"
+          volumes:
+            - name: tls-certs
+              secret:
+                secretName: "${APP_NAME}-cert"
+      triggers:
+        - type: ConfigChange
+  - apiVersion: v1
+    kind: Service
+    metadata:
+      annotations:
+        service.alpha.openshift.io/serving-cert-secret-name: "${APP_NAME}-cert"
+      labels:
+        app: "${APP_NAME}"
+      name: "${APP_NAME}"
+    spec:
+      ports:
+        - name: ${CONTAINER_PORT}-tcp
+          port: ${{CONTAINER_PORT}}
+          protocol: TCP
+      selector:
+        app: "${APP_NAME}"
+  - apiVersion: autoscaling/v2beta1
+    kind: HorizontalPodAutoscaler
+    metadata:
+      name: "${APP_NAME}-cpu-autoscaler"
+    spec:
+      scaleTargetRef:
+        apiVersion: apps.openshift.io/v1
+        kind: DeploymentConfig
+        name: "${APP_NAME}"
+        subresource: scale
+      minReplicas: ${{MIN_REPLICAS}}
+      maxReplicas: ${{MAX_REPLICAS}}
+      metrics:
+        - type: Resource
+          resource:
+            name: cpu
+            targetAverageUtilization: 200
