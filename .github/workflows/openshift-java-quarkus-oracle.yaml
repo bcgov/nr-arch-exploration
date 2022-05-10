@@ -60,7 +60,7 @@ env:
   ARTIFACTORY_REPO: artifacts.developer.gov.bc.ca
 
   APP_NAME: 'quarkus-api-oracle'
-  REPO_NAME: "nr-arch"
+  REPO_NAME: "nr-arch-templates"
   JOB_NAME: "main"
   NAMESPACE: ${{ secrets.NAMESPACE_NO_ENV }}
   TAG: "latest"
