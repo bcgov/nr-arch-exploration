@@ -1,0 +1,17 @@
+version: "2.3"
+
+services:
+  tomcat-service:
+    cpus: 1
+    image: tomcat
+    mem_limit: "10242m"
+    environment:
+      - TZ=America/Vancouver
+    ports:
+      - "8888:8000"  # the HTTP endpoint
+    networks:
+      - default
+
+networks:
+  default:
+    driver: bridge
