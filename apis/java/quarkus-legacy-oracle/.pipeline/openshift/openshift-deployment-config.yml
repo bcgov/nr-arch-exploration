@@ -45,7 +45,7 @@ parameters:
     required: true
 
 objects:
- - apiVersion: v1
+  - apiVersion: v1
     kind: DeploymentConfig
     metadata:
       labels:
