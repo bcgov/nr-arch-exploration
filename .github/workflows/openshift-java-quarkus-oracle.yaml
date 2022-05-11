@@ -159,7 +159,7 @@ jobs:
           key: ${{ runner.os }}-maven-${{ hashFiles('**/pom.xml') }}
           restore-keys: |
             ${{ runner.os }}-maven-
-      - name: Build native application
+      - name: Build application
         run: mvn clean package
       - name: Build from Dockerfile
         id: build-image
