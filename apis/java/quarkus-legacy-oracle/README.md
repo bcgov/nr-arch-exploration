@@ -41,5 +41,5 @@ Following environment variables are required to run this Docker container:
       - `NAMESPACE_NO_ENV` The namespace of the deployment ex: `aaaaaa`
 3. Please refer to this file for sample openshift deployment. `.github/workflows/openshift-java-quarkus-oracle.yaml`
 4. The image size produced is around Size 417.2 MiB.
-5. The application starts up within 30 seconds, with 50-300mc cpu and consumes around 150 Megs of memory.
+5. The application starts up within 20 seconds, with 50-300mc cpu and consumes around 150 Megs of memory.
 6. The app consumes around 2mc cpu during idle time.
