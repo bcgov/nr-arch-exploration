@@ -30,11 +30,16 @@ Following environment variables are required to run this Docker container:
       - `DOCKER_HUB_ACCESS_TOKEN`
       - `DOCKER_HUB_USERNAME`
       - `OPENSHIFT_SERVER`
-   2. The quarkus-dev environment has secrets specific to this deployment.
-      - `OPENSHIFT_TOKEN` The token to access openshift namespace where this will be deployed ex: `aaaaaa-dev`
-      - `OIDC_AUTH_SERVER_URL` The URL of the Keycloak server
+   2. The `quarkus-oracle-dev` environment has secrets specific to this deployment.
+      - `DB_HOST` The oracle DB hostname.
+      - `DB_PORT` The oracle DB secured port.
+      - `FILE_LOG_LEVEL` The log level for file logger.
+      - `OIDC_AUTH_SERVER_URL` The keycloak auth server url against which the jwt token is validated.
+      - `QUARKUS_DATASOURCE_JDBC_PASSWORD` The password for the oracle DB.
+      - `QUARKUS_DATASOURCE_JDBC_USERNAME` The username for the oracle DB.
+      - `SERVICE_NAME` The service name for Oracle DB.
       - `NAMESPACE_NO_ENV` The namespace of the deployment ex: `aaaaaa`
-3. Please refer to this file for sample openshift deployment. `.github/workflows/openshift-java-quarkus.yaml`
-4. The image size produced is around 50 MB.
-5. The application starts up within 2 seconds, with 50-150mc cpu and consumes around 35 Megs of memory.
-6. The app consumes around .2mc cpu during idle time.
+3. Please refer to this file for sample openshift deployment. `.github/workflows/openshift-java-quarkus-oracle.yaml`
+4. The image size produced is around Size 417.2 MiB.
+5. The application starts up within 18 seconds, with 50-150mc cpu and consumes around 150 Megs of memory.
+6. The app consumes around 2mc cpu during idle time.
