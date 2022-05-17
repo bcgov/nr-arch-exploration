@@ -1,8 +1,7 @@
 FROM docker.io/openjdk:17-alpine
 WORKDIR /app
 ENV LANG='en_US.UTF-8' LANGUAGE='en_US:en'
-# Configure the JAVA_OPTIONS, you can add -XshowSettings:vm to also display the heap size.
-
+RUN addgroup -S 185 && adduser -S 185 -G 185
 COPY --chown=185 apis/java/quarkus-legacy-oracle/target/quarkus-app/lib/ /deployments/lib/
 COPY --chown=185 apis/java/quarkus-legacy-oracle/target/quarkus-app/*.jar /deployments/
 COPY --chown=185 apis/java/quarkus-legacy-oracle/target/quarkus-app/app/ /deployments/app/
