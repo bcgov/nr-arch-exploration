@@ -96,6 +96,16 @@ objects:
                     secretKeyRef:
                       name: "${NAME}-secret"
                       key: database-password
+                - name: DB_HOST
+                  valueFrom:
+                    secretKeyRef:
+                      name: "${NAME}-secret"
+                      key: DB_HOST
+                - name: DB_PORT
+                  valueFrom:
+                    secretKeyRef:
+                      name: "${NAME}-secret"
+                      key: DB_PORT
                 - name: MB_JETTY_HOST
                   value: 0.0.0.0
                 - name: MB_PASSWORD_COMPLEXITY

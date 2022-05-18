@@ -26,7 +26,7 @@ objects:
       output:
         to:
           kind: ImageStreamTag
-          name: "${NAME}:${VERSION}"
+          name: "${NAME}:latest"
       postCommit: {}
       resources:
         limits:
@@ -47,10 +47,6 @@ objects:
           buildArgs:
             - name: METABASE_VERSION
               value: "${METABASE_VERSION}"
-            - name: DB_HOST
-              value: "${DB_HOST}"
-            - name: DB_PORT
-              value: "${DB_PORT}"
           pullSecret:
             name: artifactory-creds
         type: Docker
@@ -67,16 +63,4 @@ parameters:
     displayName: Metabase Version
     description: Version of Metabase to use
     required: true
-    value: v0.41.5
-  - name: VERSION
-    displayName: Image version tag
-    description: The version tag of the built image
-    required: true
-  - name: DB_HOST
-    displayName: DB_HOST
-    description: The host name of the oracle database connection using encrypted listener
-    required: true
-  - name: DB_PORT
-    displayName: DB_PORT
-    description: The port number of the oracle database connection using encrypted listener
-    required: true
+    value: v0.43.1

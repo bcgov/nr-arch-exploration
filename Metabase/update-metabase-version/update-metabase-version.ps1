@@ -292,13 +292,13 @@ function checkArtifactoryCreds
 
 function buildMetabase
 {
-    oc tag -d "$NAMESPACE-tools/metabase:$ENVIRONMENT"
-    oc tag -d "$NAMESPACE-$ENVIRONMENT/metabase:$ENVIRONMENT"
-    oc process -n $NAMESPACE-tools -f "$BASE_URL/metabase.bc.yaml" -p METABASE_VERSION=$METABASE_VERSION -p VERSION=$ENVIRONMENT -p DB_HOST=$DB_HOST -p DB_PORT=$DB_PORT -o yaml | oc apply -n $NAMESPACE-tools -f -
+    oc tag -d "$NAMESPACE-tools/metabase:latest"
+    oc tag -d "$NAMESPACE-$ENVIRONMENT/metabase:latest"
+    oc process -n $NAMESPACE-tools -f "$BASE_URL/metabase.bc.yaml" -p METABASE_VERSION=$METABASE_VERSION  -o yaml | oc apply -n $NAMESPACE-tools -f -
     Write-Host -ForegroundColor cyan "Metabase Image is being created, grab a cup of coffee as this might take 3-4 minutes."
     oc -n $NAMESPACE-tools start-build metabase --wait
     Write-Host -ForegroundColor $FOREGROUND_COLOR "Metabase Image build is completed."
-    oc tag "$NAMESPACE-tools/metabase:$ENVIRONMENT" "$NAMESPACE-$ENVIRONMENT/metabase:$ENVIRONMENT"
+    oc tag "$NAMESPACE-tools/metabase:$ENVIRONMENT" "$NAMESPACE-$ENVIRONMENT/metabase:latest"
     Write-Host -ForegroundColor $FOREGROUND_COLOR "Metabase Image is tagged in $($NAMESPACE)-$($ENVIRONMENT)."
     Write-Host -ForegroundColor cyan "Metabase secret is being created."
 }

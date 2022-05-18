@@ -286,13 +286,13 @@ function deployPostgres{
 }
 function buildMetabase
 {
-    oc tag -d "$NAMESPACE-tools/metabase:$ENVIRONMENT"
-    oc tag -d "$NAMESPACE-$ENVIRONMENT/metabase:$ENVIRONMENT"
-    oc process -n $NAMESPACE-tools -f "$BASE_URL/metabase.bc.yaml" -p METABASE_VERSION=v0.42.3 -p VERSION=$ENVIRONMENT -p DB_HOST=$DB_HOST -p DB_PORT=$DB_PORT -o yaml | oc apply -n $NAMESPACE-tools -f -
+    oc tag -d "$NAMESPACE-tools/metabase:latest"
+    oc tag -d "$NAMESPACE-$ENVIRONMENT/metabase:latest"
+    oc process -n $NAMESPACE-tools -f "$BASE_URL/metabase.bc.yaml" -o yaml | oc apply -n $NAMESPACE-tools -f -
     Write-Host -ForegroundColor cyan "Metabase Image is being created, grab a cup of coffee as this might take 3-4 minutes."
     oc -n $NAMESPACE-tools start-build metabase --wait
     Write-Host -ForegroundColor $FOREGROUND_COLOR "Metabase Image build is completed."
-    oc tag "$NAMESPACE-tools/metabase:$ENVIRONMENT" "$NAMESPACE-$ENVIRONMENT/metabase:$ENVIRONMENT"
+    oc tag "$NAMESPACE-tools/metabase:latest" "$NAMESPACE-$ENVIRONMENT/metabase:latest"
     Write-Host -ForegroundColor $FOREGROUND_COLOR "Metabase Image is tagged in $($NAMESPACE)-$($ENVIRONMENT)."
     Write-Host -ForegroundColor cyan "Metabase secret is being created."
 }
@@ -307,7 +307,7 @@ function addNetworkPolicy{
 }
 function deployMetabase
 {
-  oc process -n "$NAMESPACE-$ENVIRONMENT" -f "$BASE_URL/metabase.secret.yaml" -p ADMIN_EMAIL=$METABASE_ADMIN_EMAIL -o yaml | oc create -n "$NAMESPACE-$ENVIRONMENT" -f -
+  oc process -n "$NAMESPACE-$ENVIRONMENT" -f "$BASE_URL/metabase.secret.yaml" -p DB_HOST=$DB_HOST -p DB_PORT=$DB_PORT -p ADMIN_EMAIL=$METABASE_ADMIN_EMAIL -o yaml | oc create -n "$NAMESPACE-$ENVIRONMENT" -f -
   Write-Host -ForegroundColor $FOREGROUND_COLOR "Metabase secret created."
   oc process -n "$NAMESPACE-$ENVIRONMENT" -f "$BASE_URL/metabase.dc.yaml" -p NAMESPACE="$NAMESPACE-$ENVIRONMENT" -p VERSION=$ENVIRONMENT -p PREFIX=$METABASE_APP_PREFIX -o yaml | oc apply -n "$NAMESPACE-$ENVIRONMENT" -f -
 }
