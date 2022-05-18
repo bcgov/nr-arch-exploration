@@ -9,6 +9,7 @@ RUN apk add --update --no-cache bash curl wget ttf-dejavu fontconfig
 RUN wget -q http://downloads.metabase.com/${METABASE_VER}/metabase.jar \
 && chmod -R 777 /app
 
+COPY startup.sh .
 COPY InstallCert.class .
 COPY "InstallCert\$SavingTrustManager.class" .
 RUN chmod -R 777 /opt && chmod -R 777 /etc
