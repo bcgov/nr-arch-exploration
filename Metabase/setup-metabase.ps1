@@ -1,4 +1,4 @@
-#This script will help setup Metabase on openshift namespace wihout any installation.
+#This script will help setup Metabase on openshift namespace without any installation.
 
 #Declare global Variables here.
 
@@ -23,7 +23,7 @@ $global:BACK_UP_CONTAINER_BASE_URL="https://raw.githubusercontent.com/BCDevOps/b
 function main
 {
   Clear-Host
-  Write-Host -ForegroundColor $FOREGROUND_COLOR "This script will guide you through the installation of Metabase on Openshift namespace With Specific To Oracle DB connection Over Encrypted Listeners. Please know that Image is built uniquely for each envionment as there could be different hosts to connect to oracle DB based on the environment. This process will download OC CLI on your desktop if it is not already on Path. Please enter a key to continue."
+  Write-Host -ForegroundColor $FOREGROUND_COLOR "This script will guide you through the installation of Metabase on Openshift namespace With Specific To Oracle DB connection Over Encrypted Listeners. This process will download OC CLI on your desktop if it is not already on Path. Please enter a key to continue."
   timeout /t -1
   checkAndAddOCClientForWindows
   if($global:OC_ALIAS_REQUIRED -eq "true")
@@ -320,7 +320,7 @@ function setupBackupContainer
   oc tag "$NAMESPACE-tools/backup-postgres:v1" "$NAMESPACE-$ENVIRONMENT/backup-postgres:v1"
   oc -n "$NAMESPACE-$ENVIRONMENT" create configmap backup-conf --from-literal=backup.conf=$(Invoke-WebRequest https://raw.githubusercontent.com/bcgov/iit-arch/main/Metabase/openshift/postgres/backup/backup.conf)
   oc -n "$NAMESPACE-$ENVIRONMENT" label configmap backup-conf app=backup-container
-  oc -n "$NAMESPACE-$ENVIRONMENT" process -f https://raw.githubusercontent.com/bcgov/iit-arch/main/Metabase/openshift/postgres/backup/backup-deploy.yaml NAME=backup-postgres IMAGE_NAMESPACE="$NAMESPACE-$ENVIRONMENT" SOURCE_IMAGE_NAME=backup-postgres TAG_NAME=v1 BACKUP_VOLUME_NAME=backup-postgres-pvc -p BACKUP_VOLUME_SIZE=5Gi VERIFICATION_VOLUME_SIZE=5Gi ENVIRONMENT_NAME="$ENVIRONMENT" ENVIRONMENT_FRIENDLY_NAME='Metabase postgres DB Backups' | oc -n "$NAMESPACE-$ENVIRONMENT" create -f -
+  oc -n "$NAMESPACE-$ENVIRONMENT" process -f https://raw.githubusercontent.com/bcgov/iit-arch/main/Metabase/openshift/postgres/backup/backup-deploy.yaml NAME=backup-postgres IMAGE_NAMESPACE="$NAMESPACE-$ENVIRONMENT" SOURCE_IMAGE_NAME=backup-postgres TAG_NAME=v1 BACKUP_VOLUME_NAME=backup-postgres-pvc -p BACKUP_VOLUME_SIZE=5Gi -p VERIFICATION_VOLUME_SIZE=5Gi -p ENVIRONMENT_NAME="$ENVIRONMENT" -p ENVIRONMENT_FRIENDLY_NAME='Metabase postgres DB Backups' | oc -n "$NAMESPACE-$ENVIRONMENT" create -f -
 
 }
 
