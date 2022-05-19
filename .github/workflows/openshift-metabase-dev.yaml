@@ -152,6 +152,8 @@ jobs:
           # Otherwise, point this to your Dockerfile/Containerfile relative to the repository root.
           dockerfiles: |
             ./Metabase/openshift/.pipeline/Dockerfile.openshift
+          build-args: |
+            METABASE_VERSION=v0.43.1
 
       # https://github.com/redhat-actions/push-to-registry#readme
       - name: Push to registry
