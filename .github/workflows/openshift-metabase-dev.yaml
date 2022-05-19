@@ -216,7 +216,7 @@ jobs:
           oc process -f "https://raw.githubusercontent.com/bcgov/iit-arch/main/Metabase/openshift/postgres/postgres.yml"  -p NAMESPACE=${{ env.OPENSHIFT_NAMESPACE_NO_ENV }}-${{env.TARGET_ENV}} -p DB_PVC_SIZE=1Gi
           
           # Process and create secret 
-          oc process -f https://raw.githubusercontent.com/bcgov/${{ env.REPO_NAME }}/main/Metabase/openshift/metabase.secret.yaml" -p DB_HOST=${{ DB_HOST }} -p DB_PORT=${{ env.DB_PORT }} -p ADMIN_EMAIL=${{ env.METABASE_ADMIN_EMAIL }} \
+          oc process -f https://raw.githubusercontent.com/bcgov/${{ env.REPO_NAME }}/main/Metabase/openshift/metabase.secret.yaml" -p DB_HOST=${{ env.DB_HOST }} -p DB_PORT=${{ env.DB_PORT }} -p ADMIN_EMAIL=${{ env.METABASE_ADMIN_EMAIL }} \
           | oc create -f -
           
           # Process and apply deployment template
