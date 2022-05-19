@@ -177,7 +177,7 @@ jobs:
           # Or, perform a source-to-image build using https://github.com/redhat-actions/s2i-build
           # Otherwise, point this to your Dockerfile/Containerfile relative to the repository root.
           dockerfiles: |
-            https://github.com/BCDevOps/backup-container/blob/master/docker/Dockerfile
+            ./Metabase/openshift/backup-container/Dockerfile
 
       # https://github.com/redhat-actions/push-to-registry#readme
       - name: Push Backup Container to registry
