@@ -1,4 +1,4 @@
-# This image provides a postgres installation from which to run backups 
+# This image provides a postgres installation from which to run backups
 FROM centos/postgresql-12-centos7:20200917-804ef01
 
 # Change timezone to PST for convenience
@@ -8,13 +8,13 @@ ENV TZ=PST8PDT
 WORKDIR /
 
 # Load the backup scripts into the container (must be executable).
-COPY backup.* /
+COPY Metabase/openshift/backup-container/backup.* /
 
-COPY webhook-template.json /
+COPY Metabase/openshift/backup-container/webhook-template.json /
 
 # ========================================================================================================
 # Install go-crond (from https://github.com/BCDevOps/go-crond)
-#  - Adds some additional logging enhancements on top of the upstream project; 
+#  - Adds some additional logging enhancements on top of the upstream project;
 #    https://github.com/webdevops/go-crond
 #
 # CRON Jobs in OpenShift:
