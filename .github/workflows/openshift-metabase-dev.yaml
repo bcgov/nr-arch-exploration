@@ -242,23 +242,23 @@ jobs:
           curl -s https://raw.githubusercontent.com/bcgov/${{ env.REPO_NAME }}/main/Metabase/openshift/postgres/backup/openshift-config-map.sh
           
           oc process -f https://raw.githubusercontent.com/bcgov/${{ env.REPO_NAME }}/main/Metabase/openshift/postgres/backup/backup-deploy.yaml NAME=backup-postgres IMAGE_NAMESPACE=${{ env.OPENSHIFT_NAMESPACE_NO_ENV }}-${{env.TARGET_ENV}} SOURCE_IMAGE_NAME=backup-postgres TAG_NAME=v1 BACKUP_VOLUME_NAME=backup-postgres-pvc -p BACKUP_VOLUME_SIZE=1Gi -p VERIFICATION_VOLUME_SIZE=1Gi -p ENVIRONMENT_NAME=${{env.TARGET_ENV}} -p ENVIRONMENT_FRIENDLY_NAME='Metabase postgres DB Backups' \
-          | oc create -f -
+          | oc apply -f -
           
           # Process and Add network policy 
           oc process -f https://raw.githubusercontent.com/bcgov/${{ env.REPO_NAME }}/main/Metabase/openshift/metabase.np.yaml" \
-          | oc create -f -
+          | oc apply -f -
           
           # Process and Add Postgresql for Metabase
           oc process -f "https://raw.githubusercontent.com/bcgov/${{ env.REPO_NAME }}/main/Metabase/openshift/postgres/postgres.yml"  -p NAMESPACE=${{ env.OPENSHIFT_NAMESPACE_NO_ENV }}-${{env.TARGET_ENV}} -p DB_PVC_SIZE=1Gi \
-          | oc create -f -
+          | oc apply -f -
           
           # Process and create secret 
           oc process -f https://raw.githubusercontent.com/bcgov/${{ env.REPO_NAME }}/main/Metabase/openshift/metabase.secret.yaml" -p DB_HOST=${{ env.DB_HOST }} -p DB_PORT=${{ env.DB_PORT }} -p ADMIN_EMAIL=${{ env.METABASE_ADMIN_EMAIL }} \
-          | oc create -f -
+          | oc apply -f -
           
           # Process and apply deployment template
           oc process -f https://raw.githubusercontent.com/bcgov/${{ env.REPO_NAME }}/main/Metabase/openshift/metabase.dc.yaml -p NAMESPACE=${{ env.OPENSHIFT_NAMESPACE_NO_ENV }}-${{env.TARGET_ENV}} -p PREFIX=${{ env.METABASE_APP_PREFIX }} \
-          | oc create -f -
+          | oc apply -f -
           
           # Start rollout (if necessary) and follow it
           oc rollout latest dc/${{ env.APP_NAME }} 2> /dev/null \
