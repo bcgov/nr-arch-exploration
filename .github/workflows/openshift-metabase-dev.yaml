@@ -50,8 +50,6 @@ env:
   DB_PORT: ${{ secrets.DB_PORT }}
   MB_ADMIN_EMAIL: ${{ secrets.MB_ADMIN_EMAIL }}
   METABASE_APP_PREFIX: ${{ secrets.METABASE_APP_PREFIX }}
-  # 🖊️ EDIT to specify custom tags for the container image, or default tags will be generated below.
-  IMAGE_TAGS: ""
   DOCKER_ARTIFACTORY_REPO: docker-remote.artifacts.developer.gov.bc.ca
   ARTIFACTORY_REPO: artifacts.developer.gov.bc.ca
 
@@ -157,7 +155,7 @@ jobs:
         uses: docker/build-push-action@v2
         with:
           push: true
-          tags: "${{ env.IMAGE_REGISTRY }}/${{ github.repository }}/${{ env.APP_NAME }}:${{ env.IMAGE_TAGS }}"
+          tags: "${{ env.IMAGE_REGISTRY }}/${{ github.repository }}/${{ env.APP_NAME }}:latest"
           cache-from: type=gha
           cache-to: type=gha,mode=max
           file: |
@@ -239,7 +237,7 @@ jobs:
           # Login to OpenShift and select project
           oc login --token=${{ env.OPENSHIFT_TOKEN }} --server=${{ env.OPENSHIFT_SERVER }}
           
-          oc tag ${{ env.IMAGE_REGISTRY }}/${{ github.repository }}/${{ env.APP_NAME }}:${{ env.IMAGE_TAGS }} ${{ env.APP_NAME }}:${{ env.TAG }}
+          oc tag ${{ env.IMAGE_REGISTRY }}/${{ github.repository }}/${{ env.APP_NAME }}:latest ${{ env.APP_NAME }}:${{ env.TAG }}
           oc tag ${{ env.IMAGE_REGISTRY }}/${{ github.repository }}/postgres-backup:v1 backup-postgres:v1
           curl -s https://raw.githubusercontent.com/bcgov/${{ env.REPO_NAME }}/main/Metabase/openshift/postgres/backup/openshift-config-map.sh
           
