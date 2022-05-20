@@ -19,7 +19,7 @@ oc process -f "https://raw.githubusercontent.com/bcgov/${REPO_NAME}/main/Metabas
 | oc apply -f -
 
 # Process and create secret
-oc process -f "https://raw.githubusercontent.com/bcgov/${REPO_NAME}/main/Metabase/openshift/metabase.secret.yaml" -p DB_HOST="${DB_HOST}" -p DB_PORT="${DB_PORT}" -p ADMIN_EMAIL="${METABASE_ADMIN_EMAIL}" \
+oc process -f "https://raw.githubusercontent.com/bcgov/${REPO_NAME}/main/Metabase/openshift/metabase.secret.yaml" -p DB_HOST="${DB_HOST}" -p DB_PORT="${DB_PORT}" -p ADMIN_EMAIL="${MB_ADMIN_EMAIL}" \
 | oc apply -f -
 
 # Process and apply deployment template
