@@ -155,7 +155,7 @@ jobs:
         uses: docker/build-push-action@v2
         with:
           push: true
-          tags: "${{ env.IMAGE_REGISTRY }}/${{ github.repository }}/${{ env.APP_NAME }}:latest"
+          tags: "${{ env.IMAGE_REGISTRY }}/${{ env.APP_NAME }}:latest"
           cache-from: type=gha
           cache-to: type=gha,mode=max
           file: |
@@ -166,7 +166,7 @@ jobs:
         uses: docker/build-push-action@v2
         with:
           push: true
-          tags: "${{ env.IMAGE_REGISTRY }}/${{ github.repository }}/postgres-backup:v1"
+          tags: "${{ env.IMAGE_REGISTRY }}/postgres-backup:v1"
           cache-from: type=gha
           cache-to: type=gha,mode=max
           file: |
