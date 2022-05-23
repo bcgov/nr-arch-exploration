@@ -11,7 +11,6 @@ $global:OPENSHIFT_TOKEN=""
 $global:OPENSHIFT_SERVER=""
 $global:METABASE_ADMIN_EMAIL=""
 $global:FOREGROUND_COLOR="DarkGreen"
-$global:ARTIFACTORY_CREDS_PRESENT=""
 $global:METABASE_APP_PREFIX=""
 $global:BASE_URL="https://raw.githubusercontent.com/bcgov/iit-arch/main/Metabase/openshift"
 $global:DB_HOST=""
@@ -33,15 +32,8 @@ function main
   }
   getInputsFromUser
   loginToOpenshift
-  checkArtifactoryCreds
-  if($ARTIFACTORY_CREDS_PRESENT -eq "false")
-  {
-    Write-Host -ForegroundColor yellow "Artifactory Creds are not present. Lets set it up."
-    setupArtifactoryCreds
-  }
   addNetworkPolicy
   deployPostgres
-  buildMetabase
   deployMetabase
   setupBackupContainer
   exit 0
@@ -262,19 +254,7 @@ function setupArtifactoryCreds
 
   Write-Host -ForegroundColor $FOREGROUND_COLOR "Artifactory creds created."
 }
-function checkArtifactoryCreds
-{
-  $data = oc -n $NAMESPACE-tools get secret artifactory-creds -o json
-  if([string]::IsNullOrEmpty($data))
-  {
-    $global:ARTIFACTORY_CREDS_PRESENT = "false"
-  }
-  else
-  {
-    $global:ARTIFACTORY_CREDS_PRESENT="true"
-  }
 
-}
 
 function deployPostgres{
   try{
@@ -283,18 +263,6 @@ function deployPostgres{
     Write-Host -ForegroundColor red "Error deploying patroni. exiting."
     exit 1
   }
-}
-function buildMetabase
-{
-    oc tag -d "$NAMESPACE-tools/metabase:latest"
-    oc tag -d "$NAMESPACE-$ENVIRONMENT/metabase:latest"
-    oc process -n $NAMESPACE-tools -f "$BASE_URL/metabase.bc.yaml" -o yaml | oc apply -n $NAMESPACE-tools -f -
-    Write-Host -ForegroundColor cyan "Metabase Image is being created, grab a cup of coffee as this might take 3-4 minutes."
-    oc -n $NAMESPACE-tools start-build metabase --wait
-    Write-Host -ForegroundColor $FOREGROUND_COLOR "Metabase Image build is completed."
-    oc tag "$NAMESPACE-tools/metabase:latest" "$NAMESPACE-$ENVIRONMENT/metabase:latest"
-    Write-Host -ForegroundColor $FOREGROUND_COLOR "Metabase Image is tagged in $($NAMESPACE)-$($ENVIRONMENT)."
-    Write-Host -ForegroundColor cyan "Metabase secret is being created."
 }
 function addNetworkPolicy{
   try{
