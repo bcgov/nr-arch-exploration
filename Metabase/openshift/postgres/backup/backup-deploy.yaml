@@ -52,6 +52,22 @@ objects:
       webhook-url: ${WEBHOOK_URL}
       webhook-url-host: ${WEBHOOK_URL_HOST}
 
+  - apiVersion: v1
+    kind: ImageStream
+    metadata:
+      labels:
+        app: ${NAME}
+      name: ${NAME}
+    spec:
+      lookupPolicy:
+        local: false
+      tags:
+        - name: "v1"
+          from:
+            kind: DockerImage
+            name: "ghcr.io/bcgov/nr-arch-templates/postgres-backup:v1"
+          referencePolicy:
+            type: Local
   - kind: DeploymentConfig
     apiVersion: v1
     metadata:
