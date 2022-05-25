@@ -5,7 +5,7 @@ It also supports connection to oracle over encrypted listeners and secured port.
 
 **_Currently, only one host of oracle is supported, Connecting to multiple oracle hosts over encrypted listeners is not supported._**
 
-## Currently, there are 3 ways teams can deploy the metabase instance with postgres and backup to openshift namespace.
+## Currently, there are 2 ways teams can deploy the metabase instance with postgres and backup to openshift namespace.
 1. GitHub Actions.
 2. Powershell Script.
 3. Shell Script will be added in near future.
