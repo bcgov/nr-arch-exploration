@@ -100,32 +100,20 @@ function getEnvironment
 }
 function getOracleDBHost
 {
-  Write-Host -ForegroundColor $FOREGROUND_COLOR "Enter the oracle db host name, this is the DB Host which will be connected from the metabase instance. This is required."
+  Write-Host -ForegroundColor $FOREGROUND_COLOR "Enter the oracle db host name, this is the DB Host which will be connected from the metabase instance. If you are connecting to oracle DB over encrypted listeners, This is required."
   $data = Read-Host
   if (-not([string]::IsNullOrEmpty($data)))
   {
     $global:DB_HOST = $data.Trim()
   }
-  else
-  {
-    Write-Host -ForegroundColor red "oracle db host name is required."
-    getOracleDBHost
-  }
-
-
 }
 function getOracleDBPort
 {
-  Write-Host -ForegroundColor $FOREGROUND_COLOR "Enter the oracle db port number,this is the DB Port which will be connected from the metabase instance. This is required."
+  Write-Host -ForegroundColor $FOREGROUND_COLOR "Enter the oracle db port number,this is the DB Port which will be connected from the metabase instance. If you are connecting to oracle DB over encrypted listeners, This is required."
   $port = Read-Host
   if (-not([string]::IsNullOrEmpty($port)))
   {
     $global:DB_PORT = $port.Trim()
-  }
-  else
-  {
-    Write-Host -ForegroundColor red "oracle db port is required."
-    getOracleDBPort
   }
 }
 function getNamespace
@@ -140,34 +128,6 @@ function getNamespace
   {
     Write-Host -ForegroundColor red "Namespace is required."
     getNamespace
-  }
-}
-function getDockerUser
-{
-  Write-Host -ForegroundColor $FOREGROUND_COLOR "Enter the docker user name."
-  $DOCKER_USER = Read-Host
-  if (-not([string]::IsNullOrEmpty($DOCKER_USER)))
-  {
-    $global:DOCKER_USER = $DOCKER_USER.Trim()
-  }
-  else
-  {
-    Write-Host -ForegroundColor red "Docker user name is required."
-    getDockerUser
-  }
-}
-function getDockerPwd
-{
-  Write-Host -ForegroundColor $FOREGROUND_COLOR  "Enter the docker password."
-  $DOCKER_PWD = Read-Host
-  if (-not([string]::IsNullOrEmpty($DOCKER_PWD)))
-  {
-    $global:DOCKER_PWD = $DOCKER_PWD.Trim()
-  }
-  else
-  {
-    Write-Host -ForegroundColor red "Docker password is required."
-    getDockerPwd
   }
 }
 function getOpenShiftToken
@@ -235,25 +195,6 @@ function loginToOpenshift
   oc project $NAMESPACE-tools
   Write-Host -ForegroundColor $FOREGROUND_COLOR "Logged in to openshift."
 }
-function setupArtifactoryCreds
-{
-
-  Write-Host -ForegroundColor cyan "Go to 'tools' Environment of the openshift namespace, make sure you are an admin, on the left hand menu, expand workloads and click on secrets. click on the secret 'artifacts-default-****' once it opens , click on reveal values at the bottom right. That will give the user name and password which needs to be entered."
-  getDockerUser
-  getDockerPwd
-  Write-Host -ForegroundColor $FOREGROUND_COLOR "Setting up artifactory creds."
-  try
-  {
-    oc -n $NAMESPACE-tools create secret docker-registry artifactory-creds --docker-server=artifacts.developer.gov.bc.ca --docker-username=$DOCKER_USER --docker-password=$DOCKER_PWD --docker-email="admin@$NAMESPACE-$ENVIRONMENT.local"
-  }
-  catch
-  {
-    Write-Host -ForegroundColor red "Error setting up artifactory creds. exiting."
-    exit 1
-  }
-
-  Write-Host -ForegroundColor $FOREGROUND_COLOR "Artifactory creds created."
-}
 
 
 function deployPostgres{
@@ -282,13 +223,9 @@ function deployMetabase
 
 function setupBackupContainer
 {
-  oc process -n $NAMESPACE-tools -f "https://raw.githubusercontent.com/BCDevOps/backup-container/master/openshift/templates/backup/backup-build.yaml" -p NAME=backup-postgres OUTPUT_IMAGE_TAG=v1 | oc -n $NAMESPACE-tools create -f -
-  Write-Host -ForegroundColor cyan "Please make sure the build of Backup container is completed before pressing any key. Go to tools environment and check the build status of backup-postgres. you should see something like this: 'backup-postgres-{num}  complete'."
-  timeout /t -1
-  oc tag "$NAMESPACE-tools/backup-postgres:v1" "$NAMESPACE-$ENVIRONMENT/backup-postgres:v1"
   oc -n "$NAMESPACE-$ENVIRONMENT" create configmap backup-conf --from-literal=backup.conf=$(Invoke-WebRequest https://raw.githubusercontent.com/bcgov/iit-arch/main/Metabase/openshift/postgres/backup/backup.conf)
   oc -n "$NAMESPACE-$ENVIRONMENT" label configmap backup-conf app=backup-container
-  oc -n "$NAMESPACE-$ENVIRONMENT" process -f https://raw.githubusercontent.com/bcgov/iit-arch/main/Metabase/openshift/postgres/backup/backup-deploy.yaml NAME=backup-postgres IMAGE_NAMESPACE="$NAMESPACE-$ENVIRONMENT" SOURCE_IMAGE_NAME=backup-postgres TAG_NAME=v1 BACKUP_VOLUME_NAME=backup-postgres-pvc -p BACKUP_VOLUME_SIZE=5Gi -p VERIFICATION_VOLUME_SIZE=5Gi -p ENVIRONMENT_NAME="$ENVIRONMENT" -p ENVIRONMENT_FRIENDLY_NAME='Metabase postgres DB Backups' | oc -n "$NAMESPACE-$ENVIRONMENT" create -f -
+  oc -n "$NAMESPACE-$ENVIRONMENT" process -f https://raw.githubusercontent.com/bcgov/iit-arch/main/Metabase/openshift/postgres/backup/backup-deploy.yaml NAME=backup-postgres IMAGE_NAMESPACE="$NAMESPACE-$ENVIRONMENT" SOURCE_IMAGE_NAME=backup-postgres TAG_NAME=v1 BACKUP_VOLUME_NAME=backup-postgres-pvc -p BACKUP_VOLUME_SIZE=1Gi -p VERIFICATION_VOLUME_SIZE=1Gi -p ENVIRONMENT_NAME="$ENVIRONMENT" -p ENVIRONMENT_FRIENDLY_NAME='Metabase postgres DB Backups' | oc -n "$NAMESPACE-$ENVIRONMENT" create -f -
 
 }
 
