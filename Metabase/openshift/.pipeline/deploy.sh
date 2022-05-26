@@ -3,7 +3,14 @@ set +e -ux
 # Login to OpenShift and select project
 oc login --token="${OPENSHIFT_TOKEN}" --server="${OPENSHIFT_SERVER}"
 
-curl -s "https://raw.githubusercontent.com/bcgov/${REPO_NAME}/main/Metabase/openshift/postgres/backup/openshift-config-map.sh"
+BACKUP_CONF="postgres=metabase-postgres:5432/metabase-postgres
+
+0 1 * * * default ./backup.sh -s
+0 4 * * * default ./backup.sh -s -v all
+"
+
+oc create configmap backup-conf --from-literal=backup.conf="$BACKUP_CONF" | oc apply -f -
+oc label configmap backup-conf app=backup-container
 oc process -f https://raw.githubusercontent.com/bcgov/"${REPO_NAME}"/main/Metabase/openshift/postgres/backup/backup-deploy.yaml NAME=backup-postgres IMAGE_NAMESPACE="${OPENSHIFT_NAMESPACE_NO_ENV}"-"${TARGET_ENV}" SOURCE_IMAGE_NAME=backup-postgres TAG_NAME=v1 BACKUP_VOLUME_NAME=backup-postgres-pvc -p BACKUP_VOLUME_SIZE=1Gi -p VERIFICATION_VOLUME_SIZE=1Gi -p ENVIRONMENT_NAME="${TARGET_ENV}" -p ENVIRONMENT_FRIENDLY_NAME='Metabase postgres DB Backups' \
 | oc apply -f -
 
