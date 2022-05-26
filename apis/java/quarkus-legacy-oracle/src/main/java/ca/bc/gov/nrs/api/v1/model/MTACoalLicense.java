@@ -19,6 +19,22 @@ public class MTACoalLicense extends PanacheEntityBase {
   @Column(name = "LOCATION_DESCRIPTION")
   String locationDescription;
 
+  @Column(name = "APPLICATION_ID")
+  Integer applicationId;
+
+  @Column(name = "LAND_DISTRICT_CHR")
+  String landDistrictChr;
+
+  @Column(name = "REGION_CODE")
+  String regionCode;
+
+  @Column(name = "RENTAL_ISSUE_DATE")
+  LocalDate rentalIssueDate;
+
+  @Column(name = "TERM_EXPIRY_DATE")
+  LocalDate termExpiryDate;
+
+
   @Override
   public String toString() {
     return "MTACoalLicense{" +
@@ -87,21 +103,5 @@ public class MTACoalLicense extends PanacheEntityBase {
   public void setTermExpiryDate(LocalDate termExpiryDate) {
     this.termExpiryDate = termExpiryDate;
   }
-
-  @Column(name = "APPLICATION_ID")
-  Integer applicationId;
-
-  @Column(name = "LAND_DISTRICT_CHR")
-  String landDistrictChr;
-
-  @Column(name = "REGION_CODE")
-  String regionCode;
-
-  @Column(name = "RENTAL_ISSUE_DATE")
-  LocalDate rentalIssueDate;
-
-  @Column(name = "TERM_EXPIRY_DATE")
-  LocalDate termExpiryDate;
-
 
 }
