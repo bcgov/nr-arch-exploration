@@ -164,7 +164,7 @@ jobs:
       - name: Build and push Application image
         uses: docker/build-push-action@v3
         with:
-          context: "{{defaultContext}}"
+          context: .
           push: true
           tags: |
             "${{ env.IMAGE_REGISTRY }}/${{ env.APP_NAME }}:latest"
