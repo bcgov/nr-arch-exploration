@@ -12,8 +12,10 @@ COLOUR_PROMPT="\033[1;36m"
 COLOUR_WARNING="\033[1;33m"
 COLOUR_SELECTION="\033[1;34m"
 COLOUR_DEFAULT="\033[1;37m"
+BASE_URL="https://raw.githubusercontent.com/bcgov/nr-arch-templates/main/Metabase/openshift"
 main() {
   usage
+  checkAndAddOcClientForLinux
 }
 usage() {
   echo "----------------------------------------------------------------------"

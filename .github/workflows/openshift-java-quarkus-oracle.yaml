@@ -73,7 +73,6 @@ env:
   MAX_MEM: "350Mi"
 
 on:
-  # https://docs.github.com/en/actions/reference/events-that-trigger-workflows
   workflow_dispatch:
   pull_request:
     branches:
@@ -135,20 +134,21 @@ jobs:
 
       - name: Check out repository
         uses: actions/checkout@v2
-
-
-      - name: Determine image tags
-        if: env.IMAGE_TAGS == ''
-        run: |
-          echo "IMAGE_TAGS=latest ${GITHUB_SHA::12}" | tee -a $GITHUB_ENV
-
-      - name: Login to Docker Hub
-        uses: docker/login-action@v1
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v2
+      - name: Cache Docker layers
+        uses: actions/cache@v3
         with:
-          registry: ${{ env.DOCKER_ARTIFACTORY_REPO }}
-          username: ${{ secrets.DOCKER_HUB_USERNAME }}
-          password: ${{ secrets.DOCKER_HUB_ACCESS_TOKEN }}
-
+          path: /tmp/.buildx-cache
+          key: ${{ runner.os }}-buildx-${{ github.sha }}
+          restore-keys: |
+            ${{ runner.os }}-buildx-
+      - name: Log in to the Container registry
+        uses: docker/login-action@v2
+        with:
+          registry: ${{ env.IMAGE_REGISTRY }}
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
       - uses: actions/setup-java@v1
         with:
           java-version: 17
@@ -161,46 +161,27 @@ jobs:
             ${{ runner.os }}-maven-
       - name: Build application
         run: mvn clean package
-      - name: Build from Dockerfile
-        id: build-image
-        uses: redhat-actions/buildah-build@v2
+      - name: Build and push Application image
+        uses: docker/build-push-action@v2
         with:
-          image: ${{ env.APP_NAME }}
-          tags: ${{ env.IMAGE_TAGS }}
-
-          # If you don't have a Dockerfile/Containerfile, refer to https://github.com/redhat-actions/buildah-build#scratch-build-inputs
-          # Or, perform a source-to-image build using https://github.com/redhat-actions/s2i-build
-          # Otherwise, point this to your Dockerfile/Containerfile relative to the repository root.
-          dockerfiles: |
+          push: true
+          tags: |
+            "${{ env.IMAGE_REGISTRY }}/${{ env.APP_NAME }}:latest"
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+          file: |
             ./apis/java/quarkus-legacy-oracle/.pipeline/openshift/Dockerfile
-
-      # https://github.com/redhat-actions/push-to-registry#readme
-      - name: Push to registry
-        id: push-image
-        uses: redhat-actions/push-to-registry@v2
-        with:
-          image: ${{ steps.build-image.outputs.image }}
-          tags: ${{ steps.build-image.outputs.tags }}
-          registry: ${{ env.IMAGE_REGISTRY }}
-          username: ${{ env.IMAGE_REGISTRY_USER }}
-          password: ${{ env.IMAGE_REGISTRY_PASSWORD }}
-
-      # The path the image was pushed to is now stored in ${{ steps.push-image.outputs.registry-path }}
 
       - name: Install oc
         uses: redhat-actions/openshift-tools-installer@v1
         with:
           oc: 4
-
-        # https://github.com/redhat-actions/oc-login#readme
       - uses: actions/checkout@v2
       - name: Deploy
         run: |
           set +e -ux
           # Login to OpenShift and select project
           oc login --token=${{ env.OPENSHIFT_TOKEN }} --server=${{ env.OPENSHIFT_SERVER }}
-          
-          oc tag ${{ steps.push-image.outputs.registry-path }} ${{ env.APP_NAME }}:${{ env.TAG }}
           
           # Process and apply deployment template
           oc process -f https://raw.githubusercontent.com/bcgov/${{ env.REPO_NAME }}/main/apis/java/quarkus-legacy-oracle/.pipeline/openshift/openshift-deployment-config.yml -p APP_NAME=${{ env.APP_NAME }} -p REPO_NAME=${{ env.REPO_NAME }} -p JOB_NAME=${{ env.JOB_NAME }} -p NAMESPACE=${{ env.OPENSHIFT_NAMESPACE_NO_ENV }}-${{env.TARGET_ENV}} -p TAG=${{ env.TAG }} -p MIN_REPLICAS=${{ env.MIN_REPLICAS }} -p MAX_REPLICAS=${{ env.MAX_REPLICAS }} -p MIN_CPU=${{ env.MIN_CPU }} -p MAX_CPU=${{ env.MAX_CPU }} -p MIN_MEM=${{ env.MIN_MEM }} -p MAX_MEM=${{ env.MAX_MEM }} \

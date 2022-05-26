@@ -12,11 +12,10 @@ $global:OPENSHIFT_SERVER=""
 $global:METABASE_ADMIN_EMAIL=""
 $global:FOREGROUND_COLOR="DarkGreen"
 $global:METABASE_APP_PREFIX=""
-$global:BASE_URL="https://raw.githubusercontent.com/bcgov/iit-arch/main/Metabase/openshift"
+$global:BASE_URL="https://raw.githubusercontent.com/bcgov/nr-arch-templates/main/Metabase/openshift"
 $global:DB_HOST=""
 $global:DB_PORT=""
 $global:OC_ALIAS_REQUIRED="false"
-$global:BACK_UP_CONTAINER_BASE_URL="https://raw.githubusercontent.com/BCDevOps/backup-container/master/openshift/templates/backup"
 
 #This is our main function , which is the entry point of the script.
 function main
