@@ -183,7 +183,7 @@ jobs:
           set +e -ux
           # Login to OpenShift and select project
           oc login --token=${{ env.OPENSHIFT_TOKEN }} --server=${{ env.OPENSHIFT_SERVER }}
-          
+          oc tag -d ${{ env.APP_NAME }}:latest
           # Process and apply deployment template
           oc process -f https://raw.githubusercontent.com/bcgov/${{ env.REPO_NAME }}/main/apis/java/quarkus-legacy-oracle/.pipeline/openshift/openshift-deployment-config.yml -p APP_NAME=${{ env.APP_NAME }} -p REPO_NAME=${{ env.REPO_NAME }} -p JOB_NAME=${{ env.JOB_NAME }} -p NAMESPACE=${{ env.OPENSHIFT_NAMESPACE_NO_ENV }}-${{env.TARGET_ENV}} -p TAG=${{ env.TAG }} -p MIN_REPLICAS=${{ env.MIN_REPLICAS }} -p MAX_REPLICAS=${{ env.MAX_REPLICAS }} -p MIN_CPU=${{ env.MIN_CPU }} -p MAX_CPU=${{ env.MAX_CPU }} -p MIN_MEM=${{ env.MIN_MEM }} -p MAX_MEM=${{ env.MAX_MEM }} \
           | oc create -f -
