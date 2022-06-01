@@ -41,10 +41,18 @@
 
 <script setup lang="ts">
 import {onMounted} from "vue";
-
-const appTitle = import.meta.env.VITE_APP_TITLE;
+import axios from 'axios';
 onMounted(() => {
-console.log(appTitle);
+  const apiAxios = axios.create();
+  apiAxios.get('/config')
+    .then(function (response) {
+      // handle success
+      console.log(response);
+    })
+    .catch(function (error) {
+      // handle error
+      console.error(error);
+    })
 });
 </script>
 

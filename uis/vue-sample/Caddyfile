@@ -4,11 +4,13 @@
 }
 
 :2015
-{$VITE_APP_TITLE=env.VITE_APP_TITLE}
 root * /srv
 
 file_server
-
+respond /config 200 {
+        body `{"APP_TITLE":{$VITE_APP_TITLE}}`
+        close
+}
 @www_host {
         host www.{$HOST_ROUTE}
 }
