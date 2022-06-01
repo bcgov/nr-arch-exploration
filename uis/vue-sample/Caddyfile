@@ -4,7 +4,7 @@
 }
 
 :2015
-{env.*}
+{$VITE_APP_TITLE=env.VITE_APP_TITLE}
 root * /srv
 
 file_server
