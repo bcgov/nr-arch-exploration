@@ -40,9 +40,11 @@
 
 
 <script setup lang="ts">
-import {onMounted} from 'vue';
+import {onMounted} from "vue";
+
+const appTitle = import.meta.env.VITE_APP_TITLE;
 onMounted(() => {
-console.log(process.env.APP_TITLE);
+console.log(appTitle);
 });
 </script>
 
