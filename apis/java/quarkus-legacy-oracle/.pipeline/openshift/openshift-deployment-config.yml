@@ -46,22 +46,6 @@ parameters:
 
 objects:
   - apiVersion: v1
-    kind: ImageStream
-    metadata:
-      labels:
-        app: "${APP_NAME}"
-      name: "${APP_NAME}"
-    spec:
-      lookupPolicy:
-        local: false
-      tags:
-        - name: "latest"
-          from:
-            kind: DockerImage
-            name: "ghcr.io/bcgov/nr-arch-templates/quarkus-api-oracle:latest"
-          referencePolicy:
-            type: Local
-  - apiVersion: v1
     kind: DeploymentConfig
     metadata:
       labels:
