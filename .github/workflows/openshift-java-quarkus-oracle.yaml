@@ -65,10 +65,10 @@ env:
   NAMESPACE: ${{ secrets.NAMESPACE_NO_ENV }}
   TAG: "latest"
   TARGET_ENV: "dev"
-  MIN_REPLICAS: "1"
-  MAX_REPLICAS: "1"
+  MIN_REPLICAS: "2"
+  MAX_REPLICAS: "2"
   MIN_CPU: "50m"
-  MAX_CPU: "500m"
+  MAX_CPU: "1000m"
   MIN_MEM: "125Mi"
   MAX_MEM: "350Mi"
 
