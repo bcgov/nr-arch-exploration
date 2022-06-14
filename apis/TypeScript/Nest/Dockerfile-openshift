@@ -4,6 +4,6 @@ COPY ./apis/TypeScript/Nest .
 
 RUN printf "npm run typeorm migration:run\nexport NODE_OPTIONS=--max_old_space_size=250\nnode dist/src/main\n" > entrypoint.sh
 
-
+RUN chmod -R 777 /usr/src/app
 EXPOSE 8000
 CMD ["/bin/sh", "entrypoint.sh"]
