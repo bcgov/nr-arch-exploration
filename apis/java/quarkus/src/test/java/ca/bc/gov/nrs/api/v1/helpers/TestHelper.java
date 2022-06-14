@@ -6,6 +6,7 @@ import io.quarkus.test.h2.H2DatabaseTestResource;
 import io.quarkus.test.junit.QuarkusTest;
 import io.quarkus.test.security.TestSecurity;
 
+import javax.enterprise.context.ApplicationScoped;
 import javax.transaction.Transactional;
 import java.time.LocalDate;
 
@@ -15,6 +16,7 @@ import java.time.LocalDate;
 @QuarkusTest
 @QuarkusTestResource(H2DatabaseTestResource.class)
 @TestSecurity(authorizationEnabled = false)
+@ApplicationScoped
 public class TestHelper {
 
   @Transactional(Transactional.TxType.REQUIRES_NEW)

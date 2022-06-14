@@ -18,8 +18,7 @@ import java.util.UUID;
 @Consumes(MediaType.APPLICATION_JSON)
 @RolesAllowed("**")
 public class EmployeeEndpoint {
-  @Inject
-  JsonWebToken accessToken;
+
   @GET
   @Transactional
   @Path("/{id}")

@@ -19,7 +19,7 @@ import java.util.List;
 public class MtaCoalLicenseGraphQLEndpoint {
 
   @Query("CoalLicense_ByID")
-  @Description("Get Employees By Page number and size.")
+  @Description("Get MTA Coal License By ID.")
   @Transactional
   @Path("/{id}")
   @RolesAllowed("**")
@@ -28,7 +28,7 @@ public class MtaCoalLicenseGraphQLEndpoint {
   }
 
   @Query("Paginated_CoalLicenses")
-  @Description("Get Employees By Page number and size.")
+  @Description("Get MTA Coal Licenses By Page number and size.")
   @Transactional
   @RolesAllowed("**")
   public List<MTACoalLicense> getMTACoalLicenses(@Name("page") Integer page, @Name("size") Integer size) {

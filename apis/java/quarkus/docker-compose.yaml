@@ -2,9 +2,9 @@ version: "2.3"
 
 services:
   quarkus-service:
-    cpus: 0.25
+    cpus: 2
     build:
-      context: ../../..
+      context: ../quarkus
       dockerfile: Dockerfile
     image: quarkus-service:latest
     mem_limit: 128m
@@ -15,9 +15,9 @@ services:
       - QUARKUS_DATASOURCE_JDBC_PASSWORD=quarkus123
       - CONSOLE_LOG_LEVEL=INFO
       - FILE_LOG_LEVEL=INFO
-      - OIDC_AUTH_SERVER_URL=http://quarkus-keycloak:8190/auth/realms/master #secret
+      - OIDC_AUTH_SERVER_URL=https://dev.oidc.gov.bc.ca/auth/realms/ichqx89w #secret
     ports:
-      - "8000:8000"  # the HTTP endpoint
+      - "7997:8000"  # the HTTP endpoint
     depends_on:
       quarkus-db:
         condition: service_healthy
