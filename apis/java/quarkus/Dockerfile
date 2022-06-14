@@ -14,10 +14,10 @@ ARG DEPENDENCY=/workspace/app
 # Configure the JAVA_OPTIONS, you can add -XshowSettings:vm to also display the heap size.
 ENV JAVA_OPTIONS="-Dquarkus.http.host=0.0.0.0 -Djava.util.logging.manager=org.jboss.logmanager.LogManager"
 
-COPY --chown=1001 --from=build ${DEPENDENCY}/target/quarkus-app/lib/ /deployments/lib/
-COPY --chown=1001 --from=build ${DEPENDENCY}/target/quarkus-app/*.jar /deployments/
-COPY --chown=1001 --from=build ${DEPENDENCY}/target/quarkus-app/app/ /deployments/app/
-COPY --chown=1001 --from=build ${DEPENDENCY}/target/quarkus-app/quarkus/ /deployments/quarkus/
+COPY --chown=185 --from=build ${DEPENDENCY}/target/quarkus-app/lib/ /deployments/lib/
+COPY --chown=185 --from=build ${DEPENDENCY}/target/quarkus-app/*.jar /deployments/
+COPY --chown=185 --from=build ${DEPENDENCY}/target/quarkus-app/app/ /deployments/app/
+COPY --chown=185 --from=build ${DEPENDENCY}/target/quarkus-app/quarkus/ /deployments/quarkus/
 
 EXPOSE 8000
 USER 185
