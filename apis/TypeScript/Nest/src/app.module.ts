@@ -4,6 +4,7 @@ import { AppService as AppServiceV1 } from './v1/service/app.service';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { ConfigModule } from '@nestjs/config';
 import { UsersModule } from './v1/modules/user.module';
+
 import {
   AuthGuard,
   KeycloakConnectModule,
@@ -13,6 +14,9 @@ import {
 import { APP_GUARD } from '@nestjs/core';
 import { TerminusModule } from '@nestjs/terminus';
 import { HealthController } from './health/health.controller';
+import { ApolloDriver, ApolloDriverConfig } from '@nestjs/apollo';
+import { GraphQLModule } from '@nestjs/graphql';
+import { DirectiveLocation, GraphQLDirective} from "graphql";
 
 @Module({
   imports: [
@@ -41,6 +45,19 @@ import { HealthController } from './health/health.controller';
     }),
     UsersModule,
     TerminusModule,
+    GraphQLModule.forRoot<ApolloDriverConfig>({
+      driver: ApolloDriver,
+      autoSchemaFile: 'schema.gql',
+      installSubscriptionHandlers: true,
+      buildSchemaOptions: {
+        directives: [
+          new GraphQLDirective({
+            name: 'upper',
+            locations: [DirectiveLocation.FIELD_DEFINITION],
+          }),
+        ],
+      },
+    }),
   ],
   controllers: [AppControllerV1, HealthController],
   providers: [
@@ -54,5 +71,6 @@ import { HealthController } from './health/health.controller';
     },
     AppServiceV1,
   ],
+
 })
 export class AppModule {}

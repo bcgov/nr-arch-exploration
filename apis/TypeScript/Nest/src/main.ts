@@ -10,7 +10,9 @@ async function bootstrap() {
   const app = await NestFactory.create(AppModule, {
     logger: ['verbose'],
   });
-  app.use(helmet());
+  app.use(
+    helmet({ contentSecurityPolicy: false, crossOriginEmbedderPolicy: false }),
+  );
   app.enableCors();
   app.enableShutdownHooks();
   const config = new DocumentBuilder()
