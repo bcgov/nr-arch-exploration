@@ -200,7 +200,7 @@ jobs:
           set +e -ux
           # Login to OpenShift and select project
           oc login --token=${{ env.OPENSHIFT_TOKEN }} --server=${{ env.OPENSHIFT_SERVER }}
-          
+          oc tag -d ${{ env.APP_NAME }}:${{ env.TAG }}
           oc tag ${{ steps.push-image.outputs.registry-path }} ${{ env.APP_NAME }}:${{ env.TAG }}
           
           # Process and apply deployment template
