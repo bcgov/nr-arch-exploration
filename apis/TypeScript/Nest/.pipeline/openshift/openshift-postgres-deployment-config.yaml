@@ -80,7 +80,7 @@ objects:
         app: "${APP_NAME}-postgres"
       name: "${APP_NAME}-postgres"
     spec:
-      replicas: ${{MIN_REPLICAS}}
+      replicas: 1
       selector:
         app: "${APP_NAME}-postgres"
         deploymentConfig: "${APP_NAME}-postgres"

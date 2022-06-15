@@ -176,7 +176,7 @@ objects:
           protocol: TCP
       selector:
         app: "${APP_NAME}"
-  - apiVersion: autoscaling/v2beta1
+  - apiVersion: autoscaling/v1
     kind: HorizontalPodAutoscaler
     metadata:
       name: "${APP_NAME}-cpu-autoscaler"
