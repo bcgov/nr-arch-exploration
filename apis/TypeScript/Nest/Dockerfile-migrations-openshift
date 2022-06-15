@@ -1,5 +1,6 @@
 FROM node:lts-alpine
 WORKDIR /usr/src/app
 COPY ./apis/TypeScript/Nest .
-RUN npm install -g typeorm
-CMD["typeorm","migration:run"]
+#COPY . .
+RUN npm install -g typeorm && npm install -g ts-node
+CMD ["/bin/sh", "entrypoint.sh"]
