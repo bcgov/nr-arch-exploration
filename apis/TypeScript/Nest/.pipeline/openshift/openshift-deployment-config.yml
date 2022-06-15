@@ -137,7 +137,7 @@ objects:
                 successThreshold: 1
               livenessProbe:
                 httpGet:
-                  path: /q/health
+                  path: /health
                   port: 8000
                 initialDelaySeconds: 180
                 periodSeconds: 30
@@ -178,6 +178,36 @@ objects:
               envFrom:
                 - configMapRef:
                     name: "${APP_NAME}-config-map"
+          initContainers:
+            - name: nest-api-db-migration
+              image: "image-registry.openshift-image-registry.svc:5000/${NAMESPACE}/${APP_NAME}-migration:${TAG}"
+              env:
+                - name: DB_HOST
+                  value: nest-api-postgres
+                - name: DB_PORT
+                  value: '5432'
+                - name: DB_USER
+                  valueFrom:
+                    secretKeyRef:
+                      name: nest-api-secret
+                      key: database-user
+                - name: DB
+                  valueFrom:
+                    secretKeyRef:
+                      name: nest-api-secret
+                      key: database-name
+                - name: DB_PASSWORD
+                  valueFrom:
+                    secretKeyRef:
+                      name: nest-api-secret
+                      key: database-password
+              resources:
+                limits:
+                  cpu: "1"
+                  memory: 500Mi
+                requests:
+                  cpu: 500m
+                  memory: 250Mi
           volumes:
             - name: tls-certs
               secret:

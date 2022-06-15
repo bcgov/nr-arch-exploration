@@ -1,4 +1,4 @@
-import { Module } from '@nestjs/common';
+import { MiddlewareConsumer, Module, NestModule } from '@nestjs/common';
 import { AppControllerV1 } from './v1/controllers/app.controller';
 import { AppService as AppServiceV1 } from './v1/service/app.service';
 import { TypeOrmModule } from '@nestjs/typeorm';
@@ -16,7 +16,8 @@ import { TerminusModule } from '@nestjs/terminus';
 import { HealthController } from './health/health.controller';
 import { ApolloDriver, ApolloDriverConfig } from '@nestjs/apollo';
 import { GraphQLModule } from '@nestjs/graphql';
-import { DirectiveLocation, GraphQLDirective} from "graphql";
+import { DirectiveLocation, GraphQLDirective } from 'graphql';
+import { LoggerMiddleware } from './middlewares/logger';
 
 @Module({
   imports: [
@@ -71,6 +72,9 @@ import { DirectiveLocation, GraphQLDirective} from "graphql";
     },
     AppServiceV1,
   ],
-
 })
-export class AppModule {}
+export class AppModule implements NestModule {
+  configure(consumer: MiddlewareConsumer): void {
+    consumer.apply(LoggerMiddleware).forRoutes('*');
+  }
+}

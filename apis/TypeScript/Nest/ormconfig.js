@@ -1,6 +1,5 @@
-import { ConnectionOptions } from 'typeorm';
-
-const config: ConnectionOptions = {
+'use strict';
+const config = {
   type: 'postgres',
   host: process.env.DB_HOST,
   port: Number(process.env.DB_PORT),
@@ -20,4 +19,4 @@ const config: ConnectionOptions = {
     connectionTimeoutMillis: 30000,
   },
 };
-export = config;
+module.exports = config;
