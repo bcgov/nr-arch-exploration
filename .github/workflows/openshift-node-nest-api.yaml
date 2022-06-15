@@ -43,7 +43,7 @@ env:
 
   # 🖊️ EDIT to change the image registry settings.
   # Registries such as GHCR, Quay.io, and Docker Hub are supported.
-  IMAGE_REGISTRY: ghcr.io/${{ github.repository_owner }}
+  IMAGE_REGISTRY: ghcr.io/${{ github.repository_owner }}/nr-arch-templates
   IMAGE_REGISTRY_USER: ${{ github.actor }}
   IMAGE_REGISTRY_PASSWORD: ${{ github.token }}
   OIDC_AUTH_SERVER_URL: ${{ secrets.OIDC_AUTH_SERVER_URL }}
@@ -158,49 +158,44 @@ jobs:
         run: npm run test
       - name: Build Prod artifact
         run: npm run build
-      - name: Build Application Image from Dockerfile
-        id: build-image
-        uses: redhat-actions/buildah-build@v2
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v2
+      - name: Cache Docker layers
+        uses: actions/cache@v3
         with:
-          image: ${{ env.APP_NAME }}
-          tags: ${{ env.IMAGE_TAGS }}
-
-          # If you don't have a Dockerfile/Containerfile, refer to https://github.com/redhat-actions/buildah-build#scratch-build-inputs
-          # Or, perform a source-to-image build using https://github.com/redhat-actions/s2i-build
-          # Otherwise, point this to your Dockerfile/Containerfile relative to the repository root.
-          dockerfiles: |
+          path: /tmp/.buildx-cache
+          key: ${{ runner.os }}-buildx-${{ github.sha }}
+          restore-keys: |
+            ${{ runner.os }}-buildx-
+      - name: Log in to the Container registry
+        uses: docker/login-action@v2
+        with:
+          registry: ${{ env.IMAGE_REGISTRY }}
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+      - name: Build and push Application image
+        uses: docker/build-push-action@v2
+        with:
+          context: .
+          push: true
+          tags: |
+            "${{ env.IMAGE_REGISTRY }}/${{ env.APP_NAME }}:latest"
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+          file: |
             ./apis/TypeScript/Nest/Dockerfile-openshift
-      - name: Build Migration Image from Dockerfile
-        id: build-migration-image
-        uses: redhat-actions/buildah-build@v2
+      - name: Build and push Migration image
+        uses: docker/build-push-action@v2
         with:
-          image: "${{ env.APP_NAME }}-migration"
-          tags: ${{ env.IMAGE_TAGS }}
-
-          # If you don't have a Dockerfile/Containerfile, refer to https://github.com/redhat-actions/buildah-build#scratch-build-inputs
-          # Or, perform a source-to-image build using https://github.com/redhat-actions/s2i-build
-          # Otherwise, point this to your Dockerfile/Containerfile relative to the repository root.
-          dockerfiles: |
+          context: .
+          push: true
+          tags: |
+            "${{ env.IMAGE_REGISTRY }}/${{ env.APP_NAME }}-migration:latest"
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+          file: |
             ./apis/TypeScript/Nest/Dockerfile-migrations-openshift
-      # https://github.com/redhat-actions/push-to-registry#readme
-      - name: Push Application Image to registry
-        id: push-application-image
-        uses: redhat-actions/push-to-registry@v2
-        with:
-          image: ${{ steps.build-image.outputs.image }}
-          tags: ${{ steps.build-image.outputs.tags }}
-          registry: ${{ env.IMAGE_REGISTRY }}
-          username: ${{ env.IMAGE_REGISTRY_USER }}
-          password: ${{ env.IMAGE_REGISTRY_PASSWORD }}
-      - name: Push Migration Image to registry
-        id: push-migration-image
-        uses: redhat-actions/push-to-registry@v2
-        with:
-          image: ${{ steps.build-migration-image.outputs.image }}
-          tags: ${{ steps.build-migration-image.outputs.tags }}
-          registry: ${{ env.IMAGE_REGISTRY }}
-          username: ${{ env.IMAGE_REGISTRY_USER }}
-          password: ${{ env.IMAGE_REGISTRY_PASSWORD }}
+     
 
       # The path the image was pushed to is now stored in ${{ steps.push-image.outputs.registry-path }}
 
@@ -217,8 +212,8 @@ jobs:
           # Login to OpenShift and select project
           oc login --token=${{ env.OPENSHIFT_TOKEN }} --server=${{ env.OPENSHIFT_SERVER }}
           
-          oc tag ${{ steps.push-application-image.outputs.registry-path }} ${{ env.APP_NAME }}:${{ env.TAG }}
-          oc tag ${{ steps.push-migration-image.outputs.registry-path }} ${{ env.APP_NAME }}-migration:${{ env.TAG }}
+          oc tag ${{ env.IMAGE_REGISTRY }}/${{ env.APP_NAME }}:latest ${{ env.APP_NAME }}:${{ env.TAG }}
+          oc tag ${{ env.IMAGE_REGISTRY }}/${{ env.APP_NAME }}-migration:latest ${{ env.APP_NAME }}-migration:${{ env.TAG }}
           
           # Process and create postgres deployment template
           oc process -f https://raw.githubusercontent.com/bcgov/iit-arch/main/apis/TypeScript/Nest/.pipeline/openshift/openshift-postgres-deployment-config.yaml -p APP_NAME=${{ env.APP_NAME }} -p REPO_NAME=${{ env.REPO_NAME }} -p JOB_NAME=${{ env.JOB_NAME }} -p NAMESPACE=${{ env.OPENSHIFT_NAMESPACE_NO_ENV }}-${{env.TARGET_ENV}} \
