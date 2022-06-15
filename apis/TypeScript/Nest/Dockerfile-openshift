@@ -1,6 +1,6 @@
 FROM node:lts-alpine
 WORKDIR /usr/src/app
-COPY ./apis/TypeScript/Nest .
+COPY apis/TypeScript/Nest .
 RUN export NODE_OPTIONS="--max-old-space-size=200"
 RUN chmod -R 777 /usr/src/app
 EXPOSE 8000
