@@ -3,4 +3,4 @@ WORKDIR /usr/src/app
 COPY ./apis/TypeScript/Nest .
 #COPY . .
 RUN npm install -g typeorm && npm install -g ts-node
-CMD ["/bin/sh", "entrypoint.sh"]
+CMD ["/bin/sh", "migration.sh"]
