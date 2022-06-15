@@ -25,7 +25,7 @@ ARG GOCROND_VERSION=0.6.3
 ADD https://github.com/$SOURCE_REPO/go-crond/releases/download/$GOCROND_VERSION/go-crond-64-linux /usr/bin/go-crond
 
 USER root
-RUN chmod 777 -R /
+RUN chmod 777 backup.* && chmod 777 webhook-template.json
 RUN chmod +x /usr/bin/go-crond
 # ========================================================================================================
 
