@@ -221,7 +221,7 @@ jobs:
           oc tag ${{ steps.push-migration-image.outputs.registry-path }} ${{ env.APP_NAME }}-migration:${{ env.TAG }}
           
           # Process and create postgres deployment template
-          oc process -f https://raw.githubusercontent.com/bcgov/iit-arch/main/apis/TypeScript/Nest/.pipeline/openshift/openshift-postgres-deployment-config.yml -p APP_NAME=${{ env.APP_NAME }} -p REPO_NAME=${{ env.REPO_NAME }} -p JOB_NAME=${{ env.JOB_NAME }} -p NAMESPACE=${{ env.OPENSHIFT_NAMESPACE_NO_ENV }}-${{env.TARGET_ENV}} -p TAG=${{ env.TAG }} \
+          oc process -f https://raw.githubusercontent.com/bcgov/iit-arch/main/apis/TypeScript/Nest/.pipeline/openshift/openshift-postgres-deployment-config.yaml -p APP_NAME=${{ env.APP_NAME }} -p REPO_NAME=${{ env.REPO_NAME }} -p JOB_NAME=${{ env.JOB_NAME }} -p NAMESPACE=${{ env.OPENSHIFT_NAMESPACE_NO_ENV }}-${{env.TARGET_ENV}} -p TAG=${{ env.TAG }} \
           | oc create -f -
           
           # Process and apply deployment template
