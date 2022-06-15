@@ -34,6 +34,8 @@ function main
   getInputsFromUser
   loginToOpenshift
   removeMetabaseDeployment
+  Write-Host -ForegroundColor $FOREGROUND_COLOR "The cleanup has completed. Please enter a key to exit."
+  timeout /t -1
   exit 0
 }
 

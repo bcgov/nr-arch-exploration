@@ -217,12 +217,12 @@ parameters:
   - name: MEMORY_LIMIT
     description: Maximum amount of memory allowed to use
     displayName: Memory Limit
-    value: 1.5Gi
+    value: 1.2Gi
   - name: DATA_VOLUME_CAPACITY
     description: Volume space available for Data
     displayName: Data Volume Capacity
     required: true
-    value: 1Gi
+    value: 500Mi
   - name: DATA_PERSISTENT_VOLUME_CLASS
     description: The storage class of the volume
     displayName: Persistent Volume Class name

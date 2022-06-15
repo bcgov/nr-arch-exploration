@@ -35,6 +35,8 @@ function main
   deployPostgres
   deployMetabase
   setupBackupContainer
+  Write-Host -ForegroundColor $FOREGROUND_COLOR "The deployment has completed. Please enter a key to exit."
+  timeout /t -1
   exit 0
 }
 
@@ -175,11 +177,11 @@ function getMetabaseAdminEmail
 }
 function getMetabaseAppPrefix
 {
-  Write-Host -ForegroundColor $FOREGROUND_COLOR "Enter the prefix of the Metabase application name. A valid prefix is required. Make sure the prefix ends with a '-'."
+  Write-Host -ForegroundColor $FOREGROUND_COLOR "Enter the prefix of the Metabase application name. A valid prefix is required. Make sure the prefix is all small characters(alphabets and -) ends with a '-'."
   $METABASE_APP_PREFIX = Read-Host
   if (-not([string]::IsNullOrEmpty($METABASE_APP_PREFIX)))
   {
-    $global:METABASE_APP_PREFIX = $METABASE_APP_PREFIX.Trim()
+    $global:METABASE_APP_PREFIX = $METABASE_APP_PREFIX.Trim().ToLower()
   }
   else
   {
