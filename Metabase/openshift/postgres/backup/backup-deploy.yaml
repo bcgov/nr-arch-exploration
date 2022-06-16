@@ -56,7 +56,7 @@ objects:
     kind: ImageStream
     metadata:
       labels:
-        app: ${NAME}
+        app: backup-container
       name: ${NAME}
     spec:
       lookupPolicy:
