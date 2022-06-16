@@ -147,9 +147,9 @@ function loginToOpenshift
 function removeMetabaseDeployment
 {
   Write-Host -ForegroundColor $FOREGROUND_COLOR "Removing Metabase deployment."
-  oc delete -n "$NAMESPACE-$ENVIRONMENT" all,template,secret,pvc,configmap,dc,bc -l app=backup-container
-  oc delete -n "$NAMESPACE-$ENVIRONMENT" all,template,secret,pvc,dc,bc,configmap -l app=metabase
-  oc delete -n "$NAMESPACE-$ENVIRONMENT" all,template,secret,pvc,configmap,dc,bc -l app=metabase-postgres
+  oc delete -n "$NAMESPACE-$ENVIRONMENT" all,template,secret,pvc,configmap,dc,bc,imagestream -l app=backup-container
+  oc delete -n "$NAMESPACE-$ENVIRONMENT" all,template,secret,pvc,dc,bc,configmap,imagestream -l app=metabase
+  oc delete -n "$NAMESPACE-$ENVIRONMENT" all,template,secret,pvc,configmap,dc,bc,imagestream -l app=metabase-postgres
   Write-Host -ForegroundColor $FOREGROUND_COLOR "Metabase deployment removed."
 }
 main
