@@ -140,10 +140,10 @@ objects:
                 timeoutSeconds: 15
               resources:
                 requests:
-                  cpu: "50mc"
+                  cpu: "50m"
                   memory: "250Mi"
                 limits:
-                  cpu: "350mc"
+                  cpu: "350m"
                   memory: "500Mi"
               terminationMessagePath: "/dev/termination-log"
               terminationMessagePolicy: File
