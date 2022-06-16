@@ -200,7 +200,7 @@ function loginToOpenshift
 
 function deployPostgres{
   try{
-    oc process -f "https://raw.githubusercontent.com/bcgov/iit-arch/main/Metabase/openshift/postgres/postgres.yml"  -p NAMESPACE="$NAMESPACE-$ENVIRONMENT" -p DB_PVC_SIZE=1Gi | oc -n "$NAMESPACE-$ENVIRONMENT" create -f -
+    oc process -f "https://raw.githubusercontent.com/bcgov/iit-arch/main/Metabase/openshift/postgres/postgres.yml"  -p NAMESPACE="$NAMESPACE-$ENVIRONMENT" -p DB_PVC_SIZE=250Mi | oc -n "$NAMESPACE-$ENVIRONMENT" create -f -
   }catch{
     Write-Host -ForegroundColor red "Error deploying patroni. exiting."
     exit 1
@@ -226,7 +226,7 @@ function setupBackupContainer
 {
   oc -n "$NAMESPACE-$ENVIRONMENT" create configmap backup-conf --from-literal=backup.conf=$(Invoke-WebRequest https://raw.githubusercontent.com/bcgov/iit-arch/main/Metabase/openshift/postgres/backup/backup.conf)
   oc -n "$NAMESPACE-$ENVIRONMENT" label configmap backup-conf app=backup-container
-  oc -n "$NAMESPACE-$ENVIRONMENT" process -f https://raw.githubusercontent.com/bcgov/iit-arch/main/Metabase/openshift/postgres/backup/backup-deploy.yaml NAME=backup-postgres IMAGE_NAMESPACE="$NAMESPACE-$ENVIRONMENT" SOURCE_IMAGE_NAME=backup-postgres TAG_NAME=v1 BACKUP_VOLUME_NAME=backup-postgres-pvc -p BACKUP_VOLUME_SIZE=1Gi -p VERIFICATION_VOLUME_SIZE=1Gi -p ENVIRONMENT_NAME="$ENVIRONMENT" -p ENVIRONMENT_FRIENDLY_NAME='Metabase postgres DB Backups' | oc -n "$NAMESPACE-$ENVIRONMENT" create -f -
+  oc -n "$NAMESPACE-$ENVIRONMENT" process -f https://raw.githubusercontent.com/bcgov/iit-arch/main/Metabase/openshift/postgres/backup/backup-deploy.yaml NAME=backup-postgres IMAGE_NAMESPACE="$NAMESPACE-$ENVIRONMENT" SOURCE_IMAGE_NAME=backup-postgres TAG_NAME=v1 BACKUP_VOLUME_NAME=backup-postgres-pvc -p BACKUP_VOLUME_SIZE=200Mi -p VERIFICATION_VOLUME_SIZE=200Mi -p ENVIRONMENT_NAME="$ENVIRONMENT" -p ENVIRONMENT_FRIENDLY_NAME='Metabase postgres DB Backups' | oc -n "$NAMESPACE-$ENVIRONMENT" create -f -
 
 }
 
