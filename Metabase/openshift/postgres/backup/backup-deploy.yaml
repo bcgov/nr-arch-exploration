@@ -167,7 +167,7 @@ objects:
                   cpu: 0
                   memory: 0Mi
                 limits:
-                  cpu: 100mc
+                  cpu: 100m
                   memory: 100Mi
               volumeMounts:
                 - name: ${BACKUP_VOLUME_NAME}
