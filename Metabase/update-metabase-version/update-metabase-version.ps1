@@ -2,21 +2,21 @@
 
 #Declare global Variables here.
 
-$global:OC_BASE_PATH="C:\softwares\oc"
-$global:NAMESPACE=""
-$global:ENVIRONMENT=""
-$global:DOCKER_USER=""
-$global:DOCKER_PWD=""
-$global:OPENSHIFT_TOKEN=""
-$global:OPENSHIFT_SERVER=""
-$global:METABASE_ADMIN_EMAIL=""
-$global:FOREGROUND_COLOR="DarkGreen"
-$global:ARTIFACTORY_CREDS_PRESENT=""
-$global:METABASE_APP_PREFIX=""
-$global:BASE_URL="https://raw.githubusercontent.com/bcgov/iit-arch/main/Metabase/openshift"
-$global:DB_HOST=""
-$global:DB_PORT=""
-$global:OC_ALIAS_REQUIRED="false"
+$global:OC_BASE_PATH = "C:\softwares\oc"
+$global:NAMESPACE = ""
+$global:ENVIRONMENT = ""
+$global:DOCKER_USER = ""
+$global:DOCKER_PWD = ""
+$global:OPENSHIFT_TOKEN = ""
+$global:OPENSHIFT_SERVER = ""
+$global:METABASE_ADMIN_EMAIL = ""
+$global:FOREGROUND_COLOR = "DarkGreen"
+$global:ARTIFACTORY_CREDS_PRESENT = ""
+$global:METABASE_APP_PREFIX = ""
+$global:BASE_URL = "https://raw.githubusercontent.com/bcgov/nr-arch-templates/main/Metabase/openshift"
+$global:DB_HOST = ""
+$global:DB_PORT = ""
+$global:OC_ALIAS_REQUIRED = "false"
 
 #This is our main function , which is the entry point of the script.
 function main
@@ -25,7 +25,7 @@ function main
   Write-Host -ForegroundColor $FOREGROUND_COLOR "This script will update the metabase version on a openshift namespace."
   timeout /t -1
   checkAndAddOCClientForWindows
-  if($global:OC_ALIAS_REQUIRED -eq "true")
+  if ($global:OC_ALIAS_REQUIRED -eq "true")
   {
     Set-Alias -Name oc -Value $global:OC_BASE_PATH\oc.exe
     Write-Host "$( oc version )"
@@ -64,7 +64,7 @@ function checkAndAddOCClientForWindows
       Expand-Archive $OC_BASE_PATH\oc.zip -DestinationPath $OC_BASE_PATH
       Write-Host -ForegroundColor $FOREGROUND_COLOR "oc.exe extracted to $( $OC_BASE_PATH )"
     }
-    $global:OC_ALIAS_REQUIRED="true"
+    $global:OC_ALIAS_REQUIRED = "true"
   }
 
 
@@ -75,8 +75,6 @@ function getInputsFromUser
   getEnvironment
   getOpenShiftToken
   getOpenShiftServer
-  getOracleDBHost
-  getOracleDBPort
 }
 
 function getEnvironment
@@ -93,24 +91,6 @@ function getEnvironment
     $global:ENVIRONMENT = $ENVIRONMENT.Trim()
   }
 }
-function getOracleDBHost
-{
-  Write-Host -ForegroundColor $FOREGROUND_COLOR "Enter the oracle db host name, this is the DB Host which will be connected from the metabase instance. If you are connecting to oracle DB over encrypted listeners, This is required."
-  $data = Read-Host
-  if (-not([string]::IsNullOrEmpty($data)))
-  {
-    $global:DB_HOST = $data.Trim()
-  }
-}
-function getOracleDBPort
-{
-  Write-Host -ForegroundColor $FOREGROUND_COLOR "Enter the oracle db port number,this is the DB Port which will be connected from the metabase instance. If you are connecting to oracle DB over encrypted listeners, This is required."
-  $port = Read-Host
-  if (-not([string]::IsNullOrEmpty($port)))
-  {
-    $global:DB_PORT = $port.Trim()
-  }
-}
 function getNamespace
 {
   Write-Host -ForegroundColor $FOREGROUND_COLOR "Enter the Namespace of  where Metabase will be installed, it will be a 6 character alphanumeric string."
@@ -123,34 +103,6 @@ function getNamespace
   {
     Write-Host -ForegroundColor red "Namespace is required."
     getNamespace
-  }
-}
-function getDockerUser
-{
-  Write-Host -ForegroundColor $FOREGROUND_COLOR "Enter the docker user name."
-  $DOCKER_USER = Read-Host
-  if (-not([string]::IsNullOrEmpty($DOCKER_USER)))
-  {
-    $global:DOCKER_USER = $DOCKER_USER.Trim()
-  }
-  else
-  {
-    Write-Host -ForegroundColor red "Docker user name is required."
-    getDockerUser
-  }
-}
-function getDockerPwd
-{
-  Write-Host -ForegroundColor $FOREGROUND_COLOR  "Enter the docker password."
-  $DOCKER_PWD = Read-Host
-  if (-not([string]::IsNullOrEmpty($DOCKER_PWD)))
-  {
-    $global:DOCKER_PWD = $DOCKER_PWD.Trim()
-  }
-  else
-  {
-    Write-Host -ForegroundColor red "Docker password is required."
-    getDockerPwd
   }
 }
 function getOpenShiftToken
@@ -187,14 +139,17 @@ function getOpenShiftServer
 function loginToOpenshift
 {
   Write-Host -ForegroundColor $FOREGROUND_COLOR "Logging into openshift."
-  oc login --token=$OPENSHIFT_TOKEN --server=$OPENSHIFT_SERVER
+  oc login --token =$OPENSHIFT_TOKEN --server = $OPENSHIFT_SERVER
   oc project $NAMESPACE-tools
   Write-Host -ForegroundColor $FOREGROUND_COLOR "Logged in to openshift."
 }
 function deployMetabase
 {
-  oc process -n "$NAMESPACE-$ENVIRONMENT" -f "$BASE_URL/metabase.update.dc.yaml" -p NAMESPACE="$NAMESPACE-$ENVIRONMENT" -p VERSION=$ENVIRONMENT -o yaml | oc apply -n "$NAMESPACE-$ENVIRONMENT" -f -
-  Write-Host -ForegroundColor cyan "Metabase updated, please check the pod logs for more details."
+  oc tag -d metabase:latest
+  oc tag ghcr.io/bcgov/nr-arch-templates/metabase:latest metabase:latest
+  oc rollout latest dc/metabase
+  oc logs -f dc/metabase
+  oc rollout status dc/metabase
 }
 main
 
