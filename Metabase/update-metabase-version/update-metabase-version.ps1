@@ -33,7 +33,6 @@ function main
   getInputsFromUser
   loginToOpenshift
   deployMetabase
-  exit 0
 }
 
 #This function will check if the OC client is installed on the windows machine. If not it will install it.

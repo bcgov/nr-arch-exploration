@@ -37,7 +37,6 @@ function main
   setupBackupContainer
   Write-Host -ForegroundColor $FOREGROUND_COLOR "The deployment has completed. Please enter a key to exit."
   timeout /t -1
-  exit 0
 }
 
 #This function will check if the OC client is installed on the windows machine. If not it will install it.
