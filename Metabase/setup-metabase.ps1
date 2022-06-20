@@ -218,8 +218,8 @@ function deployMetabase
 {
   oc process -n "$NAMESPACE-$ENVIRONMENT" -f "$BASE_URL/metabase.secret.yaml" -p DB_HOST=$DB_HOST -p DB_PORT=$DB_PORT -p ADMIN_EMAIL=$METABASE_ADMIN_EMAIL -o yaml | oc create -n "$NAMESPACE-$ENVIRONMENT" -f -
   Write-Host -ForegroundColor $FOREGROUND_COLOR "Metabase secret created."
-  oc tag -d metabase:latest
-  oc tag ghcr.io/bcgov/nr-arch-templates/metabase:latest metabase:latest
+  oc -n "$NAMESPACE-$ENVIRONMENT" tag -d metabase:latest
+  oc -n "$NAMESPACE-$ENVIRONMENT" tag ghcr.io/bcgov/nr-arch-templates/metabase:latest metabase:latest
   oc process -n "$NAMESPACE-$ENVIRONMENT" -f "$BASE_URL/metabase.dc.yaml" -p NAMESPACE="$NAMESPACE-$ENVIRONMENT" -p PREFIX=$METABASE_APP_PREFIX -o yaml | oc apply -n "$NAMESPACE-$ENVIRONMENT" -f -
 }
 

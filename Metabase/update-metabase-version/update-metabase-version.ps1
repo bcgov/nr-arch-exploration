@@ -144,11 +144,11 @@ function loginToOpenshift
 }
 function deployMetabase
 {
-  oc tag -d metabase:latest
-  oc tag ghcr.io/bcgov/nr-arch-templates/metabase:latest metabase:latest
-  oc rollout latest dc/metabase
-  oc logs -f dc/metabase
-  oc rollout status dc/metabase
+  oc -n "$NAMESPACE-$ENVIRONMENT" tag -d metabase:latest
+  oc -n "$NAMESPACE-$ENVIRONMENT" tag ghcr.io/bcgov/nr-arch-templates/metabase:latest metabase:latest
+  oc -n "$NAMESPACE-$ENVIRONMENT" rollout latest dc/metabase
+  oc -n "$NAMESPACE-$ENVIRONMENT" logs -f dc/metabase
+  oc -n "$NAMESPACE-$ENVIRONMENT" rollout status dc/metabase
 }
 main
 
