@@ -22,6 +22,18 @@ Please execute the below command in powershell and follow the prompts, it will s
 ```markdown
 Invoke-Expression $( $(Invoke-WebRequest https://raw.githubusercontent.com/bcgov/iit-arch/main/Metabase/setup-metabase.ps1).Content)
 ```
+<ul> 
+<li> Once the Deployment is completed , user should be able to see 3 deployment configs with 1 pod each.
+<img src="img.png" alt="Deployment Image"/>
+</li>
+<li> One time initial setup needs to be done for metabase, Please provide the admin email and admin password from the secrets.To access the metabase admin email and password, navigate to <u> Secrets </u> and find <u> metabase-secret </u> , copy the value for <i> admin-email </i> and <i> admin-password </i> into respective form fields of the metabase setup page.
+</li>
+<li>
+The Backup container provisioned takes backup of postgres database which is used by Metabase.
+ <a href="openshift/postgres/backup/README.md">Please refer here for the respective README.md</a>
+</li>
+</ul>
+
 
 ## Deploying locally through docker
 1. `ghcr.io/bcgov/nr-arch-templates/metabase:latest` can be used in local system with Docker.
