@@ -25,7 +25,7 @@ objects:
         - name: "latest"
           from:
             kind: DockerImage
-            name: "ghcr.io/bcgov/nr-arch-templates/metabase:latest"
+            name: "ghcr.io/bcgov/nr-arch-templates/metabase:${VERSION}"
           referencePolicy:
             type: Local
   - apiVersion: v1
