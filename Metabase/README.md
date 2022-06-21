@@ -26,7 +26,7 @@ Invoke-Expression $( $(Invoke-WebRequest https://raw.githubusercontent.com/bcgov
 <li> Once the Deployment is completed , user should be able to see 3 deployment configs with 1 pod each.
 <img src="img.png" alt="Deployment Image"/>
 </li>
-<li> One time initial setup needs to be done for metabase, Please provide the admin email and admin password from the secrets.To access the metabase admin email and password, navigate to <u> Secrets </u> and find <u> metabase-secret </u> , copy the value for <i> admin-email </i> and <i> admin-password </i> into respective form fields of the metabase setup page.
+<li> One time initial setup needs to be done for metabase, Please provide the admin email and admin password from the secrets.To access the metabase admin email and password, navigate to <u> Secrets </u> and find <u> metabase-secret </u> , copy the value for <i> admin-email </i> and <i> admin-password </i> into respective form fields of the metabase setup page. if you are trying to add oracle over encrypted listener, please enable the Use SSL checkbox. <img src="use_ssl.png" alt="Enable SSL"/>
 </li>
 <li>
 The Backup container provisioned takes backup of postgres database which is used by Metabase.
