@@ -1,1 +1,3 @@
-This folder contains different micro-services framework implementation based on GO language.
+This folder contains different microservices' framework implementation based on GO language.
+
+**The APIs are still WIP**
