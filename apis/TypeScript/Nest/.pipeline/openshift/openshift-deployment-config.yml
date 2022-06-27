@@ -147,7 +147,7 @@ objects:
                       name: nest-api-secret
                       key: database-password
                 - name: FLYWAY_BASELINE_ON_MIGRATE
-                  value: true
+                  value: "true"
               resources:
                 limits:
                   cpu: "1"
