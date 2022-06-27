@@ -40,7 +40,7 @@ objects:
         contextDir: Metabase/openshift
         git:
           ref: "main"
-          uri: "https://github.com/bcgov/iit-arch.git"
+          uri: "https://github.com/bcgov/nr-arch-templates.git"
           type: Git
       strategy:
         dockerStrategy:

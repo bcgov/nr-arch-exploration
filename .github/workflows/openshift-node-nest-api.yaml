@@ -54,7 +54,7 @@ env:
   ARTIFACTORY_REPO: artifacts.developer.gov.bc.ca
 
   APP_NAME: 'nest-api'
-  REPO_NAME: "iit-arch"
+  REPO_NAME: "nr-arch-templates"
   JOB_NAME: "main"
   NAMESPACE: ${{ secrets.NAMESPACE_NO_ENV }}
   TAG: "latest"
@@ -216,14 +216,14 @@ jobs:
           oc tag ${{ env.IMAGE_REGISTRY }}/${{ env.APP_NAME }}-migration:latest ${{ env.APP_NAME }}-migration:${{ env.TAG }}
           
           # Process and create postgres deployment template
-          oc process -f https://raw.githubusercontent.com/bcgov/iit-arch/main/apis/TypeScript/Nest/.pipeline/openshift/openshift-postgres-deployment-config.yaml -p APP_NAME=${{ env.APP_NAME }} -p REPO_NAME=${{ env.REPO_NAME }} -p JOB_NAME=${{ env.JOB_NAME }} -p NAMESPACE=${{ env.OPENSHIFT_NAMESPACE_NO_ENV }}-${{env.TARGET_ENV}} \
+          oc process -f https://raw.githubusercontent.com/bcgov/nr-arch-templates/main/apis/TypeScript/Nest/.pipeline/openshift/openshift-postgres-deployment-config.yaml -p APP_NAME=${{ env.APP_NAME }} -p REPO_NAME=${{ env.REPO_NAME }} -p JOB_NAME=${{ env.JOB_NAME }} -p NAMESPACE=${{ env.OPENSHIFT_NAMESPACE_NO_ENV }}-${{env.TARGET_ENV}} \
           | oc create -f -
           
           #check the status
           oc rollout status dc/${{ env.APP_NAME }}-postgres
           
           # Process and apply deployment template
-          oc process -f https://raw.githubusercontent.com/bcgov/iit-arch/main/apis/TypeScript/Nest/.pipeline/openshift/openshift-deployment-config.yml -p APP_NAME=${{ env.APP_NAME }} -p REPO_NAME=${{ env.REPO_NAME }} -p JOB_NAME=${{ env.JOB_NAME }} -p NAMESPACE=${{ env.OPENSHIFT_NAMESPACE_NO_ENV }}-${{env.TARGET_ENV}} -p TAG=${{ env.TAG }} -p MIN_REPLICAS=${{ env.MIN_REPLICAS }} -p MAX_REPLICAS=${{ env.MAX_REPLICAS }} -p MIN_CPU=${{ env.MIN_CPU }} -p MAX_CPU=${{ env.MAX_CPU }} -p MIN_MEM=${{ env.MIN_MEM }} -p MAX_MEM=${{ env.MAX_MEM }} \
+          oc process -f https://raw.githubusercontent.com/bcgov/nr-arch-templates/main/apis/TypeScript/Nest/.pipeline/openshift/openshift-deployment-config.yml -p APP_NAME=${{ env.APP_NAME }} -p REPO_NAME=${{ env.REPO_NAME }} -p JOB_NAME=${{ env.JOB_NAME }} -p NAMESPACE=${{ env.OPENSHIFT_NAMESPACE_NO_ENV }}-${{env.TARGET_ENV}} -p TAG=${{ env.TAG }} -p MIN_REPLICAS=${{ env.MIN_REPLICAS }} -p MAX_REPLICAS=${{ env.MAX_REPLICAS }} -p MIN_CPU=${{ env.MIN_CPU }} -p MAX_CPU=${{ env.MAX_CPU }} -p MIN_MEM=${{ env.MIN_MEM }} -p MAX_MEM=${{ env.MAX_MEM }} \
           | oc apply -f -
           
           # Start rollout (if necessary) and follow it
