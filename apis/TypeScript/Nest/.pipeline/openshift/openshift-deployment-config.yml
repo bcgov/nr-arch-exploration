@@ -130,7 +130,7 @@ objects:
               image: "image-registry.openshift-image-registry.svc:5000/${NAMESPACE}/${APP_NAME}-migration:${TAG}"
               env:
                 - name: FLYWAY_URL
-                  value: jdbc:postgresql://nest-api-postgres:5432/${DB}
+                  value: "jdbc:postgresql://nest-api-postgres:5432/${DB}"
                 - name: FLYWAY_USER
                   valueFrom:
                     secretKeyRef:
