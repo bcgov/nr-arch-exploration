@@ -3,6 +3,7 @@ version: "2.3"
 services:
   nest-database:
     image: postgres
+    container_name: postgres
     mem_limit: 128m
     environment:
       - POSTGRES_USER=nest
@@ -16,11 +17,29 @@ services:
       - "5430:5432"
     networks:
       - nest
+  nest-kc-database:
+    image: postgres
+    container_name: kc-postgres
+    mem_limit: 128m
+    environment:
+      - POSTGRES_USER=nest
+      - POSTGRES_PASSWORD=nest123
+    healthcheck:
+      test: [ "CMD-SHELL", "pg_isready -U nest" ]
+      interval: 5s
+      timeout: 5s
+      retries: 6
+    command: -p 5433
+    ports:
+      - "5429:5433"
+    networks:
+      - nest
   nest-keycloak:
     image: quay.io/keycloak/keycloak:14.0.0
+    container_name: keycloak
     environment:
       DB_VENDOR: postgres
-      DB_ADDR: nest-database:5432
+      DB_ADDR: nest-kc-database:5433
       DB_DATABASE: nest
       DB_SCHEMA: public
       DB_USER: nest
@@ -40,6 +59,28 @@ services:
       - "9190:9990"  # the admin HTTP endpoint
     networks:
       - nest
+    depends_on:
+      - nest-kc-database
+  nest-flyway:
+    image: flyway/flyway:latest-alpine
+    container_name: nest-api-migrations
+    environment:
+      - FLYWAY_URL=jdbc:postgresql://nest-database:5432/nest
+      - FLYWAY_USER=nest
+      - FLYWAY_PASSWORD=nest123
+      - FLYWAY_BASELINE_ON_MIGRATE=true
+    depends_on:
+      - nest-database
+    volumes:
+      - "./src/db/migrations:/flyway/sql"
+    command:
+      - info
+      - validate
+      - migrate
+      - info
+    networks:
+      - nest
+
 networks:
   nest:
     driver: bridge

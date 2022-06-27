@@ -1,6 +1,4 @@
-FROM node:lts-alpine
-WORKDIR /usr/src/app
-COPY apis/TypeScript/Nest .
-#COPY . .
-RUN npm install -g typeorm && npm install -g ts-node
-CMD ["/bin/sh", "migration.sh"]
+FROM flyway/flyway:latest-alpine
+COPY apis/TypeScript/Nest/src/db/migrations /flyway/sql
+RUN chmod 777 -R /flyway
+CMD ["info","validate","migrate","info"]
