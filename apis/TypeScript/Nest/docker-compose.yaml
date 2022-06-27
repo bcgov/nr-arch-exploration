@@ -62,7 +62,10 @@ services:
     depends_on:
       - nest-kc-database
   nest-flyway:
-    image: flyway/flyway:latest-alpine
+    build:
+      context: ../Nest
+      dockerfile: Dockerfile-migrations-local
+    image: nest-api-migrations:latest
     container_name: nest-api-migrations
     environment:
       - FLYWAY_URL=jdbc:postgresql://nest-database:5432/nest
@@ -71,13 +74,6 @@ services:
       - FLYWAY_BASELINE_ON_MIGRATE=true
     depends_on:
       - nest-database
-    volumes:
-      - "./src/db/migrations:/flyway/sql"
-    command:
-      - info
-      - validate
-      - migrate
-      - info
     networks:
       - nest
 
