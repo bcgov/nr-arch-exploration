@@ -122,7 +122,7 @@ objects:
                 - configMapRef:
                     name: "${APP_NAME}-config-map"
           initContainers:
-            - name: nest-api-db-migration
+            - name: "${APP_NAME}-migration"
               image: "image-registry.openshift-image-registry.svc:5000/${NAMESPACE}/${APP_NAME}-migration:${TAG}"
               env:
                 - name: FLYWAY_URL

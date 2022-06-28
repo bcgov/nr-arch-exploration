@@ -10,6 +10,7 @@ echo
 echo Creating config map "$APP_NAME"-config-map
 oc create -n "$OPENSHIFT_NAMESPACE" configmap "$APP_NAME"-config-map --from-literal=TZ=$TZVALUE --from-literal=OIDC_AUTH_SERVER_URL="$OIDC_AUTH_SERVER_URL" --from-literal=FILE_LOG_LEVEL="INFO" --dry-run -o yaml | oc apply -f -
 echo
+oc -n "$OPENSHIFT_NAMESPACE" label configmap "$APP_NAME"-config-map template-owner=nr-arch-templates
 
 echo Setting environment variables for "$APP_NAME" application
 oc -n "$OPENSHIFT_NAMESPACE" set env --from=configmap/"$APP_NAME"-config-map dc/"$APP_NAME"
