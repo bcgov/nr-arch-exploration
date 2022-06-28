@@ -31,7 +31,7 @@ parameters:
     displayName: Database Volume Capacity
     name: DB_PVC_SIZE
     required: true
-    value: 512Mi
+    value: 200Mi
 
 objects:
   - kind: Secret
