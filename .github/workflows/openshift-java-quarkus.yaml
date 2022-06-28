@@ -135,7 +135,7 @@ jobs:
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
       - name: Build native application
-        run: mvn clean package -Pnative
+        run: mvn clean package
       - name: Build and push Application image
         uses: docker/build-push-action@v3
         with:
@@ -146,7 +146,7 @@ jobs:
           cache-from: type=gha
           cache-to: type=gha,mode=max
           file: |
-            ./apis/java/quarkus/.pipeline/openshift/Dockerfile.native-openshift
+            ./apis/java/quarkus/.pipeline/openshift/Dockerfile
       - name: Build and push Migration image
         uses: docker/build-push-action@v3
         with:
