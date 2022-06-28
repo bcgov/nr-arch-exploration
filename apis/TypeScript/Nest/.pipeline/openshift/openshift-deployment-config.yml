@@ -148,11 +148,11 @@ objects:
                   value: "true"
               resources:
                 limits:
-                  cpu: "1"
-                  memory: 500Mi
+                  cpu: 100m
+                  memory: 150Mi
                 requests:
-                  cpu: 250m
-                  memory: 250Mi
+                  cpu: 50m
+                  memory: 50Mi
           volumes:
             - name: tls-certs
               secret:
