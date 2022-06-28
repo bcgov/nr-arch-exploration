@@ -1,0 +1,3 @@
+FROM flyway/flyway:latest-alpine
+COPY apis/java/quarkus/src/db/migrations /flyway/sql
+CMD ["info","migrate","info"]

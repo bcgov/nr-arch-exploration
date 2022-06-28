@@ -130,21 +130,16 @@ objects:
               image: "image-registry.openshift-image-registry.svc:5000/${NAMESPACE}/${APP_NAME}-migration:${TAG}"
               env:
                 - name: FLYWAY_URL
-                  value: "jdbc:postgresql://nest-api-postgres:5432/nest-api"
+                  value: "jdbc:postgresql://${APP_NAME}-postgres:5432/${APP_NAME}"
                 - name: FLYWAY_USER
                   valueFrom:
                     secretKeyRef:
-                      name: nest-api-secret
+                      name: "${APP_NAME}-secret"
                       key: database-user
-                - name: DB
-                  valueFrom:
-                    secretKeyRef:
-                      name: nest-api-secret
-                      key: database-name
                 - name: FLYWAY_PASSWORD
                   valueFrom:
                     secretKeyRef:
-                      name: nest-api-secret
+                      name: "${APP_NAME}-secret"
                       key: database-password
                 - name: FLYWAY_BASELINE_ON_MIGRATE
                   value: "true"
@@ -153,7 +148,7 @@ objects:
                   cpu: "1"
                   memory: 500Mi
                 requests:
-                  cpu: 500m
+                  cpu: 250m
                   memory: 250Mi
           volumes:
             - name: tls-certs
