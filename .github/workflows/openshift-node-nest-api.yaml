@@ -135,7 +135,7 @@ jobs:
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
       - name: Build and push Application image
-        uses: docker/build-push-action@v2
+        uses: docker/build-push-action@v3
         with:
           context: .
           push: true
@@ -146,7 +146,7 @@ jobs:
           file: |
             ./apis/TypeScript/Nest/Dockerfile-openshift
       - name: Build and push Migration image
-        uses: docker/build-push-action@v2
+        uses: docker/build-push-action@v3
         with:
           context: .
           push: true
