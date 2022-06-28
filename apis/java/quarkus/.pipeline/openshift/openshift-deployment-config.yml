@@ -87,7 +87,7 @@ objects:
                 successThreshold: 1
               livenessProbe:
                 httpGet:
-                  path: /health
+                  path: /q/health
                   port: 8000
                 initialDelaySeconds: 180
                 periodSeconds: 30
