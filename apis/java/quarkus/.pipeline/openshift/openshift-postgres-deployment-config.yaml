@@ -3,6 +3,7 @@ kind: Template
 labels:
   template: "${REPO_NAME}-postgres-template"
   app: "${APP_NAME}"
+  template-owner: "nr-arch-templates"
 metadata:
   name: "${REPO_NAME}-postgres"
 parameters:
@@ -39,6 +40,7 @@ objects:
       name: "${APP_NAME}-secret"
       labels:
         app: "${APP_NAME}"
+        template-owner: "nr-arch-templates"
     stringData:
       database-name: "${APP_NAME}"
       database-password: "${DB_PASSWORD}"
@@ -50,6 +52,7 @@ objects:
       name: "${APP_NAME}-pvc"
       labels:
         app: "${APP_NAME}"
+        template-owner: "nr-arch-templates"
     spec:
       accessModes:
         - ReadWriteMany
@@ -78,6 +81,7 @@ objects:
     metadata:
       labels:
         app: "${APP_NAME}-postgres"
+        template-owner: "nr-arch-templates"
       name: "${APP_NAME}-postgres"
     spec:
       replicas: 1
@@ -156,6 +160,7 @@ objects:
     metadata:
       labels:
         app: "${APP_NAME}-postgres"
+        template-owner: "nr-arch-templates"
       name: "${APP_NAME}-postgres"
     spec:
       ports:

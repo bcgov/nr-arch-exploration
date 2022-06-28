@@ -3,6 +3,7 @@ kind: Template
 labels:
   template: "${REPO_NAME}-postgres-template"
   app: "${APP_NAME}"
+  template-owner: "nr-arch-templates"
 metadata:
   name: "${REPO_NAME}-postgres"
 parameters:
@@ -39,6 +40,7 @@ objects:
       name: "${APP_NAME}-secret"
       labels:
         app: "${APP_NAME}"
+        template-owner: "nr-arch-templates"
     stringData:
       database-name: "${APP_NAME}"
       database-password: "${DB_PASSWORD}"
@@ -50,6 +52,7 @@ objects:
       name: "${APP_NAME}-pvc"
       labels:
         app: "${APP_NAME}"
+        template-owner: "nr-arch-templates"
     spec:
       accessModes:
         - ReadWriteMany
@@ -63,6 +66,7 @@ objects:
       name: "${APP_NAME}-postgres"
       labels:
         app: "${APP_NAME}"
+        template-owner: "nr-arch-templates"
     spec:
       lookupPolicy:
         local: false
@@ -94,6 +98,7 @@ objects:
           labels:
             app: "${APP_NAME}-postgres"
             deploymentConfig: "${APP_NAME}-postgres"
+            template-owner: "nr-arch-templates"
         spec:
           containers:
             - image: image-registry.openshift-image-registry.svc:5000/${NAMESPACE}/${APP_NAME}-postgres:v12
@@ -156,6 +161,7 @@ objects:
     metadata:
       labels:
         app: "${APP_NAME}-postgres"
+        template-owner: "nr-arch-templates"
       name: "${APP_NAME}-postgres"
     spec:
       ports:

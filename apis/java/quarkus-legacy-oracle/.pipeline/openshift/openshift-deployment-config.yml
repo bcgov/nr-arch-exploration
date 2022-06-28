@@ -3,6 +3,7 @@ kind: Template
 labels:
   template: "${REPO_NAME}-template"
   app: "${APP_NAME}"
+  template-owner: "nr-arch-templates"
 metadata:
   name: "${REPO_NAME}-dc"
 parameters:
@@ -50,6 +51,7 @@ objects:
     metadata:
       labels:
         app: "${APP_NAME}"
+        template-owner: "nr-arch-templates"
       name: "${APP_NAME}"
     spec:
       replicas: ${{MIN_REPLICAS}}
@@ -118,6 +120,7 @@ objects:
         service.alpha.openshift.io/serving-cert-secret-name: "${APP_NAME}-cert"
       labels:
         app: "${APP_NAME}"
+        template-owner: "nr-arch-templates"
       name: "${APP_NAME}"
     spec:
       ports:
@@ -130,6 +133,9 @@ objects:
     kind: HorizontalPodAutoscaler
     metadata:
       name: "${APP_NAME}-cpu-autoscaler"
+      labels:
+        app: "${APP_NAME}"
+        template-owner: "nr-arch-templates"
     spec:
       scaleTargetRef:
         apiVersion: apps.openshift.io/v1
