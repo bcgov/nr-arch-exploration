@@ -13,7 +13,6 @@ export class LoggerMiddleware implements NestMiddleware {
     response.on('finish', () => {
       const { statusCode } = response;
       const diff = process.hrtime(startAt);
-      console.info(diff);
       const responseTime = diff[0] * 1e3 + Math.round(diff[1] * 1e-6);
       this.logger.log(
         `${method} ${originalUrl} ${statusCode} ${responseTime}ms`,
