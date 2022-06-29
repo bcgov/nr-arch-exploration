@@ -1,0 +1,44 @@
+---
+kind: Template
+apiVersion: v1
+labels:
+  app: "quarkus-postgres-porter"
+  template: "nr-arch-porter-template"
+  template-owner: "nr-arch-templates"
+metadata:
+  name: "quarkus-postgres-porter"
+objects:
+  - apiVersion: porter.devops.gov.bc.ca/v1alpha1
+    kind: TransportServerClaim
+    metadata:
+      labels:
+        app: "quarkus-postgres-porter"
+        template-owner: "nr-arch-templates"
+      name: quarkus-postgres-porter
+      namespace: 245e18-dev
+    spec:
+      monitor:
+        interval: 10
+        timeout: 10
+        type: tcp
+      service: quarkus-api-postgres
+      servicePort: 5432
+  - kind: NetworkPolicy
+    apiVersion: networking.k8s.io/v1
+    metadata:
+      labels:
+        app: "quarkus-postgres-porter"
+      name: allow-from-f5-ingress-quarkus-postgres
+      namespace: 245e18-dev
+    spec:
+      podSelector:
+        # Please be considerate to Platform Tenants, Use a Label
+        matchLabels:
+          app: quarkus-api-postgres
+      ingress:
+        - from:
+            - namespaceSelector:
+                matchLabels:
+                  network.openshift.io/policy-group: ingress
+      policyTypes:
+        - Ingress
