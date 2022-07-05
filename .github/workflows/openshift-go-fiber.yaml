@@ -1,0 +1,162 @@
+name: openshift-go-fiber
+
+env:
+  OPENSHIFT_SERVER: ${{ secrets.OPENSHIFT_SERVER }}
+  OPENSHIFT_TOKEN: ${{ secrets.OPENSHIFT_TOKEN }}
+  OPENSHIFT_NAMESPACE_NO_ENV: ${{ secrets.NAMESPACE_NO_ENV}}
+  IMAGE_REGISTRY: ghcr.io/${{ github.repository_owner }}/nr-arch-templates
+  IMAGE_REGISTRY_USER: ${{ github.actor }}
+  IMAGE_REGISTRY_PASSWORD: ${{ github.token }}
+  OIDC_AUTH_SERVER_URL: ${{ secrets.OIDC_AUTH_SERVER_URL }}
+  # 🖊️ EDIT to specify custom tags for the container image, or default tags will be generated below.
+  IMAGE_TAGS: ""
+
+  DOCKER_ARTIFACTORY_REPO: docker-remote.artifacts.developer.gov.bc.ca
+  ARTIFACTORY_REPO: artifacts.developer.gov.bc.ca
+
+  APP_NAME: 'fiber-api'
+  REPO_NAME: "nr-arch-templates"
+  JOB_NAME: "main"
+  NAMESPACE: ${{ secrets.NAMESPACE_NO_ENV }}
+  TAG: "latest"
+  TARGET_ENV: "dev"
+  MIN_REPLICAS: "1"
+  MAX_REPLICAS: "1"
+  MIN_CPU: "20m"
+  MAX_CPU: "100m"
+  MIN_MEM: "20Mi"
+  MAX_MEM: "50Mi"
+
+on:
+  workflow_dispatch:
+  pull_request:
+    branches:
+      - main
+    paths:
+      - 'apis/Go/fiber/**'
+
+jobs:
+  openshift-ci-cd:
+    name: Build and deploy to OpenShift
+    runs-on: ubuntu-20.04
+    environment: fiber-dev
+    defaults:
+      run:
+        working-directory: apis/Go/fiber
+
+    outputs:
+      ROUTE: ${{ steps.deploy-and-expose.outputs.route }}
+      SELECTOR: ${{ steps.deploy-and-expose.outputs.selector }}
+
+    steps:
+      - name: Check for required secrets
+        uses: actions/github-script@v4
+        with:
+          script: |
+            const secrets = {
+              OPENSHIFT_SERVER: `${{ secrets.OPENSHIFT_SERVER }}`,
+              OPENSHIFT_TOKEN: `${{ secrets.OPENSHIFT_TOKEN }}`,
+              OPENSHIFT_NAMESPACE_NO_ENV: ${{ secrets.NAMESPACE_NO_ENV}}
+            };
+            
+            const GHCR = "ghcr.io";
+            if (`${{ env.IMAGE_REGISTRY }}`.startsWith(GHCR)) {
+              core.info(`Image registry is ${GHCR} - no registry password required`);
+            }
+            else {
+              core.info("A registry password is required");
+              secrets["IMAGE_REGISTRY_PASSWORD"] = `${{ secrets.IMAGE_REGISTRY_PASSWORD }}`;
+            }
+            
+            const missingSecrets = Object.entries(secrets).filter(([ name, value ]) => {
+              if (value.length === 0) {
+                core.error(`Secret "${name}" is not set`);
+                return true;
+              }
+              core.info(`✔️ Secret "${name}" is set`);
+              return false;
+            });
+            
+            if (missingSecrets.length > 0) {
+              core.setFailed(`❌ At least one required secret is not set in the repository. \n` +
+                "You can add it using:\n" +
+                "GitHub UI: https://docs.github.com/en/actions/reference/encrypted-secrets#creating-encrypted-secrets-for-a-repository \n" +
+                "GitHub CLI: https://cli.github.com/manual/gh_secret_set \n" +
+                "Also, refer to https://github.com/redhat-actions/oc-login#getting-started-with-the-action-or-see-example");
+            }
+            else {
+              core.info(`✅ All the required secrets are set`);
+            }
+
+      - name: Check out repository
+        uses: actions/checkout@v3
+
+
+      - name: Determine image tags
+        if: env.IMAGE_TAGS == ''
+        run: |
+          echo "IMAGE_TAGS=latest ${GITHUB_SHA::12}" | tee -a $GITHUB_ENV
+
+      - name: setup go
+        uses: actions/setup-go@v3
+        with:
+          go-version: '>=1.18.0'
+      - name: Login to Docker Hub
+        uses: docker/login-action@v1
+        with:
+          registry: ${{ env.DOCKER_ARTIFACTORY_REPO }}
+          username: ${{ secrets.DOCKER_HUB_USERNAME }}
+          password: ${{ secrets.DOCKER_HUB_ACCESS_TOKEN }}
+
+      - name: Cache Go Modules
+        uses: actions/cache@v3
+        with:
+          path: |
+            ~/.cache/go-build
+            ~/go/pkg/mod
+          key: ${{ runner.os }}-go-${{ hashFiles('**/go.sum') }}
+          restore-keys: |
+            ${{ runner.os }}-go-
+      - name: Build application
+        run: |
+        go get -d -v .
+        go build -ldflags="-s -w" main.go
+      - name: Set up QEMU
+        uses: docker/setup-qemu-action@v2
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v2
+      - name: Cache Docker layers
+        uses: actions/cache@v3
+        with:
+          path: /tmp/.buildx-cache
+          key: ${{ runner.os }}-buildx-${{ github.sha }}
+          restore-keys: |
+            ${{ runner.os }}-buildx-
+      - name: Log in to the Container registry
+        uses: docker/login-action@v2
+        with:
+          registry: ${{ env.IMAGE_REGISTRY }}
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+      - name: Build and push Application image
+        uses: docker/build-push-action@v3
+        with:
+          context: .
+          push: true
+          tags: |
+            "${{ env.IMAGE_REGISTRY }}/${{ env.APP_NAME }}:latest"
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+          file: |
+            ./apis/Go/fiber/.pipeline/openshift/Dockerfile
+      - name: Build and push Migration image
+        uses: docker/build-push-action@v3
+        with:
+          context: .
+          push: true
+          tags: |
+            "${{ env.IMAGE_REGISTRY }}/${{ env.APP_NAME }}-migration:latest"
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+          file: |
+            ./apis/Go/fiber/.pipeline/openshift/Dockerfile.migrations
