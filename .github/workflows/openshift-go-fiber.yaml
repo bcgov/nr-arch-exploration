@@ -119,8 +119,8 @@ jobs:
             ${{ runner.os }}-go-
       - name: Build application
         run: |
-        go get -d -v .
-        go build -ldflags="-s -w" main.go
+          go get -d -v .
+          go build -ldflags="-s -w" main.go
       - name: Set up QEMU
         uses: docker/setup-qemu-action@v2
       - name: Set up Docker Buildx
