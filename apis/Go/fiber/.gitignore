@@ -17,3 +17,4 @@ k6-script.js
 
 # Go workspace file
 go.work
+.idea

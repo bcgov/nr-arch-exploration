@@ -8,5 +8,6 @@ RUN go get -d -v . && go build -ldflags="-s -w" main.go
 FROM alpine:latest
 LABEL maintainer=numtostr version=0.0.1
 COPY --from=builder /go/src/app/main /main
+COPY --from=builder /go/src/app/database /database
 EXPOSE 4000
 ENTRYPOINT /main

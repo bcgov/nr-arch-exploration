@@ -11,16 +11,13 @@ import (
 	"github.com/gofiber/fiber/v2/middleware/logger"
 	"github.com/gofiber/fiber/v2/middleware/recover"
 	"github.com/gofiber/helmet/v2"
-	"github.com/golang-migrate/migrate/v4"
 	_ "github.com/golang-migrate/migrate/v4/database/postgres"
 	_ "github.com/golang-migrate/migrate/v4/source/file"
-	"github.com/iit-arch/fiber-crud/database"
-	"github.com/iit-arch/fiber-crud/v1/routes"
-	"github.com/iit-arch/fiber-crud/v1/structs"
 	"github.com/joho/godotenv"
+	"github.com/nr-arch-templates/fiber-crud/src/database"
+	"github.com/nr-arch-templates/fiber-crud/src/v1/routes"
+	"github.com/nr-arch-templates/fiber-crud/src/v1/structs"
 	"log"
-	"os"
-	"strconv"
 )
 
 var (
@@ -33,25 +30,9 @@ func init() {
 	_ = mapper.Register(&structs.EmployeeModel{})
 }
 func main() {
-	const dbVersion = 1 // please update this line when new version of db is created
-	_ = godotenv.Load()
-	user := os.Getenv("DB_USER")
-	password := os.Getenv("DB_PASSWORD")
-	host := os.Getenv("DB_HOST")
-	db := os.Getenv("DB_NAME")
-	port, _ := strconv.Atoi(os.Getenv("DB_PORT"))
-	dsn := fmt.Sprintf("postgres://%s:%s@%s:%d/%s?sslmode=disable", user, password, host, port, db)
-	m, err := migrate.New(
-		"file://database/migrations",
-		dsn)
-	if err != nil {
-		log.Fatalf("error is %v", err)
-	}
-	currentVer, _, _ := m.Version()
-	if currentVer < dbVersion {
-		if err := m.Up(); err != nil {
-			log.Fatalf("error from migrate is %v", err)
-		}
+	envErr := godotenv.Load()
+	if envErr != nil {
+		sysLog.Fatalf("Env Error: %v", envErr)
 	}
 	dbErr := database.Connect()
 	if dbErr != nil {
@@ -60,11 +41,12 @@ func main() {
 		sysLog.Fatalf("Error: %v", dbErr)
 	}
 	app := fiber.New(fiber.Config{})
+	app.Use(helmet.New())
 	app.Use(favicon.New())
 	app.Use(recover.New())
 	app.Use(cors.New())
 	app.Use(csrf.New())
-	app.Use(helmet.New())
+
 	app.Use(logger.New(logger.Config{
 		TimeFormat: "2006-01-02T15:04:05",
 		TimeZone:   "America/Vancouver",
@@ -75,7 +57,7 @@ func main() {
 	app.Use(func(c *fiber.Ctx) error {
 		return c.SendStatus(404) // => 404 "Not Found"
 	})
-	err = app.Listen(":3000")
+	err := app.Listen(":3000")
 	if err != nil {
 		sysLog.Fatalf("Error: %v", err)
 		return

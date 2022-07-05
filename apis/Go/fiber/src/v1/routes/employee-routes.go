@@ -2,7 +2,7 @@ package routes
 
 import (
 	"github.com/gofiber/fiber/v2"
-	"github.com/iit-arch/fiber-crud/v1/services"
+	"github.com/nr-arch-templates/fiber-crud/src/v1/services"
 )
 
 func EmployeeRoutes(app fiber.Router) {

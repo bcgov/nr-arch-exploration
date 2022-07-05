@@ -1,0 +1,3 @@
+FROM flyway/flyway:latest-alpine
+COPY src/database/migrations /flyway/sql
+CMD ["info","migrate","info"]

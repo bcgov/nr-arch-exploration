@@ -16,11 +16,26 @@ services:
       - "5330:5432"
     networks:
       - fiber
+  fiber-kc-database:
+    image: postgres
+    mem_limit: 128m
+    environment:
+      - POSTGRES_USER=fiber
+      - POSTGRES_PASSWORD=fiber123
+    healthcheck:
+      test: [ "CMD-SHELL", "pg_isready -U fiber" ]
+      interval: 5s
+      timeout: 5s
+      retries: 6
+    ports:
+      - "5331:5432"
+    networks:
+      - fiber
   fiber-keycloak:
     image: quay.io/keycloak/keycloak:14.0.0
     environment:
       DB_VENDOR: postgres
-      DB_ADDR: fiber-database:5432
+      DB_ADDR: fiber-kc-database:5432
       DB_DATABASE: fiber
       DB_SCHEMA: public
       DB_USER: fiber
@@ -41,14 +56,31 @@ services:
     networks:
       - fiber
     depends_on:
-      - fiber-database
-  fiber-api:
-    cpus: 0.25
+      fiber-kc-database:
+        condition: service_healthy
+  fiber-flyway:
     build:
-      context: .
-      dockerfile: Dockerfile
-    image: fiber-api:latest
-    mem_limit: 128m
+      context: ../fiber
+      dockerfile: Dockerfile-migration-local
+    image: fiber-api-migrations:latest
+    container_name: fiber-api-migrations
+    environment:
+      - FLYWAY_URL=jdbc:postgresql://fiber-database:5432/fiber
+      - FLYWAY_USER=fiber
+      - FLYWAY_PASSWORD=fiber123
+      - FLYWAY_BASELINE_ON_MIGRATE=true
+    depends_on:
+      fiber-database:
+        condition: service_healthy
+    networks:
+      - fiber
+  fiber-api:
+    cpus: 1
+    image: cosmtrek/air
+    working_dir: "/go/src/github.com/nr-arch-templates/fiber-crud"
+    volumes:
+      - "C:\\projects\\NRS\\iit-arch\\apis\\Go\\fiber:/go/src/github.com/nr-arch-templates/fiber-crud"
+    mem_limit: 512m
     environment:
       - DB_USER=fiber
       - DB_PASSWORD=fiber123
@@ -57,6 +89,7 @@ services:
       - DB_PORT=5432
       - DB_MAX_CONNECTIONS=20
       - DB_MAX_IDLE_CONNECTIONS=2
+      - APP_PORT=3000
     ports:
       - "7998:3000"  # the HTTP endpoint
     depends_on:

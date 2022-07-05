@@ -1,0 +1,3 @@
+FROM flyway/flyway:latest-alpine
+COPY apis/Go/fiber/src/database/migrations /flyway/sql
+CMD ["info","migrate","info"]
