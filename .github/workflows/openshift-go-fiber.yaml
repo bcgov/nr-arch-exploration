@@ -158,3 +158,37 @@ jobs:
           cache-to: type=gha,mode=max
           file: |
             ./apis/Go/fiber/.pipeline/openshift/Dockerfile.migrations
+      - name: Install oc
+        uses: redhat-actions/openshift-tools-installer@v1
+        with:
+          oc: 4
+
+      # https://github.com/redhat-actions/oc-login#readme
+      - uses: actions/checkout@v2
+      - name: Deploy
+        run: |
+          set +e -ux
+          # Login to OpenShift and select project
+          oc login --token=${{ env.OPENSHIFT_TOKEN }} --server=${{ env.OPENSHIFT_SERVER }}
+          oc tag -d ${{ env.APP_NAME }}:${{ env.TAG }}
+          oc tag -d ${{ env.APP_NAME }}-migration:${{ env.TAG }}
+          oc tag ${{ env.IMAGE_REGISTRY }}/${{ env.APP_NAME }}:latest ${{ env.APP_NAME }}:${{ env.TAG }}
+          oc tag ${{ env.IMAGE_REGISTRY }}/${{ env.APP_NAME }}-migration:latest ${{ env.APP_NAME }}-migration:${{ env.TAG }}
+          
+          # Process and create postgres deployment template
+          oc process -f https://raw.githubusercontent.com/bcgov/nr-arch-templates/main/apis/Go/fiber/.pipeline/openshift/openshift-postgres-deployment-config.yaml -p APP_NAME=${{ env.APP_NAME }} -p REPO_NAME=${{ env.REPO_NAME }} -p JOB_NAME=${{ env.JOB_NAME }} -p NAMESPACE=${{ env.OPENSHIFT_NAMESPACE_NO_ENV }}-${{env.TARGET_ENV}} \
+          | oc create -f -
+          
+          #check the status
+          oc rollout status dc/${{ env.APP_NAME }}-postgres
+          
+          # Process and apply deployment template
+          oc process -f https://raw.githubusercontent.com/bcgov/nr-arch-templates/main/apis/Go/fiber/.pipeline/openshift/openshift-deployment-config.yml -p APP_NAME=${{ env.APP_NAME }} -p REPO_NAME=${{ env.REPO_NAME }} -p JOB_NAME=${{ env.JOB_NAME }} -p NAMESPACE=${{ env.OPENSHIFT_NAMESPACE_NO_ENV }}-${{env.TARGET_ENV}} -p TAG=${{ env.TAG }} -p MIN_REPLICAS=${{ env.MIN_REPLICAS }} -p MAX_REPLICAS=${{ env.MAX_REPLICAS }} -p MIN_CPU=${{ env.MIN_CPU }} -p MAX_CPU=${{ env.MAX_CPU }} -p MIN_MEM=${{ env.MIN_MEM }} -p MAX_MEM=${{ env.MAX_MEM }} \
+          | oc apply -f -
+          
+          # Start rollout (if necessary) and follow it
+          oc rollout latest dc/${{ env.APP_NAME }} 2> /dev/null \
+          || true && echo "Rollout in progress"
+          oc logs -f dc/${{ env.APP_NAME }}
+          # Get status, returns 0 if rollout is successful
+          oc rollout status dc/${{ env.APP_NAME }}
