@@ -106,14 +106,25 @@ objects:
                   cpu: 50m
                   memory: 50Mi
               env:
-                - name: QUARKUS_DATASOURCE_JDBC_URL
-                  value: "jdbc:postgresql://${APP_NAME}-postgres:5432/${APP_NAME}"
-                - name: QUARKUS_DATASOURCE_JDBC_USERNAME
+                - name: DB_HOST
+                  value: "${APP_NAME}-postgres"
+                - name: DB_PORT
+                  value: "5432"
+                - name: DB_MAX_CONNECTIONS
+                   value: "20"
+                - name: DB_MAX_IDLE_CONNECTIONS
+                  value: "2"
+                - name: DB_NAME
+                  valueFrom:
+                    secretKeyRef:
+                      name: "${APP_NAME}-secret"
+                      key: database-name
+                - name: DB_USER
                   valueFrom:
                     secretKeyRef:
                       name: "${APP_NAME}-secret"
                       key: database-user
-                - name: QUARKUS_DATASOURCE_JDBC_PASSWORD
+                - name: DB_PASSWORD
                   valueFrom:
                     secretKeyRef:
                       name: "${APP_NAME}-secret"
