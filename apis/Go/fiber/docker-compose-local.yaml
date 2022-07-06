@@ -76,10 +76,15 @@ services:
       - fiber
   fiber-api:
     cpus: 1
-    image: cosmtrek/air
-    working_dir: "/go/src/github.com/nr-arch-templates/fiber-crud"
-    volumes:
-      - "C:\\projects\\NRS\\iit-arch\\apis\\Go\\fiber:/go/src/github.com/nr-arch-templates/fiber-crud"
+    init: true
+    build:
+      context: ../fiber
+      dockerfile: Dockerfile
+    image: fiber-api:latest
+    #image: cosmtrek/air
+    #working_dir: "/go/src/github.com/nr-arch-templates/fiber-crud"
+    #volumes:
+    #  - "C:\\projects\\NRS\\iit-arch\\apis\\Go\\fiber:/go/src/github.com/nr-arch-templates/fiber-crud"
     mem_limit: 512m
     environment:
       - DB_USER=fiber

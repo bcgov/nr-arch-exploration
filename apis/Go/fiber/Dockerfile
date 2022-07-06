@@ -1,13 +1,15 @@
-#build stage
-FROM golang:alpine AS builder
-WORKDIR /go/src/app
+FROM golang:1.18 AS build
+WORKDIR /workspace/app
 COPY . .
-RUN go get -d -v . && go build -ldflags="-s -w" main.go
+RUN go get -d -v .
+RUN CGO_ENABLED=0 GOOS=linux go build -ldflags="-s -w" -a -o application main.go
 
-#final stage
-FROM alpine:latest
-LABEL maintainer=numtostr version=0.0.1
-COPY --from=builder /go/src/app/main /main
-COPY --from=builder /go/src/app/database /database
-EXPOSE 4000
-ENTRYPOINT /main
+
+FROM alpine:3.11.3
+ARG DEPENDENCY=/workspace/app
+RUN apk add --no-cache bash
+RUN addgroup -S appgroup && adduser -S 1001 -G appgroup
+USER 1001
+COPY --chown=1001 --from=build ${DEPENDENCY}/application .
+EXPOSE 3000
+ENTRYPOINT  ["./application"]

@@ -4,13 +4,13 @@ import (
 	"bytes"
 	"fmt"
 	"github.com/devfeel/mapper"
-	"github.com/gofiber/fiber/v2"
+	fiber "github.com/gofiber/fiber/v2"
 	"github.com/gofiber/fiber/v2/middleware/cors"
 	"github.com/gofiber/fiber/v2/middleware/csrf"
 	"github.com/gofiber/fiber/v2/middleware/favicon"
 	"github.com/gofiber/fiber/v2/middleware/logger"
 	"github.com/gofiber/fiber/v2/middleware/recover"
-	"github.com/gofiber/helmet/v2"
+	helmet "github.com/gofiber/helmet/v2"
 	_ "github.com/golang-migrate/migrate/v4/database/postgres"
 	_ "github.com/golang-migrate/migrate/v4/source/file"
 	"github.com/joho/godotenv"
@@ -30,10 +30,7 @@ func init() {
 	_ = mapper.Register(&structs.EmployeeModel{})
 }
 func main() {
-	envErr := godotenv.Load()
-	if envErr != nil {
-		sysLog.Fatalf("Env Error: %v", envErr)
-	}
+	_ = godotenv.Load()
 	dbErr := database.Connect()
 	if dbErr != nil {
 		err := fmt.Errorf("error: %v", dbErr)
