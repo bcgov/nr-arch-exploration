@@ -44,6 +44,9 @@ parameters:
   - name: MAX_MEM
     description: The maximum amount of memory
     required: true
+  - name: KC_JWKS_URL
+    description: The keycloack jwks url
+    required: true
 
 objects:
   - apiVersion: v1
@@ -114,6 +117,8 @@ objects:
                   value: "20"
                 - name: DB_MAX_IDLE_CONNECTIONS
                   value: "2"
+                - name: KC_JWKS_URL
+                  value: "${KC_JWKS_URL}"
                 - name: DB_NAME
                   valueFrom:
                     secretKeyRef:
