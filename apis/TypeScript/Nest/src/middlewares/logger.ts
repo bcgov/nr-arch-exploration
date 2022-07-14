@@ -1,10 +1,10 @@
 'use strict';
-import { Request, Response, NextFunction } from 'express';
-import { Injectable, NestMiddleware, Logger } from '@nestjs/common';
+import { NextFunction, Request, Response } from 'express';
+import { ConsoleLogger, Injectable, NestMiddleware } from '@nestjs/common';
 
 @Injectable()
 export class LoggerMiddleware implements NestMiddleware {
-  private logger = new Logger('HTTP');
+  private logger = new ConsoleLogger('HTTP');
 
   use(request: Request, response: Response, next: NextFunction): void {
     const startAt = process.hrtime();

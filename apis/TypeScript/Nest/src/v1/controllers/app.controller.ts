@@ -4,7 +4,6 @@ import {
   Delete,
   Get,
   HttpStatus,
-  Logger,
   Param,
   Post,
   Put,
@@ -42,7 +41,6 @@ export class AppControllerV1 {
       });
     } else {
       const createdUser = await this.appService.save(user);
-      Logger.log(`User ${createdUser.userId} created`);
       res.status(HttpStatus.CREATED);
       return createdUser;
     }

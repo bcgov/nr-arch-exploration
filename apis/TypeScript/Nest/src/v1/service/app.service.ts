@@ -1,5 +1,5 @@
 import { HttpException, HttpStatus, Injectable, Logger } from '@nestjs/common';
-import { Connection, Repository } from 'typeorm';
+import { Repository } from 'typeorm';
 import { User } from '../entities/user.entity';
 import { InjectRepository } from '@nestjs/typeorm';
 import { randomUUID } from 'crypto';
@@ -7,18 +7,17 @@ import { randomUUID } from 'crypto';
 @Injectable()
 export class AppService {
   constructor(
-    private readonly connection: Connection,
     @InjectRepository(User)
     private readonly usersRepository: Repository<User>,
   ) {}
 
-  async findOne(id: string): Promise<User> {
-    const user = await this.usersRepository.findOne(id);
+  async findOne(userId: string): Promise<User> {
+    const user = await this.usersRepository.findOneBy({ userId: userId });
     if (user) {
       return user;
     } else {
       throw new HttpException(
-        `User with id '${id}' is not found.`,
+        `User with id '${userId}' is not found.`,
         HttpStatus.NOT_FOUND,
       );
     }
@@ -40,13 +39,13 @@ export class AppService {
     }
   }
 
-  async remove(id: string): Promise<void> {
-    const user = await this.usersRepository.findOne(id);
+  async remove(userId: string): Promise<void> {
+    const user = await this.usersRepository.findOneBy({ userId: userId });
     if (user) {
       await this.usersRepository.remove(user);
     } else {
       throw new HttpException(
-        `User with id '${id}' is not found.`,
+        `User with id '${userId}' is not found.`,
         HttpStatus.NOT_FOUND,
       );
     }

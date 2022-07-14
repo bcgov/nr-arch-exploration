@@ -1,27 +1,32 @@
-import { Injectable, Logger } from '@nestjs/common';
-import { Connection, Repository } from 'typeorm';
+import { Controller, Injectable, Logger } from '@nestjs/common';
+import { Repository } from 'typeorm';
 import { User } from '../entities/user.entity';
 import { InjectRepository } from '@nestjs/typeorm';
 import { randomUUID } from 'crypto';
 import { GraphQLError } from 'graphql';
+import { Roles } from 'nest-keycloak-connect';
+import { ApiBearerAuth } from '@nestjs/swagger';
 
 @Injectable()
+@ApiBearerAuth()
+@Controller()
 export class AppGraphqlService {
   constructor(
-    private readonly connection: Connection,
     @InjectRepository(User)
     private readonly usersRepository: Repository<User>,
   ) {}
 
-  async findOne(id: string): Promise<User> {
-    const user = await this.usersRepository.findOne(id);
+  @Roles({ roles: [] })
+  async findOne(userId: string): Promise<User> {
+    const user = await this.usersRepository.findOneBy({ userId: userId });
     if (user) {
       return user;
     } else {
-      throw new GraphQLError(`User with id ${id} could not be found`);
+      throw new GraphQLError(`User with id ${userId} could not be found`);
     }
   }
 
+  @Roles({ roles: [] })
   async save(user: User): Promise<User> {
     try {
       const userModel: User = {
@@ -39,12 +44,13 @@ export class AppGraphqlService {
     }
   }
 
-  async remove(id: string): Promise<User> {
-    const user = await this.usersRepository.findOne(id);
+  @Roles({ roles: [] })
+  async remove(userId: string): Promise<User> {
+    const user = await this.usersRepository.findOneBy({ userId: userId });
     if (user) {
-      return await this.usersRepository.remove(user);
+      return this.usersRepository.remove(user);
     } else {
-      throw new GraphQLError(`User with id ${id} could not be found`);
+      throw new GraphQLError(`User with id ${userId} could not be found`);
     }
   }
 }

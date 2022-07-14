@@ -8,11 +8,22 @@
 3. login to KC admin console http://localhost:8191/auth/
 4. click on admin console
 5. sign-in with admin/admin
-6. go to clients menu in left side-bar
+6. go to clients menu in left sidebar
 7. click on create new client and then import, select the kc-local-client.json file present in this folder.
-8. run the nest application by `npm run start:dev:windows`
-9. It will run typeorm migrations and then start the application on port 8000.
-10. you can now access the swagger ui at http://localhost:8000/
+8. please paste these into a .env file 
+    DB_HOST=localhost
+    DB_PORT=5430
+    DB_USER=nest
+    DB_PASSWORD=nest123
+    DB=nest
+    PORT=7996
+    AUTH_SERVER_URL=http://localhost:8191
+    REALM=master
+    CLIENT_ID=api-client
+    CLIENT_SECRET=secret
+9. run the nest application by `npm run start:dev:windows`
+10. It starts the application on port 7996.
+11. you can now access the swagger ui at http://localhost:7996/
 
 ## Deployment to openshift
 1. follow this link for artifactory knowledge https://developer.gov.bc.ca/Artifact-Repositories-(Artifactory),  it helps in understanding build and push of image to openshift.
