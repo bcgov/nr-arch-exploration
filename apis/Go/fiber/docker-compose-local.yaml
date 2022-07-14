@@ -94,7 +94,7 @@ services:
       - DB_PORT=5432
       - DB_MAX_CONNECTIONS=20
       - DB_MAX_IDLE_CONNECTIONS=2
-      - APP_PORT=3000
+      - KC_JWKS_URL=http://fiber-keycloak:8080/auth/realms/master/protocol/openid-connect/certs
     ports:
       - "7998:3000"  # the HTTP endpoint
     depends_on:
