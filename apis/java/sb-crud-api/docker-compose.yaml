@@ -1,0 +1,116 @@
+version: "2.3"
+
+services:
+  sb-crud-api:
+    deploy:
+      resources:
+        limits:
+          cpus: '2'
+          memory: 200M
+        reservations:
+          cpus: '1'
+          memory: 120M
+    build:
+      context: ../sb-crud-api
+      dockerfile: Dockerfile
+    image: sb-api:latest
+    environment:
+      - DB_HOST=sb-db
+      - DB_NAME=sb
+      - DB_USERNAME=sb
+      - DB_PASSWORD=sb123
+      - SPRING_PROFILES_ACTIVE=openshift-dev
+      - KC_JWKS_URL=http://quarkus-keycloak:8190/auth/realms/master/protocol/openid-connect/certs #secret
+      - TZ=America/Vancouver
+    ports:
+      - "7995:8080"  # the HTTP endpoint
+    healthcheck:
+      test: [ "CMD-SHELL", "curl --fail http://localhost:8080/actuator/health" ]
+      interval: 30s
+      timeout: 10s
+      retries: 10
+      start_period: 1m
+    depends_on:
+      sb-db:
+        condition: service_healthy
+      sb-keycloak:
+        condition: service_healthy
+    networks:
+      - sb
+  sb-keycloak:
+    image: quay.io/keycloak/keycloak:14.0.0
+    environment:
+      DB_VENDOR: postgres
+      DB_ADDR: sb-kc-db:5432
+      DB_DATABASE: sb
+      DB_SCHEMA: public
+      DB_USER: sb
+      DB_PASSWORD: sb123
+      KEYCLOAK_ADMIN: admin
+      KEYCLOAK_ADMIN_PASSWORD: admin
+      KEYCLOAK_USER: admin
+      KEYCLOAK_PASSWORD: admin
+    healthcheck:
+      test: [ "CMD-SHELL", "curl --fail http://localhost:8080/auth/realms/master" ]
+      interval: 30s
+      timeout: 10s
+      retries: 10
+      start_period: 1m
+    ports:
+      - "8190:8080"  # the HTTP endpoint
+      - "9990:9990"  # the admin HTTP endpoint
+    depends_on:
+      sb-kc-db:
+        condition: service_healthy
+    networks:
+      - sb
+  sb-flyway:
+    build:
+      context: ../sb-crud-api
+      dockerfile: Dockerfile-migrations-local
+    image: sb-crud-api-migrations:latest
+    container_name: sb-api-migrations
+    environment:
+      - FLYWAY_URL=jdbc:postgresql://sb-db:5432/sb
+      - FLYWAY_USER=sb
+      - FLYWAY_PASSWORD=sb123
+      - FLYWAY_BASELINE_ON_MIGRATE=true
+    depends_on:
+      sb-db:
+        condition: service_healthy
+    networks:
+      - sb
+  sb-kc-db:
+    image: postgres
+    mem_limit: 128m
+    environment:
+      - POSTGRES_USER=sb
+      - POSTGRES_PASSWORD=sb123
+    healthcheck:
+      test: [ "CMD-SHELL", "pg_isready -U sb" ]
+      interval: 5s
+      timeout: 5s
+      retries: 6
+    ports:
+      - "5433:5432"
+    networks:
+      - sb
+  sb-db:
+    image: postgres
+    mem_limit: 128m
+    environment:
+      - POSTGRES_USER=sb
+      - POSTGRES_PASSWORD=sb123
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U sb"]
+      interval: 5s
+      timeout: 5s
+      retries: 6
+    ports:
+      - "5425:5432"
+    networks:
+      - sb
+
+networks:
+  sb:
+    driver: bridge
