@@ -62,11 +62,9 @@ spec:
       labels:
         app: redis
     spec:
-      imagePullSecrets:
-        - name: artifactory-creds
       containers:
         - name: redis
-          image: docker-remote.artifacts.developer.gov.bc.ca/redis:6.0.9-alpine
+          image: redis:alpine
           ports:
             - containerPort: 6379
               name: client
