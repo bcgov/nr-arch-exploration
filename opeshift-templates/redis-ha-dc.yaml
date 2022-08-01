@@ -5,6 +5,7 @@ metadata:
   name: redis
   labels:
     app: redis
+    template-owner: "nr-arch-templates"
 data:
   fix-ip.sh: |
     #!/bin/sh
@@ -33,6 +34,7 @@ metadata:
   name: redis
   labels:
     app: redis
+    template-owner: "nr-arch-templates"
 spec:
   ports:
     - port: 6379
@@ -51,6 +53,7 @@ metadata:
   name: redis
   labels:
     app: redis
+    template-owner: "nr-arch-templates"
 spec:
   serviceName: redis
   replicas: 6
@@ -115,6 +118,7 @@ spec:
     - metadata:
         name: data
         labels:
+          template-owner: "nr-arch-templates"
           name: redis
       spec:
         accessModes: [ "ReadWriteOnce" ]
