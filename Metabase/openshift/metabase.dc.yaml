@@ -53,7 +53,8 @@ objects:
               image: "${IMAGE_REGISTRY}/${NAMESPACE}/${NAME}:${VERSION}"
               imagePullPolicy: Always
               livenessProbe:
-                tcpSocket:
+                httpGet:
+                  path: "/"
                   port: 3000
                 initialDelaySeconds: 300
                 timeoutSeconds: 10
