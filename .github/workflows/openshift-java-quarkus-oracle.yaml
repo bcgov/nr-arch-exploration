@@ -176,7 +176,7 @@ jobs:
       - name: Install oc
         uses: redhat-actions/openshift-tools-installer@v1
         with:
-          oc: 4
+          oc: "4.10"
       - uses: actions/checkout@v2
       - name: Deploy
         run: |
