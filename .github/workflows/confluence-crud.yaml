@@ -1,0 +1,28 @@
+name: confluence-crud
+
+env:
+  CONFLUENCE_USER_NAME: ${{ secrets.CONFLUENCE_USER_NAME }}
+  CONFLUENCE_TOKEN: ${{ secrets.CONFLUENCE_TOKEN }}
+  CONFLUENCE_URL: ${{ secrets.CONFLUENCE_URL }}
+
+
+on:
+  workflow_dispatch:
+  #pull_request:
+  #  branches:
+  #    - main
+  #  paths:
+  #    - 'apis/Go/fiber/**'
+
+jobs:
+  crud-confluenc:
+    name: Get and update contents from confluence
+    runs-on: ubuntu-20.04
+
+    steps:
+      - uses: actions/checkout@v2
+      - name: Read contents
+        run: |
+          set +e -ux
+          curl -u ${{ env.CONFLUENCE_USER_NAME }}:${{ env.CONFLUENCE_TOKEN }} https://${{ env.CONFLUENCE_URL }}/rest/api/content
+
