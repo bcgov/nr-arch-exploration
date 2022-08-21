@@ -47,6 +47,7 @@ jobs:
       - name: Commit files  # transfer the new html files back into the repository
         run: |
           git config --local user.name  ${{ github.actor }}
+          ls -lrt
           git add ./confluence
           git commit -m "Adding or updating the confluence pages"
       - name: Push changes  # push the output folder to your repo
