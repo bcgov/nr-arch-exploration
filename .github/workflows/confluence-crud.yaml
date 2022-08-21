@@ -18,16 +18,32 @@ jobs:
   crud-confluenc:
     name: Get and update contents from confluence
     runs-on: ubuntu-20.04
-
+    defaults:
+      run:
+        working-directory: confluence/script
     steps:
-      - uses: actions/checkout@v2
-      - name: Read contents
+      - name: Check out repository
+        uses: actions/checkout@v2
+
+      - name: Add Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '16.x'
+
+      - uses: actions/cache@v3
+        with:
+          path: ~/.npm
+          key: ${{ runner.os }}-node-${{ hashFiles('**/package-lock.json') }}
+          restore-keys: |
+            ${{ runner.os }}-node-
+
+      - name: Install Dependencies
+        run: npm ci
+
+      - name: process script
         run: |
-          set +e -ux
-          mkdir confluence
-          cd confluence
-          curl -u ${{ env.CONFLUENCE_USER_NAME }}:${{ env.CONFLUENCE_TOKEN }} https://${{ env.CONFLUENCE_URL }}/rest/api/content/120392107?expand=body.storage >> 120392107.json
-          
+          node index.js
+
       - name: Commit files  # transfer the new html files back into the repository
         run: |
           git config --local user.name  ${{ github.actor }}

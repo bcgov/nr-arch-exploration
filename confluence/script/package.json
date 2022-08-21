@@ -1,0 +1,26 @@
+{
+  "name": "script",
+  "version": "1.0.0",
+  "description": "This package contains script to communicate with confluence and create readme files based on GH actions",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/bcgov/nr-arch-templates.git"
+  },
+  "keywords": [
+    "templates",
+    "confluence"
+  ],
+  "author": "mishraomp@github",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/bcgov/nr-arch-templates/issues"
+  },
+  "homepage": "https://github.com/bcgov/nr-arch-templates#readme",
+  "dependencies": {
+    "axios": "^0.27.2"
+  }
+}
