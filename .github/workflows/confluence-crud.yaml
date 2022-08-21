@@ -48,7 +48,7 @@ jobs:
         run: |
           git config --local user.name  ${{ github.actor }}
           ls -lrt
-          git add ./confluence
+          git add ../confluence/pages
           git commit -m "Adding or updating the confluence pages"
       - name: Push changes  # push the output folder to your repo
         uses: ad-m/github-push-action@master
