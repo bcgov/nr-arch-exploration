@@ -3,8 +3,8 @@ name: confluence-crud
 env:
   CONFLUENCE_USER_NAME: ${{ secrets.CONFLUENCE_USER_NAME }}
   CONFLUENCE_TOKEN: ${{ secrets.CONFLUENCE_TOKEN }}
-  CONFLUENCE_URL: ${{ secrets.CONFLUENCE_URL }}
-
+  BASE_URL: ${{ secrets.CONFLUENCE_URL }}
+  PAGES: "120392107"
 
 on:
   workflow_dispatch:
