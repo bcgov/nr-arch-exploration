@@ -22,7 +22,7 @@ async function processPageIdList() {
       if (fs.existsSync(filePath)) {
         const fileData = await fs_promises.readFile(filePath,'utf-8');
         if (fileData !== JSON.stringify(response.data)) {
-          await fs_promises.writeFile(filePath, response?.data);
+          await fs_promises.writeFile(filePath, JSON.stringify(response?.data));
           await fs_promises.writeFile(folderPath + '/README.md', response?.data?.body?.storage?.value);
         }else{
           console.info('It is already the latest version', page_id);
