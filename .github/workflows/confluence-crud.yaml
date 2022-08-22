@@ -50,7 +50,7 @@ jobs:
           git config --local user.name  ${{ github.actor }}
           ls -lrt
           git add ../pages
-          if [[ git diff --quiet && git diff --staged --quiet ]]
+          if [( git diff --quiet && git diff --staged --quiet ) == true]
           then 
             # Output build=true for next steps
             echo "::set-output name=push::true"
