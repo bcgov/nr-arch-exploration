@@ -8,11 +8,9 @@ env:
 
 on:
   workflow_dispatch:
-  #pull_request:
-  #  branches:
-  #    - main
-  #  paths:
-  #    - 'apis/Go/fiber/**'
+  schedule:
+    # * is a special character in YAML, so you have to quote this string
+    - cron:  '0 0 * * *'
 
 jobs:
   crud-confluenc:
