@@ -15,6 +15,8 @@ on:
 jobs:
   crud-confluenc:
     name: Get and update contents from confluence
+    outputs:
+      push: ${{ steps.commit.outputs.push }}
     runs-on: ubuntu-20.04
     defaults:
       run:
@@ -43,12 +45,19 @@ jobs:
           node index.js
 
       - name: Commit files  # transfer the new html files back into the repository
+        id: commit
         run: |
           git config --local user.name  ${{ github.actor }}
           ls -lrt
           git add ../pages
-          git commit -m "Adding or updating the confluence pages"
+          if [[ git diff --quiet && git diff --staged --quiet ]]
+          then 
+            # Output build=true for next steps
+            echo "::set-output name=push::true"
+            git commit -m "Adding or updating the confluence pages"
+          fi
       - name: Push changes  # push the output folder to your repo
+        if: steps.commit.outputs.push == 'true'
         uses: ad-m/github-push-action@master
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
