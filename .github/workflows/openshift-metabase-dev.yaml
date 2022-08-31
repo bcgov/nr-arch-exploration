@@ -11,7 +11,7 @@ env:
   DB_PORT: ${{ secrets.DB_PORT }}
   MB_ADMIN_EMAIL: ${{ secrets.MB_ADMIN_EMAIL }}
   METABASE_APP_PREFIX: ${{ secrets.METABASE_APP_PREFIX }}
-  DOCKER_ARTIFACTORY_REPO: docker-remote.artifacts.developer.gov.bc.ca
+  DOCKER_ARTIFACTORY_REPO: artifacts.developer.gov.bc.ca/docker-remote
   ARTIFACTORY_REPO: artifacts.developer.gov.bc.ca
 
   APP_NAME: 'metabase'
