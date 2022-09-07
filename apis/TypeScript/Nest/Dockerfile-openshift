@@ -25,6 +25,7 @@ COPY --from=builder /usr/lib64/libgcc_s.so.1 /usr/lib64/
 COPY --from=builder /usr/lib64/libbrotlicommon.so.1 /usr/lib64/
 
 WORKDIR /app
+RUN chmod -R 777 /app
 COPY --from=builder /app/node_modules ./node_modules
 COPY --from=builder /app/dist ./dist
 
