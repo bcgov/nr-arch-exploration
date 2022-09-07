@@ -39,8 +39,6 @@ jobs:
   openshift-ci-cd:
     name: Build and deploy to OpenShift
     runs-on: ubuntu-20.04
-    permissions:
-      packages: write
     environment: nest-dev
     defaults:
       run:
@@ -140,16 +138,16 @@ jobs:
       - name: Build and push Application image
         uses: docker/build-push-action@v3.1.1
         with:
-          context: .
+          context: ./apis/TypeScript/Nest
           push: true
           tags: |
             "${{ env.IMAGE_REGISTRY }}/${{ env.APP_NAME }}:latest"
           cache-from: type=gha
           cache-to: type=gha,mode=max
           file: |
-            ./apis/TypeScript/Nest/Dockerfile-openshift
+            Dockerfile-openshift
       - name: Build and push Migration image
-        uses: docker/build-push-action@v3
+        uses: docker/build-push-action@v3.1.1
         with:
           context: .
           push: true
