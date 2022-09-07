@@ -6,7 +6,6 @@ RUN dnf module install -y nodejs:16
 WORKDIR /app
 COPY apis/TypeScript/Nest/dist /app/dist
 COPY apis/TypeScript/Nest/node_modules /app/node_modules
-RUN pwd && ls -lrt
 
 # Deployment container
 FROM registry.access.redhat.com/ubi8/ubi-micro
