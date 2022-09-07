@@ -138,14 +138,14 @@ jobs:
       - name: Build and push Application image
         uses: docker/build-push-action@v3.1.1
         with:
-          context: ./apis/TypeScript/Nest
+          context: .
           push: true
           tags: |
             "${{ env.IMAGE_REGISTRY }}/${{ env.APP_NAME }}:latest"
           cache-from: type=gha
           cache-to: type=gha,mode=max
           file: |
-            Dockerfile-openshift
+            ./apis/TypeScript/Nest/Dockerfile-openshift
       - name: Build and push Migration image
         uses: docker/build-push-action@v3.1.1
         with:
