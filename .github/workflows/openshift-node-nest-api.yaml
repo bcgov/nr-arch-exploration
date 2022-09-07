@@ -39,6 +39,8 @@ jobs:
   openshift-ci-cd:
     name: Build and deploy to OpenShift
     runs-on: ubuntu-20.04
+    permissions:
+      packages: write
     environment: nest-dev
     defaults:
       run:
