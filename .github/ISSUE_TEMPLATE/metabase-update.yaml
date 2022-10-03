@@ -3,6 +3,6 @@ description: Please provide the version of the metabase image to be build withou
 labels: task
 body:
 - type: input
-  id: version
+  id: METABASE_VERSION
   attributes:
     label: Metabase Version
