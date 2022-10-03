@@ -1,8 +1,9 @@
 ---
 name: Update Metabase Image build and push.
 description: Please provide the version of the metabase image to be build without the letter v, it will auto append v in the beginning while downloading. sample format is 0.43.1
-version:
 labels: task
+
 ---
+
 **Please provide the version here**
 version:
