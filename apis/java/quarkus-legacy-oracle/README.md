@@ -3,6 +3,7 @@ This project uses Quarkus, the Supersonic Subatomic Java Framework.
 If you want to learn more about Quarkus, please visit its website: https://quarkus.io/ .
 
 ## This project is a simple example of how to create Java API using Quarkus framework to specifically connect to Oracle Database over encrypted connection.
+## You can also use other frameworks like Micronaut or Spring Boot et...
     
 _This API does not show how to create roles or scopes in keycloak_ but the endpoints are secured with jwt token which validated against keycloak realm.
 
@@ -15,7 +16,7 @@ Following environment variables are required to run this Docker container:
 6. QUARKUS_DATASOURCE_JDBC_USERNAME --> The username for the oracle DB.
 7. SERVICE_NAME --> The service name for Oracle DB.
 
-### Sample Openshift deployment yaml file is available in .pipline/openshift/ 
+### Sample Openshift deployment yaml file is available in .pipeline/openshift/ 
 
 ## To Run this on local,
 1. Please run `mvn clean package` first.

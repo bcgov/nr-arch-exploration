@@ -1,4 +1,4 @@
-FROM docker.io/openjdk:17-alpine
+FROM docker.io/openjdk:17-slim
 WORKDIR /app
 ENV LANG='en_US.UTF-8' LANGUAGE='en_US:en'
 ARG DEPENDENCY=/workspace/app
