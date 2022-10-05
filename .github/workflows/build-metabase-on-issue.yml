@@ -29,9 +29,9 @@ jobs:
       - name: check if build is required.
         id: check
         run: |
-          echo "Issue body : ${{ steps.parse.outputs.data }}"
+          echo "Issue body : ${{ steps.parse.outputs.data['metabase-version'] }}"
           # Check if version paramter is given.
-          METABASE_VERSION=${{ steps.parse.outputs.data.metabase-version.text }}
+          METABASE_VERSION=${{ steps.parse.outputs.data['metabase-version'].text }}
           if [ -z $METABASE_VERSION ]
           then
             echo "::set-output name=build::false"
