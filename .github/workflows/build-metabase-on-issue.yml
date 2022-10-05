@@ -31,7 +31,7 @@ jobs:
         run: |
           echo "Issue body : ${{ steps.parse.outputs.data }}"
           # Check if version paramter is given.
-          METABASE_VERSION=${{ steps.parse.outputs.data.METABASE_VERSION }}
+          METABASE_VERSION=${{ steps.parse.outputs.data.metabase-version.text }}
           if [ -z $METABASE_VERSION ]
           then
             echo "::set-output name=build::false"
