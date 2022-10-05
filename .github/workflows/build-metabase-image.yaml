@@ -31,7 +31,7 @@ jobs:
       - name: check if build is required.
         id: check
         run: |
-          echo "Issue body: ${{ github.event.issue.body }}"
+          echo "Issue body METABASE_VERSION: ${{ github.event.issue.body.METABASE_VERSION }}"
           # Check if version paramter is given.
           METABASE_VERSION=${{ github.event.inputs.METABASE_VERSION }}
           if [ -z $METABASE_VERSION ]
