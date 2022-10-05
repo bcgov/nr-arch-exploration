@@ -7,8 +7,6 @@ env:
   APP_NAME: 'metabase'
 
 on:
-  issues:
-    types: [opened, edited]
   workflow_dispatch:
     inputs:
       METABASE_VERSION:
