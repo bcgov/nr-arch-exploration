@@ -29,7 +29,10 @@ jobs:
       - name: check if build is required.
         id: check
         run: |
-          echo "Issue body : ${{ steps.parse.outputs.data['metabase-version'] }}"
+          
+          echo "Issue body : ${{ steps.parse.outputs.data }}"
+          MB=${{ steps.parse.outputs.data }} | jq -r .metabase-version
+          echo "$MB"
           # Check if version paramter is given.
           METABASE_VERSION=${{ steps.parse.outputs.data['metabase-version'].text }}
           if [ -z $METABASE_VERSION ]
