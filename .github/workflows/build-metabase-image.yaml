@@ -32,7 +32,7 @@ jobs:
         id: check
         run: |
           # Check if version paramter is given.
-          METABASE_VERSION = ${{ github.event.inputs.METABASE_VERSION }}
+          METABASE_VERSION=${{ github.event.inputs.METABASE_VERSION }}
           if [ -z $METABASE_VERSION ]
           then
             echo "::set-output name=build::false"
