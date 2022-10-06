@@ -78,7 +78,7 @@ jobs:
         with:
           push: true
           tags: |
-            "${{ env.IMAGE_REGISTRY }}/${{ env.APP_NAME }}:${{ steps.parse.outputs.data.METABASE_VERSION }}"
+            "${{ env.IMAGE_REGISTRY }}/${{ env.APP_NAME }}:${{ steps.set-result.outputs.result }}"
             "${{ env.IMAGE_REGISTRY }}/${{ env.APP_NAME }}:latest"
           cache-from: type=gha
           cache-to: type=gha,mode=max
