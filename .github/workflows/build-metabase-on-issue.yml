@@ -88,4 +88,5 @@ jobs:
         uses: peter-evans/close-issue@v2
         with:
           comment: |
-            Closing this issue as the metabase image is created and stored in the packages.
+            Closing this issue as the metabase image is created and stored in the packages. 
+            The Image should be now available for use at https://github.com/bcgov/nr-arch-templates/pkgs/container/nr-arch-templates%2Fmetabase
