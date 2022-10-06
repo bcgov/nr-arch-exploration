@@ -26,11 +26,18 @@ jobs:
         id: parse
         uses: zentered/issue-forms-body-parser@v1.5.0
       
+      - name: Stringify Result
+        uses: actions/github-script@v6
+        id: set-result
+        with:
+         script: return JSON.stringify(${{ steps.parse.outputs.data }});
+         result-encoding: string
+      
       - name: check if build is required.
         id: check
         run: |
-          echo "Issue body : ${{ steps.parse.outputs.data }}"
-          MB=${{ steps.parse.outputs.data }} | jq -r '.["metabase-version"].text'
+          echo "Issue body : ${{ steps.set-result.outputs.result }}"
+          MB=${{ steps.set-result.outputs.result }} | jq -r '.["metabase-version"].text'
           echo "MB IS $MB"
           # Check if version paramter is given.
           METABASE_VERSION=${{ steps.parse.outputs.data['metabase-version'].text }}
