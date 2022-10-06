@@ -30,7 +30,12 @@ jobs:
         uses: actions/github-script@v6
         id: set-result
         with:
-         script: return JSON.stringify(${{ steps.parse.outputs.data }});
+         script: |
+           const data = ${{ steps.parse.outputs.data }};
+           console.info(data);
+           const version = data.["metabase-version"].text;
+           console.info(version);
+           return version;
          result-encoding: string
       
       - name: check if build is required.
