@@ -1,7 +1,7 @@
 name: metabase-image-builder-on-issue
 
 env:
-  IMAGE_REGISTRY: ghcr.io/${{ github.repository_owner }}/nr-arch-templates
+  IMAGE_REGISTRY: ghcr.io/${{ github.repository }}
   IMAGE_REGISTRY_USER: ${{ github.actor }}
   IMAGE_REGISTRY_PASSWORD: ${{ github.token }}
   APP_NAME: 'metabase'
@@ -32,9 +32,7 @@ jobs:
         with:
          script: |
            const data = ${{ steps.parse.outputs.data }};
-           console.info(data);
            const version = data["metabase-version"].text;
-           console.info(version);
            return version;
          result-encoding: string
       
@@ -86,3 +84,8 @@ jobs:
             ./Metabase/openshift/.pipeline/Dockerfile.openshift
           build-args: |
             METABASE_VERSION=${{ steps.set-result.outputs.result }}
+      - name: Close Issue
+        uses: peter-evans/close-issue@v2
+        with:
+          comment: |
+            Closing this issue as the metabase image is created and stored in the packages.
