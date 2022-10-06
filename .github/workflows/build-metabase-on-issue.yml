@@ -33,7 +33,7 @@ jobs:
          script: |
            const data = ${{ steps.parse.outputs.data }};
            console.info(data);
-           const version = data.["metabase-version"].text;
+           const version = data["metabase-version"].text;
            console.info(version);
            return version;
          result-encoding: string
