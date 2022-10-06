@@ -24,12 +24,11 @@ jobs:
         
       - name: Issue Forms Body Parser
         id: parse
-        uses: zentered/issue-forms-body-parser@v1.4.3
+        uses: zentered/issue-forms-body-parser@v1.5.0
       
       - name: check if build is required.
         id: check
         run: |
-          
           echo "Issue body : ${{ steps.parse.outputs.data }}"
           MB="${{ JSON.stringify(steps.parse.outputs.data) }}" | jq -r '.["metabase-version"].text'
           echo "MB IS $MB"
