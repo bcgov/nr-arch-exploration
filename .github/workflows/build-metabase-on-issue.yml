@@ -31,8 +31,8 @@ jobs:
         run: |
           
           echo "Issue body : ${{ steps.parse.outputs.data }}"
-          MB=${{ steps.parse.outputs.data }} | jq -r '.["metabase-version"].text'
-          echo "$MB"
+          MB="${{ JSON.stringify(steps.parse.outputs.data) }}" | jq -r '.["metabase-version"].text'
+          echo "MB IS $MB"
           # Check if version paramter is given.
           METABASE_VERSION=${{ steps.parse.outputs.data['metabase-version'].text }}
           if [ -z $METABASE_VERSION ]
