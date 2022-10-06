@@ -85,4 +85,4 @@ jobs:
           file: |
             ./Metabase/openshift/.pipeline/Dockerfile.openshift
           build-args: |
-            METABASE_VERSION=${{ github.event.inputs.METABASE_VERSION }}
+            METABASE_VERSION=${{ steps.set-result.outputs.result }}
