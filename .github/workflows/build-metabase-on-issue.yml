@@ -41,7 +41,8 @@ jobs:
         run: |
           # Check if version paramter is given.
           METABASE_VERSION=${{ steps.set-result.outputs.result }}
-          if [ -z $METABASE_VERSION ]
+          URL="https://downloads.metabase.com/$METABASE_VERSION/metabase.jar"
+          if [ -z $METABASE_VERSION ] || [  $(curl -ILso /dev/null -w "%{http_code}" "${URL}") -ne 200 ]
           then
             echo "::set-output name=build::false"
             exit 0
@@ -85,8 +86,16 @@ jobs:
           build-args: |
             METABASE_VERSION=${{ steps.set-result.outputs.result }}
       - name: Close Issue
+        if: steps.check.outputs.build == 'true'
         uses: peter-evans/close-issue@v2
         with:
           comment: |
             Closing this issue as the metabase image is created and stored in the packages. 
             The Image should be now available for use at https://github.com/bcgov/nr-arch-templates/pkgs/container/nr-arch-templates%2Fmetabase
+      - name: Close Issue
+        if: steps.check.outputs.build == 'false'
+        uses: peter-evans/close-issue@v2
+        with:
+          comment: |
+            Closing this issue as the metabase version you provided is invalid. 
+            
