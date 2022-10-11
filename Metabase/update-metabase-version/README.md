@@ -1,12 +1,22 @@
 # Metabase Version Upgrade
+1. Go to https://github.com/bcgov/nr-arch-templates/issues and create a new issue by clicking on `New Issue` Button.
+2. you will land on this page https://github.com/bcgov/nr-arch-templates/issues/new/choose . please click on the `Get Started` button beside `Update Metabase Image build and push`.
+3. provide the title and the exact version of metabase starting with v, for example if you want to upgrade to `0.43.1` then please enter `v0.43.1`.
+4. it automatically triggers an action, please visit this url https://github.com/bcgov/nr-arch-templates/actions/workflows/build-metabase-on-issue.yml to see the title appear and the job being run.
+5. when the job is completed it will email to your email linked to GitHub Account.
 
-This folder contains the powershell script required in order to update Metabase version.
-Please make sure you have the host name and port number of the Oracle DB you are trying to connect to over encrypted listener. The script will prompt you for the required information.
 
-#For Windows users, please make you have access to OpenShift namespace.
+## please make sure you switch to the proper namespace after logging in through the CLI. Execute the following command.
 
-Please execute the below command in powershell.
+Switch namespace after logging in, by issuing the following command. Please replace namespace-env with yours.
+`oc project namespace-env`
+
+Please execute the below command in powershell after replacing $VERSION with the actual version you requested upgrade for. Ex: if the version upgrade request was `v0.43.1` please change the value to that.
 ```markdown
-Invoke-Expression $( $(Invoke-WebRequest https://raw.githubusercontent.com/bcgov/iit-arch/main/Metabase/update-metabase-version/update-metabase-version.ps1).Content)
+  oc tag -d metabase:latest
+  oc tag ghcr.io/bcgov/nr-arch-templates/metabase:$VERSION metabase:latest
+  oc rollout latest dc/metabase
+  oc logs -f dc/metabase
+  oc rollout status dc/metabase
 ```
 
