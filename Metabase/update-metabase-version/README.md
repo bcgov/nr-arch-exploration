@@ -7,16 +7,15 @@
 
 
 ## please make sure you switch to the proper namespace after logging in through the CLI. Execute the following command.
-
-Switch namespace after logging in, by issuing the following command. Please replace namespace-env with yours.
+Login to openshift and then copy the login command.
+Switch namespace after logging in, by issuing the following command. Please replace namespace-env with yours. If you are already on the namespace-env, you can ignore this step.
 `oc project namespace-env`
 
 Please execute the below command in powershell after replacing $VERSION with the actual version you requested upgrade for. Ex: if the version upgrade request was `v0.43.1` please change the value to that.
 ```markdown
   oc tag -d metabase:latest
   oc tag ghcr.io/bcgov/nr-arch-templates/metabase:$VERSION metabase:latest
-  oc rollout latest dc/metabase
   oc logs -f dc/metabase
-  oc rollout status dc/metabase
 ```
+
 
