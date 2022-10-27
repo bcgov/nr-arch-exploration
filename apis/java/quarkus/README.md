@@ -35,8 +35,8 @@ If you want to learn more about building native executables, please consult http
       - `OIDC_AUTH_SERVER_URL` The URL of the Keycloak server
       - `NAMESPACE_NO_ENV` The namespace of the deployment ex: `aaaaaa`
 3. Please refer to this file for sample openshift deployment. `.github/workflows/openshift-java-quarkus.yaml`
-4. The image size produced is around 50 MB.
-5. The application starts up within 2 seconds, with 50-150mc cpu and consumes around 35 Megs of memory.
+4. The image size produced is around 40 MB.
+5. The application starts up within 4 seconds, with 10-25mc cpu and consumes around 35 Megs of memory.
 6. The app consumes around .2mc cpu during idle time.
 
 ## Related Guides
