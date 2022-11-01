@@ -38,7 +38,7 @@ on:
 jobs:
   openshift-ci-cd:
     name: Build and deploy to OpenShift
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-latest
     environment: quarkus-dev
     defaults:
       run:
@@ -157,12 +157,7 @@ jobs:
           cache-to: type=gha,mode=max
           file: |
             ./apis/java/quarkus/.pipeline/openshift/Dockerfile-migrations-openshift
-      - name: Install oc
-        uses: redhat-actions/openshift-tools-installer@v1
-        with:
-          oc: 4
 
-        # https://github.com/redhat-actions/oc-login#readme
       - uses: actions/checkout@v2
       - name: Deploy
         run: |

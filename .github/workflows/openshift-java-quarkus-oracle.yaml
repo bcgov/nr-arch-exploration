@@ -83,7 +83,7 @@ on:
 jobs:
   openshift-ci-cd:
     name: Build and deploy to OpenShift
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-latest
     environment: quarkus-oracle-dev
     defaults:
       run:
@@ -173,10 +173,6 @@ jobs:
           file: |
             ./apis/java/quarkus-legacy-oracle/.pipeline/openshift/Dockerfile
 
-      - name: Install oc
-        uses: redhat-actions/openshift-tools-installer@v1
-        with:
-          oc: "4.10"
       - uses: actions/checkout@v2
       - name: Deploy
         run: |

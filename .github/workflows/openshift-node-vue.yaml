@@ -78,7 +78,7 @@ on:
 jobs:
   openshift-ci-cd:
     name: Build and deploy vue sample to OpenShift
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-latest
     environment: vue-dev
     defaults:
       run:
@@ -181,12 +181,6 @@ jobs:
           username: ${{ env.IMAGE_REGISTRY_USER }}
           password: ${{ env.IMAGE_REGISTRY_PASSWORD }}
 
-      # The path the image was pushed to is now stored in ${{ steps.push-image.outputs.registry-path }}
-
-      - name: Install oc
-        uses: redhat-actions/openshift-tools-installer@v1
-        with:
-          oc: 4
 
         # https://github.com/redhat-actions/oc-login#readme
       - uses: actions/checkout@v2

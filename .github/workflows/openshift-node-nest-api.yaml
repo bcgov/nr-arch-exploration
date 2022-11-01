@@ -38,7 +38,7 @@ on:
 jobs:
   openshift-ci-cd:
     name: Build and deploy to OpenShift
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-latest
     environment: nest-dev
     defaults:
       run:
@@ -158,7 +158,6 @@ jobs:
           file: |
             ./apis/TypeScript/Nest/Dockerfile-migrations-openshift
      
-        # https://github.com/redhat-actions/oc-login#readme
       - uses: actions/checkout@v2
       - name: Deploy
         run: |
