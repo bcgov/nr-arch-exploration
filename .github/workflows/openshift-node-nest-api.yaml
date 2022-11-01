@@ -106,7 +106,7 @@ jobs:
       - name: Add Node.js
         uses: actions/setup-node@v3
         with:
-          node-version: '16.x'
+          node-version: '18.x'
       - uses: actions/cache@v3
         with:
           path: ~/.npm
@@ -158,14 +158,6 @@ jobs:
           file: |
             ./apis/TypeScript/Nest/Dockerfile-migrations-openshift
      
-
-      # The path the image was pushed to is now stored in ${{ steps.push-image.outputs.registry-path }}
-
-      - name: Install oc
-        uses: redhat-actions/openshift-tools-installer@v1
-        with:
-          oc: 4
-
         # https://github.com/redhat-actions/oc-login#readme
       - uses: actions/checkout@v2
       - name: Deploy
