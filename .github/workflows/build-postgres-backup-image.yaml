@@ -11,7 +11,7 @@ on:
 jobs:
   build-postgres-backup-image:
     name: Build Postgres Backup container image.
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-22.04
     defaults:
       run:
         working-directory: Metabase

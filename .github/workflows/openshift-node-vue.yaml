@@ -78,7 +78,7 @@ on:
 jobs:
   openshift-ci-cd:
     name: Build and deploy vue sample to OpenShift
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-22.04
     environment: vue-dev
     defaults:
       run:

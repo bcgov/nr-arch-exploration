@@ -38,7 +38,7 @@ on:
 jobs:
   openshift-ci-cd:
     name: Build and deploy to OpenShift
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-22.04
     environment: nest-dev
     defaults:
       run:

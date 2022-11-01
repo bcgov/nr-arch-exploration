@@ -15,7 +15,7 @@ on:
 jobs:
   crud-confluenc:
     name: Get and update contents from confluence
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-22.04
     defaults:
       run:
         working-directory: confluence/script
