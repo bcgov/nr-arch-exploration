@@ -15,7 +15,7 @@ else
     DB_PORT="${strarr[1]}"
     echo "DB_PORT is $DB_PORT"
     echo adding certificates for "${DB_HOST}:${DB_PORT}"
-    java --source 17 InstallCert.java --quiet "${DB_HOST}:${DB_PORT}"
+    java InstallCert --quiet "${DB_HOST}:${DB_PORT}"
     keytool -exportcert -alias "$DB_HOST-1" -keystore jssecacerts -storepass changeit -file /opt/"$DB_HOST-1.cer"
     keytool -importcert -alias orakey -noprompt -keystore "${JAVA_HOME}"/lib/security/cacerts -storepass changeit -file /opt/"$DB_HOST-1.cer"
   done
