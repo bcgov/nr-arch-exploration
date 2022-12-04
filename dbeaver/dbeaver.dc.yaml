@@ -1,0 +1,228 @@
+---
+kind: Template
+apiVersion: template.openshift.io/v1
+labels:
+  app: "${NAME}"
+  app.kubernetes.io/component: "${NAME}"
+  app.kubernetes.io/instance: "${NAME}"
+  app.kubernetes.io/managed-by: template
+  app.kubernetes.io/name: java
+  app.kubernetes.io/part-of: "${NAME}"
+  template: "${NAME}-dc-template"
+metadata:
+  name: "${NAME}"
+objects:
+  - kind: Secret
+    apiVersion: v1
+    metadata:
+      name: "${NAME}-secret"
+      labels:
+        app: "${NAME}"
+        template-owner: "nr-arch-templates"
+    stringData:
+      user: "${USER}"
+      password: "${PASSWORD}"
+  - apiVersion: v1
+    kind: ImageStream
+    metadata:
+      labels:
+        app: ${NAME}
+      name: ${NAME}
+    spec:
+      lookupPolicy:
+        local: false
+      tags:
+        - name: "latest"
+          from:
+            kind: DockerImage
+            name: "ghcr.io/bcgov/nr-arch-templates/dbeaver:${VERSION}"
+          referencePolicy:
+            type: Local
+  - apiVersion: v1
+    kind: DeploymentConfig
+    metadata:
+      name: "${NAME}"
+    spec:
+      replicas: 1
+      revisionHistoryLimit: 10
+      selector:
+        app: "${NAME}"
+        deploymentconfig: "${NAME}"
+      strategy:
+        type: Recreate
+        resources: {}
+      template:
+        metadata:
+          name: "${NAME}"
+          labels:
+            app: "${NAME}"
+            deploymentconfig: "${NAME}"
+        spec:
+          containers:
+            - name: dbeaver
+              image: "${IMAGE_REGISTRY}/${NAMESPACE}/${NAME}:${VERSION}"
+              imagePullPolicy: Always
+              livenessProbe:
+                initialDelaySeconds: 120
+                periodSeconds: 20
+                timeoutSeconds: 10
+                failureThreshold: 30
+                tcpSocket:
+                  port: 8978
+              ports:
+                - containerPort: 8978
+                  protocol: TCP
+              readinessProbe:
+                tcpSocket:
+                  port: 8978
+                initialDelaySeconds: 10
+                periodSeconds: 5
+                timeoutSeconds: 3
+                failureThreshold: 100
+              resources:
+                requests:
+                  cpu: "${CPU_REQUEST}"
+                  memory: "${MEMORY_REQUEST}"
+                limits:
+                  cpu: "${CPU_LIMIT}"
+                  memory: "${MEMORY_LIMIT}"
+              startupProbe:
+                tcpSocket:
+                  port: 8978
+                timeoutSeconds: 5
+                periodSeconds: 10
+                failureThreshold: 50
+              env:
+                - name: CB_SERVER_URL
+                  value: "http://localhost:8978"
+                - name: CB_SERVER_NAME
+                  value: "dbeaver-nrids"
+                - name: PG_HOST
+                  value: "dbeaver-postgres"
+                - name: PG_USER
+                  valueFrom:
+                    secretKeyRef:
+                      name: dbeaver-postgres
+                      key: database-user
+                - name: PG_PWD
+                  valueFrom:
+                    secretKeyRef:
+                      name: dbeaver-postgres
+                      key: database-password
+                - name: DBEAVER_ADMIN_USER
+                  valueFrom:
+                    secretKeyRef:
+                      name: dbeaver
+                      key: user
+                - name: DBEAVER_ADMIN_PWD
+                  valueFrom:
+                    secretKeyRef:
+                      name: dbeaver
+                      key: password
+                - name: TZ
+                  value: America/Vancouver
+                - name: DB_HOST_PORT_LIST #List of host port of oracle for certs. host:port,host:port
+                  valueFrom:
+                    secretKeyRef:
+                      name: "${NAME}-secret"
+                      key: DB_HOST_PORT_LIST
+          dnsPolicy: ClusterFirst
+          restartPolicy: Always
+      test: false
+      triggers:
+        - type: ConfigChange
+        - type: ImageChange
+          imageChangeParams:
+            automatic: true
+            containerNames:
+              - metabase
+            from:
+              kind: ImageStreamTag
+              name: "${NAME}:${VERSION}"
+              namespace: "${NAMESPACE}"
+  - apiVersion: v1
+    kind: Service
+    metadata:
+      name: "${NAME}"
+    spec:
+      ports:
+        - name: 3000-tcp
+          port: 3000
+          protocol: TCP
+          targetPort: 3000
+      selector:
+        app: "${NAME}"
+        deploymentconfig: "${NAME}"
+      type: ClusterIP
+      sessionAffinity: None
+  - apiVersion: v1
+    kind: Route
+    metadata:
+      name: "${NAME}"
+    spec:
+      host: "${PREFIX}${NAME}.${DOMAIN}"
+      path: "/"
+      port:
+        targetPort: 3000-tcp
+      tls:
+        insecureEdgeTerminationPolicy: Redirect
+        termination: edge
+      to:
+        kind: Service
+        name: "${NAME}"
+        weight: 100
+      wildcardPolicy: None
+parameters:
+  - name: NAME
+    description: The name assigned to all of the objects defined in this template.
+    displayName: Name
+    required: true
+    value: dbeaver
+  - name: PREFIX
+    description: Optional prefix to describe instance of this deployment in the subdomain.
+    displayName: Prefix
+    required: false
+    value: ""
+  - name: DOMAIN
+    description: The base domain name of the cluster.
+    displayName: Base Domain
+    required: true
+    value: apps.silver.devops.gov.bc.ca
+  - name: NAMESPACE
+    description: Target namespace reference (i.e. '9f0fbe-dev')
+    displayName: Namespace
+    required: true
+  - name: IMAGE_REGISTRY
+    description: The base docker registry
+    displayName: Docker Image Registry
+    required: true
+    value: image-registry.openshift-image-registry.svc:5000
+  - name: VERSION
+    description: A version used for the image tags
+    displayName: Version
+    required: true
+    value: latest
+  - name: CPU_REQUEST
+    description: Minimal CPU needed to run
+    displayName: CPU Request
+    value: 50m
+  - name: CPU_LIMIT
+    description: Maximum CPU allowed to use
+    displayName: CPU Limit
+    value: 350m
+  - name: MEMORY_REQUEST
+    description: Minimal amount of memory needed to run
+    displayName: Memory Request
+    value: 768Mi
+  - name: MEMORY_LIMIT
+    description: Maximum amount of memory allowed to use
+    displayName: Memory Limit
+    value: 1.2Gi
+  - description: Admin Password for the DBeaver user.
+    from: "[a-zA-Z0-9]{32}"
+    generate: expression
+    name: PASSWORD
+  - description: Admin user name for the DBeaver user.
+    from: "[A-Z]{16}"
+    generate: expression
+    name: USER
