@@ -64,7 +64,7 @@ jobs:
           | oc create -f -
 
           # Process and apply deployment template
-          oc process -f "https://raw.githubusercontent.com/bcgov/nr-arch-templates/main/dbeaver/dbeaver.dc.yaml" -p NAMESPACE="${OPENSHIFT_NAMESPACE_NO_ENV}"-"${TARGET_ENV}" -p PREFIX="${METABASE_APP_PREFIX}" \
+          oc process -f "https://raw.githubusercontent.com/bcgov/nr-arch-templates/main/dbeaver/dbeaver.dc.yaml" -p NAMESPACE="${OPENSHIFT_NAMESPACE_NO_ENV}"-"${TARGET_ENV}" \
           | oc create -f -
 
           # Start rollout (if necessary) and follow it
