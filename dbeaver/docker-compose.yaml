@@ -1,0 +1,48 @@
+version: "3.9"
+
+services:
+  dbeaver-pg:
+    image: postgres:alpine
+    container_name: dbeaver-pg
+    restart: unless-stopped
+    environment:
+      - POSTGRES_USER=dbeaver
+      - POSTGRES_PASSWORD=dbeaver
+    ports:
+      - "5420:5432"  # the HTTP endpoint
+    healthcheck:
+      test: [ "CMD-SHELL", "pg_isready -U dbeaver" ]
+      interval: 5s
+      timeout: 5s
+      retries: 6
+    networks:
+      - dbeaver
+
+  dbeaver:
+    build:
+      context: .
+    image: dbeavrom:latest
+    container_name: dbeaver
+    restart: unless-stopped
+    ports:
+      - "8000:8978"  # the HTTP endpoint
+    environment:
+      - CB_SERVER_URL=http://localhost:8000
+      - CB_SERVER_NAME=dbeaver-nrids
+      - PG_HOST=dbeaver-pg
+      - DB_NAME=dbeaver
+      - PG_USER=dbeaver
+      - PG_PWD=dbeaver
+      - DBEAVER_ADMIN_USER=admin
+      - DBEAVER_ADMIN_PWD=admin
+
+    depends_on:
+      dbeaver-pg:
+        condition: service_healthy
+    networks:
+      - dbeaver
+
+
+networks:
+  dbeaver:
+    driver: bridge
