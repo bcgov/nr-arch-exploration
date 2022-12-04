@@ -22,6 +22,7 @@ objects:
     stringData:
       user: "${USER}"
       password: "${PASSWORD}"
+      dbhostportlist: ""
   - apiVersion: v1
     kind: ImageStream
     metadata:
@@ -104,6 +105,11 @@ objects:
                     secretKeyRef:
                       name: dbeaver-postgres
                       key: database-user
+                - name: DB_NAME
+                  valueFrom:
+                    secretKeyRef:
+                      name: dbeaver-postgres
+                      key: database-user
                 - name: PG_PWD
                   valueFrom:
                     secretKeyRef:
@@ -125,7 +131,7 @@ objects:
                   valueFrom:
                     secretKeyRef:
                       name: "${NAME}-secret"
-                      key: DB_HOST_PORT_LIST
+                      key: dbhostportlist
           dnsPolicy: ClusterFirst
           restartPolicy: Always
       test: false
@@ -135,7 +141,7 @@ objects:
           imageChangeParams:
             automatic: true
             containerNames:
-              - metabase
+              - dbeaver
             from:
               kind: ImageStreamTag
               name: "${NAME}:${VERSION}"
@@ -146,10 +152,10 @@ objects:
       name: "${NAME}"
     spec:
       ports:
-        - name: 3000-tcp
-          port: 3000
+        - name: 8978-tcp
+          port: 8978
           protocol: TCP
-          targetPort: 3000
+          targetPort: 8978
       selector:
         app: "${NAME}"
         deploymentconfig: "${NAME}"
@@ -160,10 +166,10 @@ objects:
     metadata:
       name: "${NAME}"
     spec:
-      host: "${PREFIX}${NAME}.${DOMAIN}"
+      host: "${PREFIX}${NAME}-${NAMESPACE}.${DOMAIN}"
       path: "/"
       port:
-        targetPort: 3000-tcp
+        targetPort: 8978-tcp
       tls:
         insecureEdgeTerminationPolicy: Redirect
         termination: edge
