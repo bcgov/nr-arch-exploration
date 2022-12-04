@@ -103,17 +103,17 @@ objects:
                 - name: PG_USER
                   valueFrom:
                     secretKeyRef:
-                      name: dbeaver-postgres
+                      name: dbeaver-pg-secret
                       key: database-user
                 - name: DB_NAME
                   valueFrom:
                     secretKeyRef:
-                      name: dbeaver-postgres
+                      name: dbeaver-pg-secret
                       key: database-user
                 - name: PG_PWD
                   valueFrom:
                     secretKeyRef:
-                      name: dbeaver-postgres
+                      name: dbeaver-pg-secret
                       key: database-password
                 - name: DBEAVER_ADMIN_USER
                   valueFrom:
