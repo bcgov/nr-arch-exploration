@@ -17,7 +17,7 @@ else
     echo adding certificates for "${DB_HOST}:${DB_PORT}"
     java InstallCert --quiet "${DB_HOST}:${DB_PORT}"
     keytool -exportcert -alias "$DB_HOST-1" -keystore jssecacerts -storepass changeit -file /opt/"$DB_HOST-1.cer"
-    keytool -importcert -alias orakey -noprompt -keystore "${JAVA_HOME}"/lib/security/cacerts -storepass changeit -file /opt/"$DB_HOST-1.cer"
+    keytool -importcert -alias "orakey-$DB_HOST-1" -noprompt -keystore "${JAVA_HOME}"/lib/security/cacerts -storepass changeit -file /opt/"$DB_HOST-1.cer"
   done
   ./run-server.sh
 fi
