@@ -43,7 +43,7 @@ jobs:
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
       
-      - name: Build and push Metabase image
+      - name: Build and push Dbeaver image
         uses: docker/build-push-action@v2
         with:
           push: true
