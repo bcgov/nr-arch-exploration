@@ -59,6 +59,7 @@ jobs:
           # Login to OpenShift and select project
           oc login --token="${OPENSHIFT_TOKEN}" --server="${OPENSHIFT_SERVER}"
           oc tag -d ${{ env.APP_NAME }}:${{ env.TAG }}
+          oc tag ${{env.IMAGE_REGISTRY}}/${{ env.APP_NAME }}:${{ env.TAG }} ${{ env.APP_NAME }}:${{ env.TAG }}
           # Process and Add Postgresql for dbeaver
           oc process -f "https://raw.githubusercontent.com/bcgov/nr-arch-templates/main/dbeaver/dbeaver-postgres-deployment-config.yaml"  -p NAMESPACE="${OPENSHIFT_NAMESPACE_NO_ENV}"-"${TARGET_ENV}" -p DB_PVC_SIZE=200Mi \
           | oc create -f -
