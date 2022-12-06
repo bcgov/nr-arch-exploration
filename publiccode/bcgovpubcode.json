@@ -1,0 +1,71 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "definitions": {
+    "product_info": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "product_owner","ministry","program_area","application_name","application_acronym","application_short_description"
+      ],
+      "properties": {
+        "product_owner": {
+          "description": "This key contains the full name of one of the product owner. It must be a real person.",
+          "type": "string"
+        },
+        "ministry": {
+          "description": "This key contains the ministry name.",
+          "type": "array",
+          "items": {
+            "enum": [
+              "HEALTH",
+              "EDUC",
+              "AG",
+              "LWRS",
+              "ENV",
+              "IRR",
+              "EMLI",
+              "FOREST"
+            ]
+          }
+        },
+        "program_area": {
+          "description": "This key contains the program area name.",
+          "type": "string"
+        },
+        "application_name": {
+          "description": "This key contains the application name.",
+          "type": "string"
+        },
+        "application_acronym": {
+          "description": "This key contains the application acronym.",
+          "type": "string"
+        },
+        "application_short_description": {
+          "description": "This key contains a short description of the software. It should be a single line containing a single sentence. Maximum 150 characters are allowed.",
+          "type": "string",
+          "maxLength": 150
+        },
+        "application_long_description": {
+          "description": "This key contains a longer description of the software, between 500 and 10000 chars. It is meant to provide an overview of the capabilities of the software for a potential user. The audience for this text should be that of users of the software, not developers. You can think of this text as the description of the software that would be in its website (if the software had one).\n\nThis description can contain some basic markdown: *italic*, **bold**, bullet points and [links](#).",
+          "type": "string",
+          "minLength": 500,
+          "maxLength": 10000
+        },
+        "product_status": {
+          "description": "phone number (with international prefix). This has to be a string.",
+          "type": "string"
+        },
+        "affiliation": {
+          "description": "This key contains an explicit affiliation information for the technical contact. In case of multiple maintainers, this can be used to create a relation between each technical contact and each maintainer entity. It can contain for instance a company name, an association name, etc.",
+          "type": "string"
+        }
+      }
+    }
+  },
+
+  "required": [
+    "product_info"
+  ],
+  "title": "JSON schema for bcgovpubcode.yml",
+  "type": "object"
+}
