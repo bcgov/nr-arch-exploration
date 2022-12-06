@@ -1,11 +1,20 @@
 {
   "$schema": "http://json-schema.org/draft-07/schema#",
   "definitions": {
+  },
+  "description": "bcgovpubcode.yml is a metadata standard for repositories containing software developed or acquired by the Public Administration, aimed at making them easily discoverable and thus reusable by other entities. ",
+  "properties": {
     "product_info": {
       "type": "object",
       "additionalProperties": false,
       "required": [
-        "product_owner","ministry","program_area","application_name","application_acronym","application_short_description"
+        "product_owner",
+        "ministry",
+        "program_area",
+        "application_name",
+        "application_acronym",
+        "business_capabilities",
+        "application_short_description"
       ],
       "properties": {
         "product_owner": {
@@ -40,6 +49,13 @@
           "description": "This key contains the application acronym.",
           "type": "string"
         },
+        "business_capabilities": {
+          "description": "This key contains the business capabilities that are achieved by this application.",
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
         "application_short_description": {
           "description": "This key contains a short description of the software. It should be a single line containing a single sentence. Maximum 150 characters are allowed.",
           "type": "string",
@@ -52,13 +68,21 @@
           "maxLength": 10000
         },
         "product_status": {
-          "description": "Status of the product.",
-          "type": "string"
+          "description": "Status of the product. more around this can be found here https://github.com/bcgov/repomountie/blob/master/doc/lifecycle-badges.md",
+          "type": "array",
+          "items": {
+            "enum": [
+              "active",
+              "stable",
+              "maturing",
+              "dormant",
+              "retired"
+            ]
+          }
         }
       }
     }
   },
-
   "required": [
     "product_info"
   ],
