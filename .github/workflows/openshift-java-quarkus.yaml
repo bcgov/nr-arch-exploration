@@ -36,7 +36,7 @@ on:
       - 'apis/java/quarkus/**'
 
 jobs:
-  openshift-ci-cd:
+  builds:
     name: Build and deploy to OpenShift
     runs-on: ubuntu-22.04
     environment: quarkus-dev
@@ -71,7 +71,13 @@ jobs:
           tag_fallback: test
           token: ${{ secrets.GITHUB_TOKEN }}
           triggers: ${{ matrix.triggers }}
-
+  
+  deploys:
+    name: Deploys
+    needs:
+      - builds
+    runs-on: ubuntu-22.04
+    steps:
       - uses: actions/checkout@v2
       - name: Deploy
         run: |
