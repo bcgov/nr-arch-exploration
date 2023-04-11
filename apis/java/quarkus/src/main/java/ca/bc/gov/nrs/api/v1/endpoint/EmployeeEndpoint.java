@@ -1,10 +1,8 @@
 package ca.bc.gov.nrs.api.v1.endpoint;
 
 import ca.bc.gov.nrs.api.v1.model.EmployeeEntity;
-import org.eclipse.microprofile.jwt.JsonWebToken;
 
 import javax.annotation.security.RolesAllowed;
-import javax.inject.Inject;
 import javax.transaction.Transactional;
 import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
