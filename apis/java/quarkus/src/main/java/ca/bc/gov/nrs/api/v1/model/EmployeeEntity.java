@@ -1,10 +1,10 @@
 package ca.bc.gov.nrs.api.v1.model;
 
 import io.quarkus.hibernate.orm.panache.PanacheEntityBase;
+import jakarta.persistence.*;
 import org.hibernate.annotations.GenericGenerator;
 import org.hibernate.annotations.Parameter;
 
-import javax.persistence.*;
 import java.time.LocalDate;
 import java.util.UUID;
 

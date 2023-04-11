@@ -1,12 +1,12 @@
 package ca.bc.gov.nrs.api.v1.endpoint;
 
 import ca.bc.gov.nrs.api.v1.model.EmployeeEntity;
+import jakarta.annotation.security.RolesAllowed;
+import jakarta.enterprise.context.ApplicationScoped;
+import jakarta.transaction.Transactional;
+import jakarta.ws.rs.PathParam;
 import org.eclipse.microprofile.graphql.*;
 
-import javax.annotation.security.RolesAllowed;
-import javax.enterprise.context.ApplicationScoped;
-import javax.transaction.Transactional;
-import javax.ws.rs.PathParam;
 import java.util.Optional;
 import java.util.UUID;
 

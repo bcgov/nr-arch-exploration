@@ -5,9 +5,9 @@ import io.quarkus.test.common.QuarkusTestResource;
 import io.quarkus.test.h2.H2DatabaseTestResource;
 import io.quarkus.test.junit.QuarkusTest;
 import io.quarkus.test.security.TestSecurity;
+import jakarta.enterprise.context.ApplicationScoped;
+import jakarta.transaction.Transactional;
 
-import javax.enterprise.context.ApplicationScoped;
-import javax.transaction.Transactional;
 import java.time.LocalDate;
 
 /**
