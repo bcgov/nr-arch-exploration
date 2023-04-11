@@ -47,41 +47,30 @@ jobs:
     outputs:
       ROUTE: ${{ steps.deploy-and-expose.outputs.route }}
       SELECTOR: ${{ steps.deploy-and-expose.outputs.selector }}
-
+    strategy:
+      matrix:
+        package: [quarkus, quarkus-migration]
+        include:
+          - package: quarkus
+            triggers: ('apis/java/quarkus')
+            build_file: ./apis/java/quarkus/.pipeline/openshift/Dockerfile.native-openshift
+            build_context: ./apis/java/quarkus
+          - package: quarkus-migration
+            triggers: ('apis/java/quarkus')
+            build_file: ./apis/java/quarkus/.pipeline/openshift/Dockerfile-migrations-openshift
+            build_context: ./apis/java/quarkus
     steps:
-      - name: Check out repository
-        uses: actions/checkout@v2    
+      - uses: actions/checkout@v3
      
-      - name: Cache Docker layers
-        uses: actions/cache@v3
+      - uses: bcgov-nr/action-builder-ghcr@v1.1.0
         with:
-          path: /tmp/.buildx-cache
-          key: ${{ runner.os }}-buildx-${{ github.sha }}
-          restore-keys: |
-            ${{ runner.os }}-buildx-
-
-      - name: Build and push Application image
-        uses: docker/build-push-action@v3
-        with:
-          context: .
-          push: true
-          tags: |
-            "${{ env.IMAGE_REGISTRY }}/${{ env.APP_NAME }}:latest"
-          cache-from: type=gha
-          cache-to: type=gha,mode=max
-          file: |
-            ./apis/java/quarkus/.pipeline/openshift/Dockerfile.native-openshift
-      - name: Build and push Migration image
-        uses: docker/build-push-action@v3
-        with:
-          context: .
-          push: true
-          tags: |
-            "${{ env.IMAGE_REGISTRY }}/${{ env.APP_NAME }}-migration:latest"
-          cache-from: type=gha
-          cache-to: type=gha,mode=max
-          file: |
-            ./apis/java/quarkus/.pipeline/openshift/Dockerfile-migrations-openshift
+          package: ${{ matrix.package }}
+          build_file: ${{ matrix.build_file }}
+          build_context: ${{ matrix.build_context }}
+          tag: latest
+          tag_fallback: test
+          token: ${{ secrets.GITHUB_TOKEN }}
+          triggers: ${{ matrix.triggers }}
 
       - uses: actions/checkout@v2
       - name: Deploy
