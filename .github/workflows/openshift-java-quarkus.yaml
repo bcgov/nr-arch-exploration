@@ -122,7 +122,9 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-maven-
       - name: Build native application
-        run: mvn clean package -Pnative
+        run: |
+         chmod +x .mvnw
+         .mvnw clean package -Pnative
       - name: Set up QEMU
         uses: docker/setup-qemu-action@v2
       - name: Set up Docker Buildx
