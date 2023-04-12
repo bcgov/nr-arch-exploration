@@ -74,6 +74,7 @@ jobs:
   
   deploys:
     name: Deploys
+    environment: quarkus-dev
     needs:
       - builds
     runs-on: ubuntu-22.04
