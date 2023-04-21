@@ -27,9 +27,6 @@ jobs:
 
     steps:
       - uses: actions/checkout@master
-      - uses: actions/setup-java@v1
-        with:
-          java-version: 17
       - uses: joshuaavalon/flyway-action@v3.0.0
         with:
           url: jdbc:postgresql://postgres:5432/default
@@ -37,7 +34,7 @@ jobs:
           password: default
         env:
           FLYWAY_VALIDATE_MIGRATION_NAMING: true
-          FLYWAY_LOCATIONS: filesystem:./src/db/migrations
+          FLYWAY_LOCATIONS: filesystem:./apis/java/quarkus/src/db/migrations
       - name: Run Migrations
         run: |
           flyway migrate
