@@ -1,5 +1,5 @@
-date=2023-04-21 20:04:32+0000
+date=2023-04-24 16:29:05+0000
 os=Linux 5.15.0-1035-azure
 schemaspy-version=6.2.3-SNAPSHOT
-schemaspy-build=6.2.3-SNAPSHOT.41 2023-04-21 17:48:45
+schemaspy-build=6.2.3-SNAPSHOT.41 2023-04-22 06:27:31
 renderer=Graphviz dot 2.47.1 
