@@ -24,7 +24,8 @@
 9. run the nest application by `npm run start:dev:windows`
 10. It starts the application on port 7996.
 11. you can now access the swagger ui at http://localhost:7996/
-
+### Deprecation
+This API uses https://github.com/keycloak/keycloak-nodejs-connect which is deprecated, will try to find alternate way to secure routes.
 ## Deployment to openshift
 1. follow this link for artifactory knowledge https://developer.gov.bc.ca/Artifact-Repositories-(Artifactory),  it helps in understanding build and push of image to openshift.
 2. Create secrets in GitHub
