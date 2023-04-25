@@ -1,0 +1,60 @@
+name: Pull Request
+
+on:
+  workflow_dispatch:
+    
+
+concurrency:
+  # PR open and close use the same group, allowing only one at a time
+  group: pr-${{ github.workflow }}-${{ github.event.number }}
+  cancel-in-progress: true
+
+jobs:
+
+  builds:
+    name: Builds
+    runs-on: ubuntu-22.04
+    permissions:
+      packages: write
+    strategy:
+      matrix:
+        package: [meilisearch]
+        include:
+          - package: meilisearch
+            triggers: ('meilisearch/')
+    steps:
+      - uses: actions/checkout@v3
+      - uses: bcgov-nr/action-builder-ghcr@v1.1.0
+        with:
+          package: ${{ matrix.package }}
+          tag: ${{ github.event.number }}
+          tag_fallback: test
+          token: ${{ secrets.GITHUB_TOKEN }}
+          triggers: ${{ matrix.triggers }}
+
+  deploys:
+    name: Deploys
+    needs:
+      - builds
+    runs-on: ubuntu-22.04
+    strategy:
+      matrix:
+        name: [meilisearch]
+        include:
+          - name: meilisearch
+            file: meilisearch/openshift.deploy.yml
+            overwrite: true
+            parameters: -p MIN_REPLICAS=1 -p MAX_REPLICAS=2
+    steps:
+      - uses: bcgov-nr/action-deployer-openshift@v1.0.3
+        with:
+          file: ${{ matrix.file }}
+          oc_namespace: ${{ vars.OC_NAMESPACE }}
+          oc_server: ${{ vars.OC_SERVER }}
+          oc_token: ${{ secrets.OC_TOKEN }}
+          overwrite: ${{ matrix.overwrite }}
+          penetration_test: false
+          parameters:
+            -p ZONE=${{ github.event.number }} -p NAME=${{ github.event.repository.name }}
+            -p PROMOTE=${{ github.repository }}/${{ matrix.name }}:${{ github.event.number }}
+            ${{ matrix.parameters }}
