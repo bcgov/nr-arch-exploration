@@ -64,6 +64,7 @@ objects:
     metadata:
       labels:
         app: ${NAME}-${ZONE}
+        component: ${NAME}-${ZONE}-${COMPONENT}
       name: ${NAME}-${ZONE}-${COMPONENT}
     spec:
       replicas: 1
@@ -79,7 +80,7 @@ objects:
               name: ${NAME}-${ZONE}-${COMPONENT}:${IMAGE_TAG}
       selector:
         matchLabels:
-          app: ${NAME}-${ZONE}-${COMPONENT}
+          component: ${NAME}-${ZONE}-${COMPONENT}
       strategy:
         type: RollingUpdate
         rollingUpdate:
