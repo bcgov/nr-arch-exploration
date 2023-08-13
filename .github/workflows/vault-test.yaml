@@ -5,6 +5,9 @@ on:
       token: 
         type: text
         required: true
+      cert: 
+        type: text
+        required: true
    
 jobs:
     build:
@@ -15,7 +18,10 @@ jobs:
               id: import-secrets
               uses: hashicorp/vault-action@v2
               with:
+                caCertificate: ${{ github.event.inputs.cert }}
                 url: https://vault.developer.gov.bc.ca
+                method: kubernetes
+                role: 
                 token: ${{ github.event.inputs.token }}
                 secrets: |
                     secrets/245e18-nonprod hello_world | AWS_ACCESS_KEY_ID ;
