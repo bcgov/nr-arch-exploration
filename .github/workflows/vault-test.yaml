@@ -1,0 +1,27 @@
+name: vault test
+on:
+  workflow_dispatch:
+    inputs:
+      token: 
+        type: text
+        required: true
+   
+jobs:
+    build:
+        runs-on: ubuntu-latest
+        steps:
+            # ...
+            - name: Import Secrets
+              id: import-secrets
+              uses: hashicorp/vault-action@v2
+              with:
+                url: https://vault.developer.gov.bc.ca
+                token: ${{ github.event.inputs.token }}
+                caCertificate: ${{ secrets.VAULT_CA_CERT }}
+                secrets: |
+                    secrets/245e18-nonprod hello_world | AWS_ACCESS_KEY_ID ;
+            - name: print
+              run: |
+                touch secrets.json
+                echo "${{ toJson(steps.import-secrets.outputs) }}" >> secrets.json
+         
