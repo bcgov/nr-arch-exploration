@@ -20,9 +20,6 @@ jobs:
               with:
                 caCertificate: ${{ github.event.inputs.cert }}
                 url: https://vault.developer.gov.bc.ca
-                method: kubernetes
-                role: 245e18
-                kubernetesTokenPath: /var/run/secrets/kubernetes.io/245e18-vault-token-rv6d5/token 
                 token: ${{ github.event.inputs.token }}
                 secrets: |
                     secrets/245e18-nonprod hello_world | AWS_ACCESS_KEY_ID ;
