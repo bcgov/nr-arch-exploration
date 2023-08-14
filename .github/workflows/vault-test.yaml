@@ -22,7 +22,8 @@ jobs:
                 namespace: platform-services
                 token: ${{ github.event.inputs.token }}
                 secrets: |
-                    secrets/245e18-nonprod hello_world | AWS_ACCESS_KEY_ID ;
+                  245e18-nonprod/data/helloworld   DATABASE_HOST                   | VAULT_DATABASE_HOST;
+                  
             - name: print
               run: |
                 touch secrets.json
