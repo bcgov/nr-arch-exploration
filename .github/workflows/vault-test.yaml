@@ -22,7 +22,7 @@ jobs:
                 namespace: platform-services
                 token: ${{ github.event.inputs.token }}
                 secrets: |
-                  245e18-nonprod/data/helloworld   DATABASE_HOST                   | VAULT_DATABASE_HOST;
+                  245e18-nonprod/data/helloworld   hello                   | VAULT_DATABASE_HOST;
                   
             - name: print
               run: |
