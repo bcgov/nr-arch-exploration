@@ -1,0 +1,27 @@
+name: Vault Experiments
+on:
+  workflow_dispatch:
+
+
+jobs:
+  fetch-secrets-from-vault:
+     runs-on: ubuntu-22.04
+     environment: nest-dev
+     steps:
+      - name: Import Secrets
+        id: vault
+        uses: hashicorp/vault-action@v2
+        with:
+          url: https://vault.developer.gov.bc.ca
+          token: ${{ secrets.VAULT_TOKEN }}
+          namespace: platform-services
+          secrets: |
+            ${{secrets.VAULT_ENVIRONMENT}}/data/CMAN?version=3   cman_cert_nrcdb10                   | cman_cert_nrcdb10;
+      - name: create oc secret.
+        shell: bash
+        run: |
+          set +e -ux
+          # Login to OpenShift and select project
+          oc login --token=${{ secrets.OPENSHIFT_TOKEN }} --server=${{ secrets.OPENSHIFT_SERVER }}
+          oc create secret generic vault-injections -from-literal=cman_cert_nrcdb10="${{ env.cman_cert_nrcdb10 }}"
+    
