@@ -23,5 +23,5 @@ jobs:
           set +e -ux
           # Login to OpenShift and select project
           oc login --token=${{ secrets.OPENSHIFT_TOKEN }} --server=${{ secrets.OPENSHIFT_SERVER }}
-          oc create secret generic vault-injections -from-literal=cman_cert_nrcdb10="${{ env.cman_cert_nrcdb10 }}"
+          oc create secret generic vault-injections --from-literal=cman_cert_nrcdb10="${{ env.cman_cert_nrcdb10 }}"
     
