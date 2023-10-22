@@ -16,7 +16,9 @@ jobs:
           token: ${{ secrets.VAULT_TOKEN }}
           namespace: platform-services
           secrets: |
-            ${{secrets.VAULT_ENVIRONMENT}}/data/CMAN?version=3   cman_cert_nrcdb10                   | cman_cert_nrcdb10;
+            ${{secrets.VAULT_ENVIRONMENT}}/data/CMAN-TEST  cman_cert_nrcdb10                   | cman_cert_nrcdb10;
+            ${{secrets.VAULT_ENVIRONMENT}}/data/CMAN-TEST  key                   | key;
+            ${{secrets.VAULT_ENVIRONMENT}}/data/CMAN-TEST  iv                   | iv;
       - name: create oc secret.
         shell: bash
         run: |
@@ -24,4 +26,14 @@ jobs:
           # Login to OpenShift and select project
           oc login --token=${{ secrets.OPENSHIFT_TOKEN }} --server=${{ secrets.OPENSHIFT_SERVER }}
           oc create secret generic vault-injections --from-literal=cman_cert_nrcdb10="${{ env.cman_cert_nrcdb10 }}"
+      - uses: actions/checkout@v3
+      - uses: actions/setup-java@v3
+        with:
+          distribution: 'temurin' # See 'Supported distributions' for available options
+          java-version: '21'
+      - name: Run Java Program
+        shell: bash
+        run: |
+          cd vault-test
+          java Enc.java  "${{ env.key }}" "${{ env.iv }}" "${{ env.cman_cert_nrcdb10 }}"
     
