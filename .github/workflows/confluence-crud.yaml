@@ -21,7 +21,7 @@ jobs:
         working-directory: confluence/script
     steps:
       - name: Check out repository
-        uses: actions/checkout@v2
+        uses: actions/checkout@v4
 
       - name: Add Node.js
         uses: actions/setup-node@v3

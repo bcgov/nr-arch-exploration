@@ -23,7 +23,7 @@ jobs:
           - package: meilisearch
             triggers: ('meilisearch/')
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
       - uses: bcgov-nr/action-builder-ghcr@v1.1.0
         with:
           package: ${{ matrix.package }}

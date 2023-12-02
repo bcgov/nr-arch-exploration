@@ -60,7 +60,7 @@ jobs:
             build_file: ./apis/java/quarkus/.pipeline/openshift/Dockerfile-migrations-openshift
             build_context: ./apis/java/quarkus
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
      
       - uses: bcgov-nr/action-builder-ghcr@v1.1.0
         with:
@@ -79,7 +79,7 @@ jobs:
       - builds
     runs-on: ubuntu-22.04
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v4
       - name: Deploy
         run: |
           set +e -ux
