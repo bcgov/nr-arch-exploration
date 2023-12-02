@@ -1,0 +1,44 @@
+version: 2
+updates:
+  # Maintain dependencies for GitHub Actions
+  - package-ecosystem: "github-actions"
+    directory: "/"
+    schedule:
+      interval: "daily"
+
+  # Maintain dependencies defined in package.json file for npm
+  - package-ecosystem: "npm"
+    directory: "/uis/react-sample" # Target directory the root package.json is located in.
+    schedule:
+      interval: "daily"
+    # Use targeted versioning strategy
+    versioning-strategy: "lockfile-only"
+    # Maintain dependencies defined in package.json file for npm
+  - package-ecosystem: "npm"
+    directory: "/uis/vue-sample" # Target directory the root package.json is located in.
+    schedule:
+      interval: "daily"
+    # Use targeted versioning strategy
+    versioning-strategy: "lockfile-only"
+  - package-ecosystem: "npm"
+    directory: "/apis/TypeScript/Nest" # Target directory the root package.json is located in.
+    schedule:
+      interval: "daily"
+    # Use targeted versioning strategy
+    versioning-strategy: "lockfile-only"
+
+  # Maintain dependencies for Maven (Java)
+  - package-ecosystem: "maven"
+    directory: "/apis/java/quarkus" # Target directory the pom.xml is located in.
+    schedule:
+      interval: "daily"
+    # Maintain dependencies for Maven (Java)
+  - package-ecosystem: "maven"
+    directory: "/apis/java/quarkus-legacy-oracle" # Target directory the pom.xml is located in.
+    schedule:
+      interval: "daily"
+    # Maintain dependencies for Maven (Java)
+  - package-ecosystem: "maven"
+    directory: "/apis/java/sb-crud-api" # Target directory the pom.xml is located in.
+    schedule:
+      interval: "daily"
