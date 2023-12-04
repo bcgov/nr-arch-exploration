@@ -24,7 +24,7 @@ jobs:
         
       - name: Issue Forms Body Parser
         id: parse
-        uses: zentered/issue-forms-body-parser@v1.5.0
+        uses: zentered/issue-forms-body-parser@v2.2.0
       
       - name: Stringify Result
         uses: actions/github-script@v6
