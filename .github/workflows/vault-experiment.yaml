@@ -27,7 +27,7 @@ jobs:
           oc login --token=${{ secrets.OPENSHIFT_TOKEN }} --server=${{ secrets.OPENSHIFT_SERVER }}
           oc create secret generic vault-injections --from-literal=cman_cert_nrcdb10="${{ env.cman_cert_nrcdb10 }}"
       - uses: actions/checkout@v3
-      - uses: actions/setup-java@v3
+      - uses: actions/setup-java@v4
         with:
           distribution: 'temurin' # See 'Supported distributions' for available options
           java-version: '21'
