@@ -6,6 +6,7 @@ const server = http.createServer();
 server.listen(3002); // just to make the process does not exit.
 const axios = require('axios').default;
 const BASE_URL = process.env.BASE_URL;
+console.log(BASE_URL);
 const PAGE_ID_LIST = process.env.PAGES?.split(','); // expected to be comma separated page ids.
 async function processPageIdList() {
   const options = {
